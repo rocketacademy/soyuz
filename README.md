@@ -10,3 +10,8 @@ This is the backend system that coordinates all student and course activities an
 # Technical Specs
 
 Soyuz is a Django app with a Postgres DB.
+
+## Django Rest Framework Reference
+https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
+
+Auth: https://www.django-rest-framework.org/api-guide/authentication/
