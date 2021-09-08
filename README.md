@@ -15,3 +15,6 @@ Soyuz is a Django app with a Postgres DB.
 https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
 
 Auth: https://www.django-rest-framework.org/api-guide/authentication/
+
+## Heroku Settings Reference
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
