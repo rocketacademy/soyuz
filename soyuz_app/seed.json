@@ -1,0 +1,40 @@
+[
+  {
+    "model": "soyuz_app.batch",
+    "pk": 1,
+    "fields": {
+      "created_at":"2021-09-08T00:00:00",
+      "updated_at":"2021-09-08T00:00:00",
+      "start_date":"2021-09-08"
+    }
+  },
+  {
+    "model": "soyuz_app.batch",
+    "pk": 2,
+    "fields": {
+      "created_at":"2021-09-08T00:00:00",
+      "updated_at":"2021-09-08T00:00:00",
+      "start_date":"2021-09-08"
+    }
+  },
+  {
+    "model": "soyuz_app.section",
+    "pk": 1,
+    "fields": {
+      "name": "b10",
+      "created_at":"2021-09-08T00:00:00",
+      "updated_at":"2021-09-08T00:00:00",
+      "batch_id": 1
+    }
+  },
+  {
+    "model": "soyuz_app.section",
+    "pk": 2,
+    "fields": {
+      "name": "b11",
+      "created_at":"2021-09-08T00:00:00",
+      "updated_at":"2021-09-08T00:00:00",
+      "batch_id": 2
+    }
+  }
+]
