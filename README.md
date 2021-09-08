@@ -7,6 +7,10 @@ Rocket Academy Backend Student System
 
 This is the backend system that coordinates all student and course activities and is the source of truth for data to run Rocket Academy courses.
 
+# Links
+https://soyuz-ra.herokuapp.com/
+https://soyuz-ra.herokuapp.com/api/batches/
+
 # Technical Specs
 
 Soyuz is a Django app with a Postgres DB.
@@ -18,3 +22,16 @@ Auth: https://www.django-rest-framework.org/api-guide/authentication/
 
 ## Heroku Settings Reference
 https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
+
+### Heroku PG Reference
+
+https://help.heroku.com/GDQ74SU2/django-migrations
+
+```bash
+heroku run python manage.py makemigrations
+heroku run python manage.py migrate
+heroku run python manage.py createsuperuser
+heroku run python manage.py makemigrations soyuz_app
+heroku run python manage.py migrate soyuz_app
+heroku run python manage.py loaddata soyuz_app/seed.json
+```
