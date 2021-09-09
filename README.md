@@ -35,3 +35,9 @@ heroku run python manage.py makemigrations soyuz_app
 heroku run python manage.py migrate soyuz_app
 heroku run python manage.py loaddata soyuz_app/seed.json
 ```
+## SASS Reference
+https://www.accordbox.com/blog/how-use-scss-sass-your-django-project-python-way/
+
+### Static Files
+https://docs.djangoproject.com/en/3.2/ref/contrib/staticfiles/
+https://docs.djangoproject.com/en/3.2/howto/static-files/
