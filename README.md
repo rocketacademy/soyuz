@@ -1,6 +1,8 @@
 # Soyuz
 Rocket Academy Backend Student System
 
+https://soyuz-ra-staging.herokuapp.com/
+
 ![](https://news.in-24.com/content/uploads/2021/05/19/84e035c899.jpg)
 
 [Soyuz](https://en.wikipedia.org/wiki/Soyuz_(spacecraft)) means "union" in Russian.
@@ -13,7 +15,11 @@ https://soyuz-ra.herokuapp.com/api/batches/
 
 # Technical Specs
 
-Soyuz is a Django app with a Postgres DB.
+#### Backend
+Soyuz is a Django app with Django Rest Framework and a Postgres DB.
+
+#### Front-end
+CSS is built using SASS with Bootstrap.
 
 ## Django Rest Framework Reference
 https://www.digitalocean.com/community/tutorials/build-a-to-do-application-using-django-and-react
