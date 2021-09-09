@@ -87,3 +87,6 @@ local_settings.py
 
 .env
 db.sqlite3
+
+# whitenoise caches front end files
+staticfiles

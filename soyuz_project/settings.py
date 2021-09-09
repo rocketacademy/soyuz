@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+DEBUG = (os.environ.get('DJANGO_DEBUG') == "True")
 
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', default='cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 ALLOWED_HOSTS = [
     'soyuz-ra-production.herokuapp.com',
@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'compressor',
+
 ]
 
 MIDDLEWARE = [
@@ -145,7 +147,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 # The absolute path to the directory where collectstatic will collect static files for deployment.
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/static/'
@@ -163,10 +166,28 @@ CORS_ORIGIN_WHITELIST = [
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder' # Django-Compressor
+]
+
+STATIC_HOST = os.environ.get('DJANGO_STATIC_HOST', default='')
+STATIC_URL = STATIC_HOST + '/static/'
+
+# ! Set this to where you put your static files (js, css, images, fonts.)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# SASS
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'django_libsass.SassCompiler'),
+)
+
 # email settings - sendgrid
 
-EMAIL_HOST_USER = os.environ.get('SENDGRID_USERNAME') != False
+EMAIL_HOST_USER = os.environ.get('SENDGRID_USERNAME', default='')
 EMAIL_HOST= 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD') != False
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD', default='')

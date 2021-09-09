@@ -4,6 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>RA Wow Django!</title>
+        {% load compress %}
+        {% compress css %}
+            {% load static %}
+            <link type="text/x-scss" href="{% static 'sass/bootstrap/bootstrap.scss' %}" rel="stylesheet" media="screen">
+        {% endcompress %}
     </head>
     <body>
       {% block page_content %}{% endblock %}
