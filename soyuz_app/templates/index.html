@@ -1,0 +1,14 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<div>
+    <h1>Title: {{ title }}</h1>
+    <ul>
+    {% for batch in batches %}
+        <li>
+            <span>Id: {{ batch.id }}</span>
+            <span>Start Date: {{ batch.start_date }}</span>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
