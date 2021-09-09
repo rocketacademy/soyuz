@@ -15,6 +15,12 @@ from pathlib import Path
 
 import dj_database_url
 
+# in non production mode, try to load a dotenv file
+if not os.environ.get("PRODUCTION"):
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
-ALLOWED_HOSTS = ['soyuz-ra.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = [
+    'soyuz-ra-production.herokuapp.com',
+    'soyuz-ra-staging.herokuapp.com',
+    '127.0.0.1',
+    'localhost'
+]
 
 # Application definition
 
@@ -151,3 +162,11 @@ CORS_ORIGIN_WHITELIST = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# email settings - sendgrid
+
+EMAIL_HOST_USER = os.environ.get('SENDGRID_USERNAME') != False
+EMAIL_HOST= 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD') != False
