@@ -99,7 +99,7 @@ DATABASES = {
 
         'NAME': 'soyuz_db',
 
-        'USER': 'akira',
+        'USER': 'michellemok',
 
         'HOST': 'localhost',
 
