@@ -10,5 +10,14 @@
         </li>
     {% endfor %}
     </ul>
+    <form action="{% url 'index' %}" method="POST">
+        {% csrf_token %}
+        <ul>
+        {{ form.as_ul }}
+        </ul>
+        <div id="registration-actions">
+            <button>Register</button>
+        </div>
+    </form>
 </div>
 {% endblock %}

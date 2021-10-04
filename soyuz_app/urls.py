@@ -9,5 +9,7 @@ router.register(r'batches', views.BatchView, 'batch')
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('registration-success', views.confirm_registration,
+         name="registration-success"),
     path('api/', include(router.urls)),
 ]
