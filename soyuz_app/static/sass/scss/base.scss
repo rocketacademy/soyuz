@@ -1,0 +1,35 @@
+body,
+html,
+.registration-form-container {
+  height: 100%;
+  background-color: $off-white;
+  .navbar-brand {
+    padding-left: 20px;
+    img {
+      height: 60px;
+      width: 150px;
+    }
+  }
+  .registration-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    ul {
+      list-style: none;
+      label {
+        color: $blue;
+        padding-right: 10px;
+        font-family: $secondary-font;
+      }
+      input {
+        border-radius: 5px;
+        border-width: 0.5px;
+      }
+    }
+    .btn {
+      color: white;
+    }
+  }
+}

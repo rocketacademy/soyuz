@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Raleway:wght@100;200;400;600&display=swap");
+
+$secondary-font: "Open Sans", sans-serif;
+$primary-font: "Raleway", sans-serif;
+$primary: #e73c3e;
+$secondary: #af231c;
+$blue: #00567e;
+$off-white: #f9f6e7;
+
+@import "./bootstrap/bootstrap";
+@import "./scss/base";

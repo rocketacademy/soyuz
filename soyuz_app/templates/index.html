@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
-<div>
-    <h1>Title: {{ title }}</h1>
+<div class="registration-form-container">
+    <!-- <h1>Title: {{ title }}</h1>
     <ul>
     {% for batch in batches %}
         <li>
@@ -9,14 +9,14 @@
             <span>Start Date: {{ batch.start_date }}</span>
         </li>
     {% endfor %}
-    </ul>
-    <form action="{% url 'index' %}" method="POST">
+    </ul> -->
+        <form class="registration-form" action="{% url 'index' %}" method="POST">
         {% csrf_token %}
         <ul>
         {{ form.as_ul }}
         </ul>
         <div id="registration-actions">
-            <button>Register</button>
+            <button class="btn btn-primary">Register</button>
         </div>
     </form>
 </div>
