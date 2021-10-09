@@ -1,47 +1,42 @@
 from django.db import models
+from django.db.models.deletion import PROTECT
 
 # Create your models here.
 
 
 class Course (models.Model):
     name = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-
-class Batch(models.Model):
-    name = models.CharField(max_length=200)
-    start_date = models.DateField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    course_id = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
-
-
-class Section (models.Model):
-    name = models.TextField()
-    batch_id = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
 
 
 class User (models.Model):
-    github_username = models.CharField(max_length=200)
-    batch_id = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True)
-    section_id = models.ForeignKey(
-        Section, on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    github_username = models.CharField(max_length=200, null=True)
+    hubspot_id = models.TextField(max_length=300, null=True)
+    password = models.TextField(max_length=200 )
 
 
-class Workflow_types (models.Model):
+class Batch(models.Model):
+    number = models.IntegerField()
+    start_date = models.DateField()
+    users = models.ManyToManyField(
+        User, blank=True)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+
+class Section (models.Model):
+    number = models.IntegerField()
+    users = models.ManyToManyField(
+        User, blank=True)
+    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE)
+
+
+class Workflow_type (models.Model):
     name = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    course_id = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
+    course_id = models.ManyToManyField(Course)
 
 
 class Workflows (models.Model):
-    workFlow_type_id = models.CharField(max_length=200)
-    completed = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=PROTECT)
+    completed = models.BooleanField(default=False)

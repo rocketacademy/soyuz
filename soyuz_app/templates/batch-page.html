@@ -1,0 +1,25 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<div class="batch-page-container">
+<h1>{{ title }}</h1>
+<ul>
+{% for batch in batches %}
+    <li class="batch-list-item">
+        <span>{{ batch.course_id.name }}</span>
+        <span>{{ batch.number }}, </span>
+        <span>Start Date: {{ batch.start_date }}</span>
+        <a class="btn btn-primary" href="{% url 'get_sections' batch.id %}" role="button">batch registration</a>
+    </li>
+{% endfor %}
+</ul>
+<form class="add-batch-form" action="{% url 'get_batches' %}" method="POST">
+    {% csrf_token %}
+    <ul>
+        {{ form.as_ul }}
+    </ul>
+    <div class="add-batch-actions">
+        <button class="btn btn-primary">Add Batch</button>
+    </div>
+</form>
+</div>
+{% endblock %}

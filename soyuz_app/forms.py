@@ -1,8 +1,12 @@
 from django import forms
-from .models import User
+from .models import Batch, User
 
 
-class RegistrationForm(forms.ModelForm):
+class RegistrationForm(forms.Form):
+    github_username = forms.CharField(label='Github username')
+
+
+class AddBatchForm(forms.ModelForm):
     class Meta:
-        model = User
-        fields = ['github_username']
+        model = Batch
+        fields = ['course_id', 'start_date', 'number']
