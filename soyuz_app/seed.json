@@ -21,76 +21,11 @@
     }
   },
   {
-    "model": "soyuz_app.user",
-    "pk": 1,
-    "fields": {
-      "github_username": "tony-stark",
-      "hubspot_id": "23456"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 2,
-    "fields": {
-      "github_username": "clarke-kent",
-      "hubspot_id": "122344"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 3,
-    "fields": {
-      "github_username": "bruce-wayne",
-      "hubspot_id": "334455"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 4,
-    "fields": {
-      "github_username": "lex-luthor",
-      "hubspot_id": "890736"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 5,
-    "fields": {
-      "github_username": "kara_danvers",
-      "hubspot_id": "889877"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 6,
-    "fields": {
-      "github_username": "jean-grey",
-      "hubspot_id": "122343"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 7,
-    "fields": {
-      "github_username": "n-romanov",
-      "hubspot_id": "575665"
-    }
-  },
-  {
-    "model": "soyuz_app.user",
-    "pk": 8,
-    "fields": {
-      "github_username": "bruce-banner",
-      "hubspot_id": "098098"
-    }
-  },
-  {
     "model": "soyuz_app.batch",
     "pk": 1,
     "fields": {
       "number": 1,
       "start_date": "2021-09-08",
-      "users": [5, 6, 7, 8],
       "course_id": 1
     }
   },
@@ -100,44 +35,7 @@
     "fields": {
       "number": 2,
       "start_date": "2021-09-08",
-      "users": [1, 2, 3, 4],
       "course_id": 1
-    }
-  },
-  {
-    "model": "soyuz_app.section",
-    "pk": 1,
-    "fields": {
-      "number": 1,
-      "batch_id": 1,
-      "users": [5, 6]
-    }
-  },
-  {
-    "model": "soyuz_app.section",
-    "pk": 2,
-    "fields": {
-      "number": 2,
-      "batch_id": 1,
-      "users": [7, 8]
-    }
-  },
-  {
-    "model": "soyuz_app.section",
-    "pk": 3,
-    "fields": {
-      "number": 1,
-      "batch_id": 2,
-      "users": [1, 2]
-    }
-  },
-  {
-    "model": "soyuz_app.section",
-    "pk": 4,
-    "fields": {
-      "number": 2,
-      "batch_id": 2,
-      "users": [3, 4]
     }
   }
 ]

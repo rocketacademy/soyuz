@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 
 from django.http import HttpResponse
-from ..models import Batch, Section, User, Course
-from ..forms import RegistrationForm, AddBatchForm
+from ..models import Batch, Section, Course
+from accounts.forms import RegistrationForm
+from ..forms import AddBatchForm
 
 
 def index(request):
@@ -74,13 +75,13 @@ def student_registration(request, batch_number, user_hubspot_id):
         registration_form = RegistrationForm()
     else:
         registration_form = RegistrationForm(request.POST)
-        if registration_form.is_valid():
-            user_github = registration_form.cleaned_data['github_username']
-            print(user_github)
-            user = User.objects.create(
-                github_username=user_github, hubspot_id=user_hubspot_id)
-            batch.users.add(user)
-            return redirect('registration-success')
+        # if registration_form.is_valid():
+        #     user_github = registration_form.cleaned_data['github_username']
+        #     print(user_github)
+        #     user = User.objects.create(
+        #         github_username=user_github, hubspot_id=user_hubspot_id)
+        #     batch.users.add(user)
+        redirect('registration-success')
 
     context = {
         "title": "Student Registration",
