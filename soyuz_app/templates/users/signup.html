@@ -1,0 +1,9 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<h1>Student Registration</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <button type="submit">Register</button>
+</form>
+{% endblock %}

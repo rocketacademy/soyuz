@@ -43,7 +43,6 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'soyuz_app',
-    'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'accounts.Account'
+AUTH_USER_MODEL = 'soyuz_app.User'
 WSGI_APPLICATION = 'soyuz_project.wsgi.application'
 
 
