@@ -12,13 +12,14 @@ class RegistrationForm(forms.ModelForm):
         model = Account
         fields = ('email', 'github_username', 'password')
 
-    def save(self, commit=True):
-        # Save the provided password in hashed format
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])
-        if commit:
-            user.save()
-        return user
+    # def save(self, commit=True):
+    #     # Save the provided password in hashed format
+    #     user = super().save(commit=False)
+    #     user.github_username = (self.cleaned_data["github_username"])
+    #     user.set_password(self.cleaned_data["password"])
+    #     if commit:
+    #         user.save()
+    #     return user
 
 
 class UserCreationForm(forms.ModelForm):

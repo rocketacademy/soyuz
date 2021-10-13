@@ -16,7 +16,7 @@ from .forms import RegistrationForm
 
 
 class RegistrationView(CreateView):
-    template_name = 'registration/register.html'
+    template_name = 'register/register.html'
     form_class = RegistrationForm
 
     def get_context_data(self, *args, **kwargs):
