@@ -28,12 +28,12 @@ html,
         border-width: 0.5px;
       }
     }
-    .btn {
-      color: white;
-    }
   }
 }
 
+.btn {
+  color: white;
+}
 // batch-page.html
 .batch-page-container {
   display: flex;
@@ -41,9 +41,7 @@ html,
   justify-content: center;
   align-items: center;
   color: $blue;
-  .btn {
-    color: white;
-  }
+
   h1 {
     padding: 20px 0 10px;
   }
@@ -72,5 +70,31 @@ html,
       display: flex;
       justify-content: flex-end;
     }
+  }
+}
+
+.signup,
+.login {
+  h1 {
+    padding: 30px 0;
+    color: $blue;
+    font: $primary-font;
+  }
+
+  form {
+    color: $blue;
+    width: 70%;
+    input {
+      margin-bottom: 20px;
+    }
+  }
+
+  .btn {
+    margin-top: 20px;
+  }
+
+  li,
+  small {
+    color: $blue !important;
   }
 }

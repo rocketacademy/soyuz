@@ -43,6 +43,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'soyuz_app',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -191,3 +192,7 @@ EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD', default='')
+
+# crispy forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
