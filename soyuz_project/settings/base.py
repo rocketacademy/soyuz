@@ -152,6 +152,9 @@ STATICFILES_FINDERS = [
     "compressor.finders.CompressorFinder",  # Django-Compressor
 ]
 
+# SASS
+COMPRESS_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
+
 # MEDIA
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
