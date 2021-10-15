@@ -69,32 +69,43 @@ git commit --no-verify
 git push --no-verify
 
 # Heroku Setup
+From: https://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html?highlight=heroku
 ```
 heroku create --buildpack heroku/python
 
 heroku addons:create heroku-postgresql:hobby-dev
+
 # On Windows use double quotes for the time zone, e.g.
 # heroku pg:backups schedule --at "02:00 America/Los_Angeles" DATABASE_URL
-heroku pg:backups schedule --at '02:00 America/Los_Angeles' DATABASE_URL
+
+heroku pg:backups schedule --at '02:00 America/Los_Angeles' DATABASE_URL  --remote staging
+
 heroku pg:promote DATABASE_URL
 
-heroku addons:create heroku-redis:hobby-dev
+heroku addons:create heroku-redis:hobby-dev --remote staging
 
-heroku addons:create mailgun:starter
+heroku addons:create mailgun:starter --remote staging
 
-heroku config:set PYTHONHASHSEED=random
 
-heroku config:set WEB_CONCURRENCY=4
+heroku config:set PYTHONHASHSEED=random --remote staging
 
-heroku config:set DJANGO_DEBUG=False
-heroku config:set DJANGO_SETTINGS_MODULE=config.settings.production
-heroku config:set DJANGO_SECRET_KEY="$(openssl rand -base64 64)"
+
+heroku config:set WEB_CONCURRENCY=4 --remote staging
+
+
+heroku config:set DJANGO_DEBUG=False  --remote staging
+
+heroku config:set DJANGO_SETTINGS_MODULE=config.settings.production  --remote staging
+
+heroku config:set DJANGO_SECRET_KEY="$(openssl rand -base64 64)" --remote staging
+
 
 # Generating a 32 character-long random string without any of the visually similar characters "IOl01":
-heroku config:set DJANGO_ADMIN_URL="$(openssl rand -base64 4096 | tr -dc 'A-HJ-NP-Za-km-z2-9' | head -c 32)/"
+heroku config:set DJANGO_ADMIN_URL="$(openssl rand -base64 4096 | tr -dc 'A-HJ-NP-Za-km-z2-9' | head -c 32)/"  --remote staging
+
 
 # Set this to your Heroku app url, e.g. 'bionic-beaver-28392.herokuapp.com'
-heroku config:set DJANGO_ALLOWED_HOSTS=
+heroku config:set DJANGO_ALLOWED_HOSTS='soyuz-ra-staging.herokuapp.com rocketacademy.co' --remote staging
 
 # Assign with AWS_ACCESS_KEY_ID
 heroku config:set DJANGO_AWS_ACCESS_KEY_ID=
