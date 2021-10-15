@@ -33,14 +33,6 @@ https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
 
 https://help.heroku.com/GDQ74SU2/django-migrations
 
-```bash
-heroku run python manage.py makemigrations
-heroku run python manage.py migrate
-heroku run python manage.py createsuperuser
-heroku run python manage.py makemigrations soyuz_app
-heroku run python manage.py migrate soyuz_app
-heroku run python manage.py loaddata soyuz_app/seed.json
-```
 ## SASS Reference
 https://www.accordbox.com/blog/how-use-scss-sass-your-django-project-python-way/
 
@@ -69,11 +61,28 @@ Setup the Git precommit hooks:
 pre-commit install
 ```
 
+#### Running the Server
+```
+DJANGO_READ_DOT_ENV_FILE=True python3 manage.py runserver
+```
+
 #### Skip Pre Commit
 git commit --no-verify
 git push --no-verify
 
 # Heroku Setup
+
+
+```bash
+heroku run python manage.py makemigrations
+heroku run python manage.py migrate
+heroku run python manage.py createsuperuser
+heroku run python manage.py makemigrations soyuz_app
+heroku run python manage.py migrate soyuz_app
+heroku run python manage.py loaddata soyuz_app/seed.json
+heroku run python manage.py collectstatic
+```
+
 From: https://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html?highlight=heroku
 ```
 heroku create --buildpack heroku/python
@@ -104,6 +113,8 @@ heroku config:set DJANGO_SETTINGS_MODULE=soyuz_app.settings.production  --remote
 
 heroku config:set DJANGO_SECRET_KEY="$(openssl rand -base64 64)" --remote staging
 
+# need this to turn off debug scripts
+heroku config:set DJANGO_ENV="production" --remote staging
 
 # Generating a 32 character-long random string without any of the visually similar characters "IOl01":
 heroku config:set DJANGO_ADMIN_URL="$(openssl rand -base64 4096 | tr -dc 'A-HJ-NP-Za-km-z2-9' | head -c 32)/"  --remote staging

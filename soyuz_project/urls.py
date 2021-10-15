@@ -13,17 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
+from pathlib import Path
+
+import environ
 from django.contrib import admin
 from django.urls import include, path
 
+ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+APPS_DIR = ROOT_DIR / "soyuz"
+env = environ.Env()
+
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    env.read_env(str(ROOT_DIR / ".env"))
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('soyuz_app.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("soyuz_app.urls")),
 ]
 
-if settings.DEBUG:
+if env("DJANGO_ENV") == "development":
     import debug_toolbar
+
     urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
+        path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns

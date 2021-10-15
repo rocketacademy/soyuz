@@ -49,9 +49,9 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
-ROOT_URLCONF = 'soyuz_project.urls'
+ROOT_URLCONF = "soyuz_project.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
-WSGI_APPLICATION = 'soyuz_project.wsgi.application'
+WSGI_APPLICATION = "soyuz_project.wsgi.application"
 
 # APPS
 # ------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     # Your stuff: custom apps go here
-    'soyuz_app',
+    "soyuz_app",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -91,9 +91,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
-AUTH_USER_MODEL = 'soyuz_app.User'
+AUTH_USER_MODEL = "soyuz_app.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = '/dashboard'
+LOGIN_REDIRECT_URL = "/dashboard"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 # LOGIN_URL = "account_login"
 
@@ -136,19 +136,24 @@ MIDDLEWARE = [
 
 # STATIC
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_HOST = os.environ.get('DJANGO_STATIC_HOST', default='')
-STATIC_URL = STATIC_HOST + '/static/'
-# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = [os.path.join(ROOT_DIR, 'soyuz_app', 'static')]
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
+
+STATIC_HOST = os.environ.get("DJANGO_STATIC_HOST", default="")
+STATIC_URL = STATIC_HOST + "/static/"
+
+# ! Set this to where you put your static files (js, css, images, fonts.)
+STATICFILES_DIRS = [os.path.join(ROOT_DIR, "soyuz_app", "static")]
+
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",  # Django-Compressor
 ]
+
+# SASS
+COMPRESS_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
 
 # MEDIA
 # ------------------------------------------------------------------------------
