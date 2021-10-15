@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import authenticate, get_user_model, login
+from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
-from ..models import Batch
-from django.contrib.auth import get_user_model
+
 from ..forms import SignUpForm
+from ..models import Batch
 
 
 class UserView(DetailView):

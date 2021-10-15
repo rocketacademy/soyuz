@@ -1,7 +1,11 @@
-from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
+from django.db import models
 from django.db.models.deletion import PROTECT
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
 
 
@@ -9,7 +13,7 @@ class UserManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError('Userz must have an email address')
         now = timezone.now()
         email = self.normalize_email(email)
         user = self.model(

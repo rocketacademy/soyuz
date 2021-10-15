@@ -1,8 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Register your models here.
-from .models import Batch, Section, Course, User
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Batch, Course, Section, User
 
 
 class UserAdmin(BaseUserAdmin):

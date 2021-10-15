@@ -1,7 +1,7 @@
 from django import forms
-from .models import Batch, User
-
 from django.contrib.auth.forms import UserCreationForm
+
+from .models import Batch, User
 
 
 class SignUpForm(UserCreationForm):

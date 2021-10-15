@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
-
 from django.http import HttpResponse
-from ..models import Batch, Section, Course
+from django.shortcuts import redirect, render
+
 from ..forms import AddBatchForm
+from ..models import Batch, Course, Section
 
 
 def confirm_registration(request):
