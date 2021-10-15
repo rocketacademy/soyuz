@@ -73,6 +73,7 @@ html,
   }
 }
 
+// login/ signup forms
 .signup,
 .login {
   h1 {
@@ -96,5 +97,36 @@ html,
   li,
   small {
     color: $blue !important;
+  }
+}
+
+.login {
+  h1 {
+    padding: 30px 0;
+    color: $blue;
+    font: $primary-font;
+  }
+  .login-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    padding: 30px 0;
+    form {
+      color: $blue;
+      input {
+        margin-bottom: 20px;
+      }
+    }
+
+    .btn {
+      margin-top: 20px;
+    }
+
+    li,
+    small {
+      color: $blue !important;
+    }
   }
 }

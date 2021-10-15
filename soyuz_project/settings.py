@@ -88,6 +88,7 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = 'soyuz_app.User'
+LOGIN_REDIRECT_URL = '/dashboard'
 WSGI_APPLICATION = 'soyuz_project.wsgi.application'
 
 

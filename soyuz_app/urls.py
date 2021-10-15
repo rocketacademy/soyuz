@@ -18,8 +18,6 @@ urlpatterns = [
     path('dashboard/',  login_required(UserView.as_view()), name='dashboard'),
     path('batch/<batch_number>/hubspot_id/<user_hubspot_id>',
          signup, name='signup'),
-    #     path('batch/<batch_number>/hubspot_id/<user_hubspot_id>',
-    #          views.student_registration, name='student_registration'),
     path('student-admin/batches/', views.get_batches, name='get_batches'),
     path('student-admin/batch/<batch_id>',
          views.get_sections, name='get_sections'),
