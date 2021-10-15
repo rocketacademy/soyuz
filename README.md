@@ -47,3 +47,23 @@ https://www.accordbox.com/blog/how-use-scss-sass-your-django-project-python-way/
 ### Static Files
 https://docs.djangoproject.com/en/3.2/ref/contrib/staticfiles/
 https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+# Local Dev Setup
+
+Install EditorConfig for VS Code: https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig
+
+```
+dropdb soyuz_db
+create_db soyuz_db
+pip install -r requirements/local.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py makemigrations soyuz_app
+python manage.py migrate soyuz_app
+python manage.py loaddata soyuz_app/seed.json
+```
+
+#### Skip Pre Commit
+git commit --no-verify
+git push --no-verify
