@@ -64,6 +64,11 @@ python manage.py migrate soyuz_app
 python manage.py loaddata soyuz_app/seed.json
 ```
 
+Setup the Git precommit hooks:
+```
+pre-commit install
+```
+
 #### Skip Pre Commit
 git commit --no-verify
 git push --no-verify
@@ -95,7 +100,7 @@ heroku config:set WEB_CONCURRENCY=4 --remote staging
 
 heroku config:set DJANGO_DEBUG=False  --remote staging
 
-heroku config:set DJANGO_SETTINGS_MODULE=config.settings.production  --remote staging
+heroku config:set DJANGO_SETTINGS_MODULE=soyuz_app.settings.production  --remote staging
 
 heroku config:set DJANGO_SECRET_KEY="$(openssl rand -base64 64)" --remote staging
 
