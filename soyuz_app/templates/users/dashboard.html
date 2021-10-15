@@ -1,0 +1,8 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<h1>Student Dashboard</h1>
+<p>
+    {{ object }}
+</p>
+<a href="{% url 'soyuz_app:logout' %}">Logout</a>
+{% endblock %}

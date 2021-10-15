@@ -29,7 +29,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 DEBUG = (os.environ.get('DJANGO_DEBUG') == "True")
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', default='cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY', default='cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 ALLOWED_HOSTS = [
     'soyuz-ra-production.herokuapp.com',
@@ -42,6 +43,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'soyuz_app',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,6 +87,8 @@ TEMPLATES = [
     },
 ]
 
+AUTH_USER_MODEL = 'soyuz_app.User'
+LOGIN_REDIRECT_URL = '/dashboard'
 WSGI_APPLICATION = 'soyuz_project.wsgi.application'
 
 
@@ -99,7 +103,7 @@ DATABASES = {
 
         'NAME': 'soyuz_db',
 
-        'USER': 'akira',
+        'USER': 'michellemok',
 
         'HOST': 'localhost',
 
@@ -149,7 +153,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:8000'
+    'http://localhost:8000'
 ]
 
 # Simplified static file serving.
@@ -160,7 +164,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder' # Django-Compressor
+    'compressor.finders.CompressorFinder'  # Django-Compressor
 ]
 
 
@@ -185,7 +189,11 @@ COMPRESS_PRECOMPILERS = (
 # email settings - sendgrid
 
 EMAIL_HOST_USER = os.environ.get('SENDGRID_USERNAME', default='')
-EMAIL_HOST= 'smtp.sendgrid.net'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_PASSWORD', default='')
+
+# crispy forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

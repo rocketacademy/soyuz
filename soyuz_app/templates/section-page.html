@@ -1,0 +1,20 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<div class="section-page-container">
+    <h1>{{ title }}: {{ batch.course_id }} {{ batch.number }}</h1>
+    <h2>Start Date: {{ batch.start_date }}</h2>
+    
+    {% for section in sections %}
+    <div class="section">
+    <h3>Section: {{ section.number }}</h3>
+    {% for user in section.users %}
+    <ul class="user-details">
+        <li>User ID: {{ user.id }}</li>
+        <li>Hubspot ID: {{ user.hubspot_id }}</li>
+        <li>Github username: {{ user.github_username }}</li>
+    </ul>
+    {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
