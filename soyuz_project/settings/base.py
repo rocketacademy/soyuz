@@ -7,7 +7,7 @@ from pathlib import Path
 import environ
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-APPS_DIR = ROOT_DIR / "soyuz"
+APPS_DIR = ROOT_DIR / "soyuz_app"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
@@ -136,24 +136,22 @@ MIDDLEWARE = [
 
 # STATIC
 # ------------------------------------------------------------------------------
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
 
 STATIC_HOST = os.environ.get("DJANGO_STATIC_HOST", default="")
 STATIC_URL = STATIC_HOST + "/static/"
-
-# ! Set this to where you put your static files (js, css, images, fonts.)
-STATICFILES_DIRS = [os.path.join(ROOT_DIR, "soyuz_app", "static")]
 
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     "compressor.finders.CompressorFinder",  # Django-Compressor
+    "sass_processor.finders.CssFinder",
 ]
 
 # SASS
 COMPRESS_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
+LIBSASS_SOURCEMAPS = True
 
 # MEDIA
 # ------------------------------------------------------------------------------
