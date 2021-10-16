@@ -1,0 +1,141 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Raleway:wght@100;200;400;600&display=swap");
+
+$secondary-font: "Open Sans", sans-serif;
+$primary-font: "Raleway", sans-serif;
+$primary: #e73c3e;
+$secondary: #af231c;
+$blue: #00567e;
+$off-white: #f9f6e7;
+
+body,
+html,
+.registration-form-container {
+  height: 100%;
+  background-color: $off-white;
+  .navbar-brand {
+    padding-left: 20px;
+    img {
+      height: 60px;
+      width: 150px;
+    }
+  }
+  .registration-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    ul {
+      list-style: none;
+      label {
+        color: $blue;
+        padding-right: 10px;
+        font-family: $secondary-font;
+      }
+      input {
+        border-radius: 5px;
+        border-width: 0.5px;
+      }
+    }
+  }
+}
+
+.btn {
+  color: white;
+}
+// batch-page.html
+.batch-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $blue;
+
+  h1 {
+    padding: 20px 0 10px;
+  }
+  ul {
+    height: 40%;
+    padding: 20px 0;
+    list-style: none;
+    .batch-list-item {
+      margin: 10px;
+    }
+  }
+  form {
+    height: 50%;
+    ul {
+      li {
+        margin: 15px 0;
+        input,
+        select {
+          border-radius: 5px;
+          border-width: 0.5px;
+          width: 100%;
+        }
+      }
+    }
+    .add-batch-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+// login/ signup forms
+.signup,
+.login {
+  h1 {
+    padding: 30px 0;
+    color: $blue;
+    font: $primary-font;
+  }
+
+  form {
+    color: $blue;
+    width: 70%;
+    input {
+      margin-bottom: 20px;
+    }
+  }
+
+  .btn {
+    margin-top: 20px;
+  }
+
+  li,
+  small {
+    color: $blue !important;
+  }
+}
+
+.login {
+  h1 {
+    padding: 30px 0;
+    color: $blue;
+    font: $primary-font;
+  }
+  .login-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    padding: 30px 0;
+    form {
+      color: $blue;
+      input {
+        margin-bottom: 20px;
+      }
+    }
+
+    .btn {
+      margin-top: 20px;
+    }
+
+    li,
+    small {
+      color: $blue !important;
+    }
+  }
+}
