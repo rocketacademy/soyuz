@@ -34,7 +34,14 @@ https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
 https://help.heroku.com/GDQ74SU2/django-migrations
 
 ## SASS Reference
-https://www.accordbox.com/blog/how-use-scss-sass-your-django-project-python-way/
+https://github.com/jrief/django-sass-processor
+
+#### Manage SASS files locally
+```
+python manage.py compilescss # run sass
+python manage.py collectstatic --clear # delete static file cache
+python manage.py compilescss --delete-files # get rid of files
+```
 
 ### Static Files
 https://docs.djangoproject.com/en/3.2/ref/contrib/staticfiles/
@@ -61,9 +68,10 @@ Setup the Git precommit hooks:
 pre-commit install
 ```
 
-#### Running the Server
+# Setting Local Dev Env Vars
 ```
-DJANGO_READ_DOT_ENV_FILE=True python3 manage.py runserver
+echo 'export DJANGO_READ_DOT_ENV_FILE=True' >> ~/.profile
+echo 'export DJANGO_ENV=development' >> ~/.profile
 ```
 
 #### Skip Pre Commit
@@ -86,6 +94,8 @@ heroku run python manage.py collectstatic
 From: https://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html?highlight=heroku
 ```
 heroku create --buildpack heroku/python
+
+heroku buildpacks:add --index 2 https://github.com/drpancake/heroku-buildpack-django-sass.git --remote staging
 
 heroku addons:create heroku-postgresql:hobby-dev
 
@@ -139,6 +149,4 @@ heroku run python manage.py createsuperuser
 heroku run python manage.py check --deploy
 
 heroku open
-
-heroku buildpacks:add --index 2 https://github.com/drpancake/heroku-buildpack-django-sass.git --remote staging
 ```
