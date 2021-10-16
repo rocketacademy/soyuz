@@ -6,13 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>RA Wow Django!</title>
         <!-- Bootstrap core CSS -->
-        {% load compress %}
-        {% compress css %}
         {% load sass_tags %}
-
         <link href="{% sass_src 'sass/bootstrap/bootstrap.scss' %}" rel="stylesheet" type="text/css" />
         <link href="{% sass_src 'sass/theme.scss' %}" rel="stylesheet" type="text/css" />
-        {% endcompress %}
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
