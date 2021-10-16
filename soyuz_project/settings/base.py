@@ -146,7 +146,6 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     "compressor.finders.CompressorFinder",  # Django-Compressor
-    "sass_processor.finders.CssFinder",
 ]
 
 # SASS
