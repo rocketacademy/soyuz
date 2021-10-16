@@ -139,4 +139,6 @@ heroku run python manage.py createsuperuser
 heroku run python manage.py check --deploy
 
 heroku open
+
+heroku buildpacks:add --index 2 https://github.com/drpancake/heroku-buildpack-django-sass.git --remote staging
 ```

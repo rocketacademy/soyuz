@@ -8,7 +8,10 @@
         <!-- Bootstrap core CSS -->
         {% load compress %}
         {% compress css %}
-        <link type="text/x-scss" href="{% static 'sass/bootstrap/bootstrap.scss' %}" rel="stylesheet" media="screen">
+        {% load sass_tags %}
+
+        <link href="{% sass_src 'sass/bootstrap/bootstrap.scss' %}" rel="stylesheet" type="text/css" />
+        <link href="{% sass_src 'sass/theme.scss' %}" rel="stylesheet" type="text/css" />
         {% endcompress %}
     </head>
     <body>

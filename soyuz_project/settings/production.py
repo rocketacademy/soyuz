@@ -63,7 +63,15 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 
 # STATIC
 # ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+SASS_PROCESSOR_STORAGE = "django.contrib.staticfiles.storage.FileSystemStorage"
+SASS_PROCESSOR_STORAGE_OPTIONS = {
+    "location": STATIC_ROOT,  # noqa F405
+    "base_url": STATIC_URL,  # noqa F405
+}
+
 # MEDIA
 # ------------------------------------------------------------------------------
 

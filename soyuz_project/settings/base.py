@@ -71,6 +71,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "sass_processor",
 ]
 
 LOCAL_APPS = [
@@ -146,11 +147,13 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     "compressor.finders.CompressorFinder",  # Django-Compressor
+    "sass_processor.finders.CssFinder",
 ]
 
 # SASS
 COMPRESS_PRECOMPILERS = (("text/x-scss", "django_libsass.SassCompiler"),)
 LIBSASS_SOURCEMAPS = True
+SASS_PRECISION = 8
 
 # MEDIA
 # ------------------------------------------------------------------------------
