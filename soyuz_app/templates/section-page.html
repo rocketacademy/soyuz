@@ -3,15 +3,26 @@
 <div class="section-page-container">
     <h1>{{ title }}: {{ batch.course_id }} {{ batch.number }}</h1>
     <h2>Start Date: {{ batch.start_date }}</h2>
-    
+
     {% for section in sections %}
     <div class="section">
     <h3>Section: {{ section.number }}</h3>
     {% for user in section.users %}
     <ul class="user-details">
+      <div class="user">
         <li>User ID: {{ user.id }}</li>
         <li>Hubspot ID: {{ user.hubspot_id }}</li>
-        <li>Github username: {{ user.github_username }}</li>
+        <li>Email: {{ user.email }}</li>
+      </div>
+      <form action="get_sections" method="POST">
+        <select name="batch_sections" class="section-select">
+          <option selected="selected" disabled>--</option>
+          {% for section in sections %}
+          <option value="{{ section.number }}">{{ section.number }}</option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Select">
+      </form>
     </ul>
     {% endfor %}
     </div>
