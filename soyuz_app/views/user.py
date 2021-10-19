@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
 
 from ..forms import SignUpForm
-from ..models import Batch
+from ..models import Batch, Section
 
 
 class UserView(DetailView):
@@ -16,6 +16,7 @@ class UserView(DetailView):
 
 def signup(request, batch_number, user_hubspot_id):
     batch = Batch.objects.get(number=batch_number)
+    max_students = 4
 
     if request.method == "POST":
         form = SignUpForm(request.POST)
@@ -23,13 +24,25 @@ def signup(request, batch_number, user_hubspot_id):
             raw_password = form.cleaned_data.get("password1")
             email = form.cleaned_data.get("email")
             user_github = form.cleaned_data.get("github_username")
-            print(user_github)
             user = get_user_model().objects.create(
                 email=email, github_username=user_github, hubspot_id=user_hubspot_id
             )
             user.set_password(raw_password)
             user.save()
             batch.users.add(user)
+            sections = Section.objects.all().order_by("-number")
+            if sections.count() > 0:
+                if sections[0].users.count() <= max_students:
+                    sections[0].users.add(user)
+                else:
+                    new_section = Section.objects.create(
+                        number=sections.count() + 1, batch_id=batch
+                    )
+                    new_section.users.add(user)
+            else:
+                new_section = Section.objects.create(number=1, batch_id=batch)
+                new_section.users.add(user)
+
             user = authenticate(request, email=user.email, password=raw_password)
             if user is not None:
 

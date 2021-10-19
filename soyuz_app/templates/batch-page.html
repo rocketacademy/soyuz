@@ -1,18 +1,17 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="batch-page-container">
-<h1>{{ title }}</h1>
 <ul>
 {% for batch in batches %}
     <li class="batch-list-item">
         <span>{{ batch.course_id.name }}</span>
         <span>{{ batch.number }}, </span>
         <span>Start Date: {{ batch.start_date }}</span>
-        <a class="btn btn-primary" href="{% url 'get_sections' batch.id %}" role="button">batch registration</a>
+        <a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' batch_id=batch.id %}" role="button">batch registration</a>
     </li>
 {% endfor %}
 </ul>
-<form class="add-batch-form" action="{% url 'get_batches' %}" method="POST">
+<form class="add-batch-form" action="{% url 'soyuz_app:get_batches' %}" method="POST">
     {% csrf_token %}
     <ul>
         {{ form.as_ul }}
