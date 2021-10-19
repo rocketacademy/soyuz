@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model, login
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
 
@@ -44,6 +45,16 @@ def signup(request, batch_number, user_hubspot_id):
 
             user = authenticate(request, email=user.email, password=raw_password)
             if user is not None:
+
+                # TODO: add relevant batch deailts to email
+                # send them a confirmation email
+                send_mail(
+                    "Rocket Basics Signup",
+                    "Thanks for signing up for basics.",
+                    "Rocket Academy <hello@rocketacademy.co>",
+                    [user.email],
+                )
+
                 login(request, user)
             else:
                 print("user is not authenticated")
