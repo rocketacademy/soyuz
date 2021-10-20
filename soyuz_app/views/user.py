@@ -39,7 +39,7 @@ def signup(request, batch_number, user_hubspot_id):
             user.save()
             batch.users.add(user)
 
-            properties = {"bootcamp_funnel_status": "basics-register"}
+            properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
 
             simple_public_object_input = SimplePublicObjectInput(properties=properties)
             try:
