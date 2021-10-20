@@ -1,10 +1,16 @@
+from pprint import pprint
+
+import hubspot
 from django.contrib.auth import authenticate, get_user_model, login
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
+from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
 
 from ..forms import SignUpForm
 from ..models import Batch, Section
+
+client = hubspot.Client.create(api_key="HUBSPOT_API_KEY")
 
 
 class UserView(DetailView):
@@ -30,6 +36,19 @@ def signup(request, batch_number, user_hubspot_id):
             user.set_password(raw_password)
             user.save()
             batch.users.add(user)
+
+            properties = {"bootcamp_funnel_status": "basics-register"}
+
+            simple_public_object_input = SimplePublicObjectInput(properties=properties)
+            try:
+                api_response = client.crm.contacts.basic_api.update(
+                    contact_id=user_hubspot_id,
+                    simple_public_object_input=simple_public_object_input,
+                )
+                pprint(api_response)
+            except ApiException as e:
+                print("Exception when calling basic_api->update: %s\n" % e)
+
             sections = Section.objects.all().order_by("-number")
             if sections.count() > 0:
                 if sections[0].users.count() <= max_students:
