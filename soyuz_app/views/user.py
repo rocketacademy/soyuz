@@ -1,6 +1,7 @@
 from pprint import pprint
 
 import hubspot
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
@@ -10,7 +11,8 @@ from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
 from ..forms import SignUpForm
 from ..models import Batch, Section
 
-client = hubspot.Client.create(api_key="HUBSPOT_API_KEY")
+print(settings.HUBSPOT_API_KEY)
+client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 
 
 class UserView(DetailView):
