@@ -1,0 +1,44 @@
+body {
+  min-height: 100vh;
+  line-height: 1.7;
+  padding-top: 69px;
+}
+.ra-max-width-cont {
+  max-width: 1320px;
+}
+.btn {
+  font-family: $primary-font;
+}
+.btn-light {
+  color: red;
+}
+.ra-title-col {
+  padding-bottom: 2rem;
+}
+
+.centered-container{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  .centered-box{
+    background-color:$light;
+    min-height:30vh;
+    margin:0;
+    padding:20px;
+    @include media-breakpoint-up(md) {
+      border-radius:11px;
+      margin:40px;
+      padding:48px;
+      width:80%;
+      -webkit-box-shadow: 5px 5px 15px 5px #9B9B9B;
+      box-shadow: 5px 5px 15px 5px #9B9B9B;
+      max-width:450px;
+    }
+
+    h1{
+      color:$blue;
+    }
+  }
+}

@@ -1,0 +1,93 @@
+@charset "utf-8";
+
+// scss-docs-start import-stack
+// Configuration
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+@import "bootstrap/scss/mixins";
+
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+//
+//    Import RA specific variable file.
+//    This has to happen before the rest
+//    of bootstrap is imported and compiled
+//
+@import "partials/variables";
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+// =====================================
+
+@import "bootstrap/scss/utilities";
+
+// Layout & components
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/accordion";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/toasts";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/carousel";
+@import "bootstrap/scss/spinners";
+@import "bootstrap/scss/offcanvas";
+
+// Helpers
+@import "bootstrap/scss/helpers";
+
+// Utilities
+@import "bootstrap/scss/utilities/api";
+// scss-docs-end import-stack
+
+// redefine the default CSS color variables based on *SASS* variables
+// from: https://stackoverflow.com/questions/68667437/create-new-color-scheme-for-dark-light-mode-in-bootstrap-sass
+// and: https://stackoverflow.com/questions/40010597/how-do-i-apply-opacity-to-a-css-color-variable
+:root {
+
+    /* redefine theme color variables */
+    @each $color, $value in $theme-colors {
+        --#{$variable-prefix}#{$color}: #{$value};
+    }
+
+    /* redefine theme color rgb vars (used for bg- colors) */
+    $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+    @each $color, $value in $theme-colors-rgb {
+        --#{$variable-prefix}#{$color}-rgb: #{$value};
+    }
+
+    $body-color: #eeeeee;
+    $body-bg: $light;
+
+    --#{$variable-prefix}body-color: #{$body-color};
+    --#{$variable-prefix}body-bg: #{$body-bg};
+}
+
+@import "partials/app", "partials/footer", "partials/navbar", "partials/batch-registration";

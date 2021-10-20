@@ -1,13 +1,17 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
-<h1>{{ title }}</h1>
-<form class="registration form" action="{% url 'student_registration' batch_number=batch_number user_hubspot_id=user_hubspot %}" method="POST">
-    {% csrf_token %}
-    <ul>
-        {{ form.as_ul }}
-    </ul>
-    <div class="student-registration">
-        <button class="btn btn-primary">Register</button>
-    </div>
-</form>
+<div class="centered-container">
+  <div class="centered-box">
+    <h1>{{ title }}</h1>
+    <form class="registration form" action="{% url 'student_registration' batch_number=batch_number user_hubspot_id=user_hubspot %}" method="POST">
+        {% csrf_token %}
+        <ul>
+            {{ form.as_ul }}
+        </ul>
+        <div class="student-registration">
+            <button class="btn btn-primary">Register</button>
+        </div>
+    </form>
+  </div>
+</div>
 {% endblock %}

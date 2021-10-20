@@ -1,0 +1,31 @@
+.navbar-expand-lg {
+  letter-spacing: 0.1rem;
+  .navbar-brand {
+    img {
+      height: 37px;
+      margin-left:10px;
+    }
+  }
+
+  .navbar-collapse {
+    padding:10px 10px 0 10px;
+    .navbar-nav {
+      margin:0 0 0 auto;
+      text-align:center;
+      .nav-link {
+        color: $blue;
+        font-weight: 400;
+        font-size: 18px;
+      }
+      .nav-link.active {
+        text-decoration: underline;
+      }
+
+      @include media-breakpoint-up(lg) {
+        .nav-item .btn{
+          margin-left:10px;
+        }
+      }
+    }
+  }
+}

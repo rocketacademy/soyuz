@@ -1,7 +1,8 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 {% load crispy_forms_tags %}
-<div class="container signup">
+<div class="centered-container">
+  <div class="centered-box">
     <h1>Student Registration</h1>
     <div class="signup-form-container">
         <form method="post">
@@ -9,7 +10,7 @@
             {{ form|crispy }}
             <button class="btn btn-primary" type="submit">Register</button>
         </form>
-    </div>    
+    </div>
+  </div>
 </div>
-
 {% endblock %}

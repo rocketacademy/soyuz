@@ -1,0 +1,29 @@
+// typographic defaults
+$primary-font: Raleway, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+$headings-font-family: $primary-font;
+
+$font-family-sans-serif: Open Sans, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+// viewport breakpoints
+// https://glennmccomb.com/articles/useful-sass-scss-media-query-mixins-for-bootstrap/
+
+// https://webaim.org/resources/contrastchecker/
+// our app colors are below the acceptablke contrast range:
+$min-contrast-ratio:   4.0;
+$red: #E73C3E; //crimson
+$primary: $red;
+$secondary: #AF231C; // mercury red
+$blue: #00567E; // agean
+$info: $blue;
+$light:#F9F6E7; // milk
+
+$theme-colors:map-merge($theme-colors, (
+  "primary": $primary,
+  "secondary": $secondary,
+  "info":$info,
+  "light": $light,
+  "blue": $blue,
+  "red": $secondary
+));
+
+// $body-bg: $light; // milk
