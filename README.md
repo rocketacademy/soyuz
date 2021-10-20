@@ -158,3 +158,23 @@ heroku run python manage.py check --deploy
 
 heroku open
 ```
+
+# View Testing Code
+```
+import json
+from django.http import JsonResponse
+from django.core import serializers
+
+def test(request):
+    batch = Batch.objects.get(number=1)
+
+    response = serializers.serialize('python', [batch], ensure_ascii=False)
+    return JsonResponse(response, safe=False)
+
+
+```
+
+# Django Relationships
+
+#### "backwards" relationships
+https://docs.djangoproject.com/en/dev/topics/db/queries/#backwards-related-objects
