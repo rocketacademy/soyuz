@@ -5,7 +5,7 @@ https://soyuz-ra-staging.herokuapp.com/
 
 ![](https://news.in-24.com/content/uploads/2021/05/19/84e035c899.jpg)
 
-[Soyuz](https://en.wikipedia.org/wiki/Soyuz_(spacecraft)) means "union" in Russian.
+[Soyuz](https://en.wikipedia.org/wiki/Soyuz_(rocket_family)) means "union" in Russian. Soyuz is a rocket that, according to wikipedia, "*with over 1,900 flights since its debut in 1966, [is] the most frequently used launch vehicle in the world as of 2021.*"
 
 This is the backend system that coordinates all student and course activities and is the source of truth for data to run Rocket Academy courses.
 
@@ -158,3 +158,23 @@ heroku run python manage.py check --deploy
 
 heroku open
 ```
+
+# View Testing Code
+```
+import json
+from django.http import JsonResponse
+from django.core import serializers
+
+def test(request):
+    batch = Batch.objects.get(number=1)
+
+    response = serializers.serialize('python', [batch], ensure_ascii=False)
+    return JsonResponse(response, safe=False)
+
+
+```
+
+# Django Relationships
+
+#### "backwards" relationships
+https://docs.djangoproject.com/en/dev/topics/db/queries/#backwards-related-objects
