@@ -37,6 +37,9 @@ def get_sections(request, batch_id):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
+    selected_section = request.POST["batch_sections"]
+    print(selected_section)
+
     context = {
         "title": "List of Sections",
         "batch": batch,

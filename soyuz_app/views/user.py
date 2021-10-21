@@ -1,11 +1,18 @@
 import datetime
+from pprint import pprint
 
+import hubspot
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
+from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
+from sentry_sdk import capture_exception
 
 from ..forms import SignUpForm
 from ..models import Batch, Section
+
+client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 
 
 def dashboard(request):
@@ -39,6 +46,20 @@ def signup(request, batch_number, user_hubspot_id):
             user.set_password(raw_password)
             user.save()
             batch.users.add(user)
+
+            properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
+
+            simple_public_object_input = SimplePublicObjectInput(properties=properties)
+            try:
+                api_response = client.crm.contacts.basic_api.update(
+                    contact_id=user_hubspot_id,
+                    simple_public_object_input=simple_public_object_input,
+                )
+                pprint(api_response)
+
+            except ApiException as e:
+                capture_exception(e)
+
             sections = Section.objects.all().order_by("-number")
             if sections.count() > 0:
                 if sections[0].users.count() <= max_students:
