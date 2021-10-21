@@ -5,6 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>RA Wow Django!</title>
+        <link href="{% static 'fontawesome_free/css/all.min.css' %}" rel="stylesheet" type="text/css">
         <!-- Bootstrap core CSS -->
         {% load sass_tags %}
         <link href="{% sass_src 'sass/bootstrap/bootstrap.scss' %}" rel="stylesheet" type="text/css" />
@@ -20,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home</a>
+                        <a class="nav-link" href="#">Home<i class="fa fa-trash"></i></a>
                     </li>
                 </ul>
             </div>
