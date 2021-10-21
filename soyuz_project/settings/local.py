@@ -11,7 +11,6 @@ SECRET_KEY = env(
     default="cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag",
 )
 
-HUBSPOT_API_KEY = env("HUBSPOT_API_KEY")
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]

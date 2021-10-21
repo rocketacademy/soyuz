@@ -7,11 +7,11 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
 from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
+from sentry_sdk import capture_exception
 
 from ..forms import SignUpForm
 from ..models import Batch, Section
 
-print(settings.HUBSPOT_API_KEY)
 client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 
 
@@ -48,8 +48,9 @@ def signup(request, batch_number, user_hubspot_id):
                     simple_public_object_input=simple_public_object_input,
                 )
                 pprint(api_response)
+
             except ApiException as e:
-                print("Exception when calling basic_api->update: %s\n" % e)
+                capture_exception(e)
 
             sections = Section.objects.all().order_by("-number")
             if sections.count() > 0:
