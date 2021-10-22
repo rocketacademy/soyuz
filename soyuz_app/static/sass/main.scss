@@ -71,23 +71,23 @@
 // from: https://stackoverflow.com/questions/68667437/create-new-color-scheme-for-dark-light-mode-in-bootstrap-sass
 // and: https://stackoverflow.com/questions/40010597/how-do-i-apply-opacity-to-a-css-color-variable
 :root {
+  /* redefine theme color variables */
+  @each $color, $value in $theme-colors {
+    --#{$variable-prefix}#{$color}: #{$value};
+  }
 
-    /* redefine theme color variables */
-    @each $color, $value in $theme-colors {
-        --#{$variable-prefix}#{$color}: #{$value};
-    }
+  /* redefine theme color rgb vars (used for bg- colors) */
+  $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
+  @each $color, $value in $theme-colors-rgb {
+    --#{$variable-prefix}#{$color}-rgb: #{$value};
+  }
 
-    /* redefine theme color rgb vars (used for bg- colors) */
-    $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
-    @each $color, $value in $theme-colors-rgb {
-        --#{$variable-prefix}#{$color}-rgb: #{$value};
-    }
+  $body-color: #eeeeee;
+  $body-bg: $light;
 
-    $body-color: #eeeeee;
-    $body-bg: $light;
-
-    --#{$variable-prefix}body-color: #{$body-color};
-    --#{$variable-prefix}body-bg: #{$body-bg};
+  --#{$variable-prefix}body-color: #{$body-color};
+  --#{$variable-prefix}body-bg: #{$body-bg};
 }
 
-@import "partials/app", "partials/footer", "partials/navbar", "partials/batch-registration";
+@import "partials/app", "partials/footer", "partials/navbar",
+  "partials/batch-registration", "partials/section-page";

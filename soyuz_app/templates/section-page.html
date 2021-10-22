@@ -3,7 +3,7 @@
 <div class="section-page-container">
     <h1>{{ title }}: {{ batch.course_id }} {{ batch.number }}</h1>
     <h2>Start Date: {{ batch.start_date }}</h2>
-
+    <div class="section-container">
     {% for section in sections %}
     <div class="section">
     <h3>Section: {{ section.number }}</h3>
@@ -14,18 +14,25 @@
         <li>Hubspot ID: {{ user.hubspot_id }}</li>
         <li>Email: {{ user.email }}</li>
       </div>
-      <form action="get_sections" method="POST">
+      <form method="POST">
+        {% csrf_token %}
         <select name="batch_sections" class="section-select">
           <option selected="selected" disabled>--</option>
           {% for section in sections %}
-          <option value="{{ section.number }}">{{ section.number }}</option>
+          <option value="{{ section.number }}/{{ user.id }}">{{ section.number }}</option>
           {% endfor %}
         </select>
-        <input type="submit" value="Select">
+        <button class="btn btn-primary" type="submit" value="Submit">change section</button>
+      </form>
+      <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit" name="delete_items"
+          value="{{ section.number }}/{{ user.id }}">delete from section</button>
       </form>
     </ul>
     {% endfor %}
     </div>
     {% endfor %}
+    </div>
 </div>
 {% endblock %}
