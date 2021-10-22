@@ -64,7 +64,7 @@ python manage.py migrate
 python manage.py createsuperuser
 python manage.py makemigrations soyuz_app
 python manage.py migrate soyuz_app
-python manage.py loaddata soyuz_app/seed.json
+python manage.py loaddata soyuz_app/fixtures/seed.json
 ```
 
 Setup the Git precommit hooks:
@@ -109,7 +109,7 @@ heroku run python manage.py migrate
 heroku run python manage.py createsuperuser
 heroku run python manage.py makemigrations soyuz_app
 heroku run python manage.py migrate soyuz_app
-heroku run python manage.py loaddata soyuz_app/seed.json
+heroku run python manage.py loaddata soyuz_app/fixtures/seed.json
 heroku run python manage.py collectstatic
 ```
 
