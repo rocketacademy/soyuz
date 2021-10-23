@@ -34,4 +34,3 @@ tomli==1.2.1
 typing-extensions==3.10.0.2
 whitenoise==5.3.0
 wrapt==1.12.1
-fontawesomefree==5.15.4

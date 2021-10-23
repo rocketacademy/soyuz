@@ -7,17 +7,19 @@
   padding: 40px;
   .section-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     padding: 40px 0;
     .section {
       padding: 20px 40px;
       margin: 0 20px 0 0;
       border: 1px solid lightgray;
       border-radius: 10px;
-      .user-details {
-        list-style: none;
-        padding: 20px 0;
-        border-bottom: 1px solid lightgray;
+      td,
+      th {
+        text-align: center;
+      }
+      .first-column {
+        text-align: left;
       }
     }
   }
