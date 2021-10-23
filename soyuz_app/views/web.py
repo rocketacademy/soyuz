@@ -1,7 +1,17 @@
+import logging
+
+from django.conf import settings
 from django.shortcuts import render
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 from ..forms import AddBatchForm
 from ..models import Batch, Section
+
+# WebClient insantiates a client that can call API methods
+# When using Bolt, you can use either `app.client` or the `client` passed to listeners.
+client = WebClient(token=settings.SLACK_BOT_TOKEN)
+logger = logging.getLogger(__name__)
 
 
 def confirm_registration(request):
@@ -29,6 +39,7 @@ def get_sections(request, batch_id):
     sections = Section.objects.filter(batch_id=batch_id)
     users = batch.users.all()
     print(users)
+
     section_array = []
     for section in sections:
         section_obj = {}
@@ -37,8 +48,20 @@ def get_sections(request, batch_id):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
-    selected_section = request.POST["batch_sections"]
-    print(selected_section)
+    if "create_channels" in request.POST:
+        print("inside post request")
+        try:
+            # Call the conversations.create method using the WebClient
+            # conversations_create requires the channels:manage bot scope
+            result = client.conversations_create(
+                # The name of the conversation
+                name="soyuz-channel-1"
+            )
+            # Log the result which includes information like the ID of the conversation
+            logger.info(result)
+
+        except SlackApiError as e:
+            logger.error("Error creating conversation: {}".format(e))
 
     context = {
         "title": "List of Sections",

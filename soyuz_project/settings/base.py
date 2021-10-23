@@ -16,6 +16,8 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(ROOT_DIR / ".env"))
 
 HUBSPOT_API_KEY = env("HUBSPOT_API_KEY")
+SLACK_BOT_TOKEN = env("SLACK_BOT_TOKEN")
+SLACK_SIGNING_SECRET = env("SLACK_SIGNING_SECRET")
 
 # GENERAL
 # ------------------------------------------------------------------------------

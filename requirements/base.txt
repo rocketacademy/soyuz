@@ -43,3 +43,7 @@ urllib3==1.26.7
 
 # sentry
 sentry-sdk==1.4.3  # https://github.com/getsentry/sentry-python
+
+# slack
+slack-bolt==1.9.3
+slack-sdk==3.11.2
