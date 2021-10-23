@@ -53,12 +53,14 @@ def get_sections(request, batch_id):
         try:
             # Call the conversations.create method using the WebClient
             # conversations_create requires the channels:manage bot scope
-            result = client.conversations_create(
-                # The name of the conversation
-                name="soyuz-channel-1"
-            )
-            # Log the result which includes information like the ID of the conversation
-            logger.info(result)
+            for section in sections:
+                section_name = f"basics-{batch.number}-{section.number}"
+                result = client.conversations_create(
+                    # The name of the conversation
+                    name=section_name
+                )
+                # Log the result which includes information like the ID of the conversation
+                logger.info(result)
 
         except SlackApiError as e:
             logger.error("Error creating conversation: {}".format(e))
