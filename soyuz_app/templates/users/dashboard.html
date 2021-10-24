@@ -5,7 +5,7 @@
     <h1>Student Dashboard</h1>
     {% if batch %}
       <p>
-      Your upcoming {{batch.course_id.name}} batch: {{ batch.id }}
+      Your upcoming {{batch.course.name}} batch: {{ batch.id }}
       </p>
       <p>
           On: {{ batch.start_date }}

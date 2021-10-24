@@ -4,10 +4,10 @@
 <ul>
 {% for batch in batches %}
     <li class="batch-list-item">
-        <span>{{ batch.course_id.name }}</span>
+        <span>{{ batch.course.name }}</span>
         <span>{{ batch.number }}, </span>
         <span>Start Date: {{ batch.start_date }}</span>
-        <a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' batch_id=batch.id %}" role="button">batch registration</a>
+        <a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' batch_number=batch.number %}" role="button">batch registration</a>
     </li>
 {% endfor %}
 </ul>

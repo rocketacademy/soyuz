@@ -13,4 +13,4 @@ class SignUpForm(UserCreationForm):
 class AddBatchForm(forms.ModelForm):
     class Meta:
         model = Batch
-        fields = ["course_id", "start_date", "number"]
+        fields = ["course", "start_date", "number"]

@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="section-page-container">
-    <h1>{{ title }}: {{ batch.course_id }} {{ batch.number }}</h1>
+    <h1>{{ title }}: {{ batch.course }} {{ batch.number }}</h1>
     <h2>Start Date: {{ batch.start_date }}</h2>
 
     {% for section in sections %}

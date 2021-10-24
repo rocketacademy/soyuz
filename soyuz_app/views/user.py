@@ -23,7 +23,7 @@ def dashboard(request):
     if len(batch_query) > 0:
         batch = batch_query[0]
         context["batch"] = batch
-        section_query = request.user.section_set.filter(batch_id=batch.id)
+        section_query = request.user.section_set.filter(batch_number=batch.id)
         if len(section_query) > 0:
             context["section"] = section_query[0]
 
@@ -67,11 +67,11 @@ def signup(request, batch_number, user_hubspot_id):
                     section.users.add(user)
                 else:
                     section = Section.objects.create(
-                        number=sections.count() + 1, batch_id=batch
+                        number=sections.count() + 1, batch=batch
                     )
                     section.users.add(user)
             else:
-                section = Section.objects.create(number=1, batch_id=batch)
+                section = Section.objects.create(number=1, batch=batch)
                 section.users.add(user)
 
             user = authenticate(request, email=user.email, password=raw_password)
@@ -98,14 +98,14 @@ def signup(request, batch_number, user_hubspot_id):
 
 def send_email_notification(user, batch, section):
 
-    email_text_body = f""" Thanks for signing up for {batch.course_id.name}
+    email_text_body = f""" Thanks for signing up for {batch.course.name}
         It starts on {batch.start_date}
         You are in section {section.number}"""
 
     # TODO: add relevant batch deailts to email
     # send them a confirmation email
     send_mail(
-        f"Rocket Academy {batch.course_id.name} Signup",
+        f"Rocket Academy {batch.course.name} Signup",
         email_text_body,
         "Rocket Academy <hello@rocketacademy.co>",
         [user.email],
