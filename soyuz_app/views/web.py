@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from ..forms import AddBatchForm
-from ..models import Batch, Section
+from ..models import Batch
 
 
 def confirm_registration(request):
@@ -26,7 +26,7 @@ def get_batches(request):
 
 def get_sections(request, batch_id):
     batch = Batch.objects.get(id=batch_id)
-    sections = Section.objects.filter(batch_id=batch_id)
+    sections = batch.section_set.all()
     users = batch.users.all()
     print(users)
     section_array = []
@@ -37,11 +37,7 @@ def get_sections(request, batch_id):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
-    selected_section = request.POST["batch_sections"]
-    print(selected_section)
-
     context = {
-        "title": "List of Sections",
         "batch": batch,
         "sections": section_array,
     }
