@@ -30,7 +30,7 @@ def dashboard(request):
     return render(request, "users/dashboard.html", context)
 
 
-def signup(request, batch_number, user_hubspot_id):
+def signup(request, batch_number, user_hubspot_id, email, first_name, last_name):
     batch = Batch.objects.get(number=batch_number)
     max_students = 4
 
@@ -39,9 +39,16 @@ def signup(request, batch_number, user_hubspot_id):
         if form.is_valid():
             raw_password = form.cleaned_data.get("password1")
             email = form.cleaned_data.get("email")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
             user_github = form.cleaned_data.get("github_username")
             user = get_user_model().objects.create(
-                email=email, github_username=user_github, hubspot_id=user_hubspot_id
+                email=email,
+                github_username=user_github,
+                hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
             )
             user.set_password(raw_password)
             user.save()
@@ -84,12 +91,17 @@ def signup(request, batch_number, user_hubspot_id):
                 print("user is not authenticated")
             return redirect("soyuz_app:dashboard")
     else:
-        form = SignUpForm()
+        form = SignUpForm(
+            initial={
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "user_hubspot_id": user_hubspot_id,
+            }
+        )
 
     context = {
-        "title": "Student Registration",
         "batch_number": batch_number,
-        "user_hubspot": user_hubspot_id,
         "form": form,
     }
 

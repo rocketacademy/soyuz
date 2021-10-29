@@ -19,7 +19,11 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
     path("dashboard/", login_required(dashboard), name="dashboard"),
-    path("batch/<batch_number>/hubspot_id/<user_hubspot_id>", signup, name="signup"),
+    path(
+        "batch/<batch_number>/hubspot_id/<user_hubspot_id>/email/<email>/first_name/<first_name>/last_name/<last_name>",
+        signup,
+        name="signup",
+    ),
     path("student-admin/batches/", get_batches, name="get_batches"),
     path("student-admin/batch/<batch_number>", get_sections, name="get_sections"),
     path(
