@@ -80,18 +80,18 @@ class Batch(models.Model):
     number = models.IntegerField()
     start_date = models.DateField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
 
 
 class Section(models.Model):
     number = models.IntegerField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    batch_id = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
 
 
 class Workflow_type(models.Model):
     name = models.CharField(max_length=200)
-    course_id = models.ManyToManyField(Course)
+    course = models.ManyToManyField(Course)
 
 
 class Workflows(models.Model):

@@ -7,41 +7,51 @@ from .models import Batch, Course, Section, User
 
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {'fields': ('email', 'password',
-         'github_username', 'hubspot_id', 'last_login')}),
-        ('Permissions', {'fields': (
-            'is_active',
-            'is_staff',
-            'is_superuser',
-            'groups',
-            'user_permissions',
-        )}),
-    )
-    add_fieldsets = (
         (
             None,
             {
-                'classes': ('wide',),
-                'fields': ('email', 'password1', 'password2')
-            }
+                "fields": (
+                    "email",
+                    "password",
+                    "github_username",
+                    "hubspot_id",
+                    "last_login",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
         ),
     )
+    add_fieldsets = (
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
+    )
 
-    list_display = ('email', 'hubspot_id', 'github_username',
-                    'is_staff', 'last_login')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('email',)
-    ordering = ('email',)
-    filter_horizontal = ('groups', 'user_permissions',)
+    list_display = ("email", "hubspot_id", "github_username", "is_staff", "last_login")
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    search_fields = ("email",)
+    ordering = ("email",)
+    filter_horizontal = (
+        "groups",
+        "user_permissions",
+    )
 
 
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ('number', 'batch_id')
+    list_display = ("number", "batch")
 
 
 class BatchAdmin(admin.ModelAdmin):
-    list_display = ('number', 'start_date',
-                    'course_id')
+    list_display = ("number", "start_date", "course")
 
 
 # class UserAdmin(admin.ModelAdmin):
