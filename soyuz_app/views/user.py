@@ -25,7 +25,7 @@ def dashboard(request):
     if len(batch_query) > 0:
         batch = batch_query[0]
         context["batch"] = batch
-        section_query = request.user.section_set.filter(batch_id=batch.id)
+        section_query = request.user.section_set.filter(batch_number=batch.id)
         if len(section_query) > 0:
             context["section"] = section_query[0]
 
@@ -101,14 +101,14 @@ def update_hubspot(user_hubspot_id):
 
 def send_email_notification(user, batch, section):
 
-    email_text_body = f""" Thanks for signing up for {batch.course_id.name}
+    email_text_body = f""" Thanks for signing up for {batch.course.name}
         It starts on {batch.start_date}
         You are in section {section.number}"""
 
     # TODO: add relevant batch deailts to email
     # send them a confirmation email
     send_mail(
-        f"Rocket Academy {batch.course_id.name} Signup",
+        f"Rocket Academy {batch.course.name} Signup",
         email_text_body,
         "Rocket Academy <hello@rocketacademy.co>",
         [user.email],

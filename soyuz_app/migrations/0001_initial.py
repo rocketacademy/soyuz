@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
-                ('course_id', models.ManyToManyField(to='soyuz_app.Course')),
+                ('course', models.ManyToManyField(to='soyuz_app.Course')),
             ],
         ),
         migrations.CreateModel(
@@ -70,13 +70,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('number', models.IntegerField()),
-                ('batch_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='soyuz_app.batch')),
+                ('batch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='soyuz_app.batch')),
                 ('users', models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='batch',
-            name='course_id',
+            name='course',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='soyuz_app.course'),
         ),
         migrations.AddField(

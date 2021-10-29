@@ -21,7 +21,7 @@ urlpatterns = [
     path("dashboard/", login_required(dashboard), name="dashboard"),
     path("batch/<batch_number>/hubspot_id/<user_hubspot_id>", signup, name="signup"),
     path("student-admin/batches/", get_batches, name="get_batches"),
-    path("student-admin/batch/<batch_id>", get_sections, name="get_sections"),
+    path("student-admin/batch/<batch_number>", get_sections, name="get_sections"),
     path(
         "registration-success", views.confirm_registration, name="registration-success"
     ),

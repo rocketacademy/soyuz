@@ -24,8 +24,8 @@ def get_batches(request):
     return render(request, "batch-page.html", context)
 
 
-def get_sections(request, batch_id):
-    batch = Batch.objects.get(id=batch_id)
+def get_sections(request, batch_number):
+    batch = Batch.objects.get(number=batch_number)
     sections = batch.section_set.all()
     users = batch.users.all()
     print(users)
