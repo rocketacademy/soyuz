@@ -7,7 +7,7 @@ from .models import Batch, User
 class SignUpForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ("email",)
+        fields = ("email", "first_name", "last_name")
 
 
 class AddBatchForm(forms.ModelForm):
