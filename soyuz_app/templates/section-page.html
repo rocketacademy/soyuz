@@ -1,9 +1,9 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="section-page-container">
-    <h1>{{ title }}: {{ batch.course_id }} {{ batch.number }}</h1>
-    <h2>Start Date: {{ batch.start_date }}</h2>
-    <div class="section-container">
+  <h1>{{ title }}: {{ batch.course }} {{ batch.number }}</h1>
+  <h2>Start Date: {{ batch.start_date }}</h2>
+  <div class="section-container">
     {% for section in sections %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>
@@ -18,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-        {% for user in section.users %}
+          {% for user in section.users %}
           <tr>
             <th class="first-column" scope="row">{{ user.email }}</th>
             <td>{{ user.id }}</td>
@@ -38,13 +38,14 @@
             <td>
               <form method="POST">
                 {% csrf_token %}
-                <button class="btn btn-primary" type="submit" name="delete_items" value="{{ section.number }}/{{ user.id }}"><i class="fas fa-trash-alt"></i></button>
+                <button class="btn btn-primary" type="submit" name="delete_items"
+                  value="{{ section.number }}/{{ user.id }}"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
           </tr>
-        {% endfor %}
+          {% endfor %}
         </tbody>
       </table>
     </div>
     {% endfor %}
-{% endblock %}
+    {% endblock %}
