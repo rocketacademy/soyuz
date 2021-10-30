@@ -93,9 +93,9 @@ class Section(models.Model):
 
 class Workflow_type(models.Model):
     name = models.CharField(max_length=200)
-    course = models.ManyToManyField(Course, on_delete=models.DO_NOTHING)
+    course = models.ManyToManyField(Course)
 
 
 class Workflows(models.Model):
-    workFlow_type_id = models.ForeignKey(Workflow_type)
+    workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=models.DO_NOTHING)
     completed = models.BooleanField(default=False)
