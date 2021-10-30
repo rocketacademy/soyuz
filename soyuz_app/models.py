@@ -40,11 +40,14 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, first_name, last_name, email, password, **extra_fields):
-        return self._create_user(email, password, False, False, **extra_fields)
+        return self._create_user(
+            first_name, last_name, email, password, False, False, **extra_fields
+        )
 
-    def create_superuser(self, email, password, **extra_fields):
-        user = self._create_user(email, password, True, True, **extra_fields)
-        return user
+    def create_superuser(self, first_name, last_name, email, password, **extra_fields):
+        return self._create_user(
+            first_name, last_name, email, password, True, True, **extra_fields
+        )
 
 
 class User(AbstractBaseUser, PermissionsMixin):
