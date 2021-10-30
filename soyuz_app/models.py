@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
-from django.db.models.deletion import PROTECT
 from django.utils import timezone
 
 
@@ -83,13 +82,13 @@ class Batch(models.Model):
     number = models.IntegerField()
     start_date = models.DateField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course)
 
 
 class Section(models.Model):
     number = models.IntegerField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch)
 
 
 class Workflow_type(models.Model):
@@ -98,5 +97,5 @@ class Workflow_type(models.Model):
 
 
 class Workflows(models.Model):
-    workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=PROTECT)
+    workFlow_type_id = models.ForeignKey(Workflow_type)
     completed = models.BooleanField(default=False)
