@@ -94,6 +94,11 @@ python manage.py migrate soyuz_app
 python manage.py loaddata soyuz_app/fixtures/seed.json
 ```
 
+#### show all routes
+```
+python manage.py show_urls
+```
+
 # Setting Local Dev Env Vars
 ```
 echo 'export DJANGO_READ_DOT_ENV_FILE=True' >> ~/.profile
