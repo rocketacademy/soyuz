@@ -37,8 +37,14 @@ def signup(request, batch_number, user_hubspot_id, email, first_name, last_name)
     batch = Batch.objects.get(number=batch_number)
 
     if request.method == "GET":
-
-        form = SignUpForm()
+        form = SignUpForm(
+            initial={
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "user_hubspot_id": user_hubspot_id,
+            }
+        )
 
         context = {
             "email": email,
