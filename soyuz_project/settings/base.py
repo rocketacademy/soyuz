@@ -15,7 +15,7 @@ if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
 
-HUBSPOT_API_KEY = env("HUBSPOT_API_KEY")
+HUBSPOT_API_KEY = env("HUBSPOT_API_KEY", default="banana")
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -115,9 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 6,
+        },
+    },
 ]
 
 # MIDDLEWARE
@@ -281,3 +284,5 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+MAX_STUDENTS_SECTION = env("MAX_STUDENTS_SECTION", default=4)
