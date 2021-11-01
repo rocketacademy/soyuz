@@ -84,6 +84,24 @@ class Batch(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
 
+    def add_student_to_section(self, user):
+
+        max_students = settings.MAX_STUDENTS_SECTION
+
+        section = self.section_set.order_by("id").last()
+        if section is not None and section.users.count() < max_students:
+            # section that still has space left
+            section.users.add(user)
+
+        # no sections yet or all sections full
+        else:
+
+            section_num = section.number + 1 if section is not None else 1
+            section = Section.objects.create(number=section_num, batch=self)
+            section.users.add(user)
+
+        return section
+
 
 class Section(models.Model):
     number = models.IntegerField()

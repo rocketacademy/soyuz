@@ -281,3 +281,5 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+MAX_STUDENTS_SECTION = env("MAX_STUDENTS_SECTION", default=4)
