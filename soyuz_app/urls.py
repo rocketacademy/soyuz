@@ -20,7 +20,7 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
     path("dashboard/", login_required(dashboard), name="dashboard"),
     path(
-        "batch/<batch_number>/hubspot_id/<user_hubspot_id>/email/<email>/first_name/<first_name>/last_name/<last_name>",
+        "batch/<batch_number>/email/<email>",
         signup,
         name="signup",
     ),

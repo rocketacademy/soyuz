@@ -194,14 +194,14 @@ heroku open
 # View Testing Code
 ```
 import json
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.core import serializers
 
 def test(request):
     batch = Batch.objects.get(number=1)
+    json_obj = json.dumps(batch, indent=4, sort_keys=True, default=str)
 
-    response = serializers.serialize('python', [batch], ensure_ascii=False)
-    return JsonResponse(response, safe=False)
+    return HttpResponse(json_obj)
 ```
 
 # Django Relationships
