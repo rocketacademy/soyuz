@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
-from django.db.models.deletion import PROTECT
 from django.utils import timezone
 
 
@@ -40,11 +39,14 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, first_name, last_name, email, password, **extra_fields):
-        return self._create_user(email, password, False, False, **extra_fields)
+        return self._create_user(
+            first_name, last_name, email, password, False, False, **extra_fields
+        )
 
-    def create_superuser(self, email, password, **extra_fields):
-        user = self._create_user(email, password, True, True, **extra_fields)
-        return user
+    def create_superuser(self, first_name, last_name, email, password, **extra_fields):
+        return self._create_user(
+            first_name, last_name, email, password, True, True, **extra_fields
+        )
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -80,7 +82,7 @@ class Batch(models.Model):
     number = models.IntegerField()
     start_date = models.DateField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
 
     def add_student_to_section(self, user):
 
@@ -104,7 +106,7 @@ class Batch(models.Model):
 class Section(models.Model):
     number = models.IntegerField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch, on_delete=models.DO_NOTHING)
 
 
 class Workflow_type(models.Model):
@@ -113,5 +115,5 @@ class Workflow_type(models.Model):
 
 
 class Workflows(models.Model):
-    workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=PROTECT)
+    workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=models.DO_NOTHING)
     completed = models.BooleanField(default=False)

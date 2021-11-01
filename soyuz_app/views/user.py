@@ -33,7 +33,7 @@ def dashboard(request):
 
 
 @require_http_methods(["GET", "POST"])
-def signup(request, batch_number, user_hubspot_id):
+def signup(request, batch_number, user_hubspot_id, email, first_name, last_name):
     batch = Batch.objects.get(number=batch_number)
 
     if request.method == "GET":
@@ -41,6 +41,9 @@ def signup(request, batch_number, user_hubspot_id):
         form = SignUpForm()
 
         context = {
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
             "batch_number": batch_number,
             "user_hubspot": user_hubspot_id,
             "form": form,
@@ -55,6 +58,9 @@ def signup(request, batch_number, user_hubspot_id):
         if form.is_valid() is False:
 
             context = {
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
                 "batch_number": batch_number,
                 "user_hubspot": user_hubspot_id,
                 "form": form,
@@ -62,12 +68,23 @@ def signup(request, batch_number, user_hubspot_id):
 
             return render(request, "users/signup.html", context)
 
+        # set hubspot user data
+        update_hubspot(user_hubspot_id)
+
         raw_password = form.cleaned_data.get("password1")
+        first_name = form.cleaned_data.get("first_name")
+        last_name = form.cleaned_data.get("last_name")
         email = form.cleaned_data.get("email")
         user_github = form.cleaned_data.get("github_username")
+
         user = get_user_model().objects.create(
-            email=email, github_username=user_github, hubspot_id=user_hubspot_id
+            email=email,
+            github_username=user_github,
+            hubspot_id=user_hubspot_id,
+            first_name=first_name,
+            last_name=last_name,
         )
+
         user.set_password(raw_password)
         user.save()
         batch.users.add(user)
@@ -75,9 +92,6 @@ def signup(request, batch_number, user_hubspot_id):
 
         # send email
         send_email_notification(user, batch, section)
-
-        # set hubspot user data
-        update_hubspot(user_hubspot_id)
 
         login(request, user)
 

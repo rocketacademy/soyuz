@@ -5,13 +5,13 @@ https://soyuz-ra-staging.herokuapp.com/
 
 ![](https://news.in-24.com/content/uploads/2021/05/19/84e035c899.jpg)
 
-[Soyuz](https://en.wikipedia.org/wiki/Soyuz_(rocket_family)) means "union" in Russian. Soyuz is a rocket that, according to wikipedia, "*with over 1,900 flights since its debut in 1966, [is] the most frequently used launch vehicle in the world as of 2021.*"
+[Soyuz](https://en.wikipedia.org/wiki/Soyuz_(rocket_family)) means "union" in Russian. Soyuz is a rocket that, according to wikipedia, has "*over 1,900 flights since its debut in 1966, [and is] the most frequently used launch vehicle in the world as of 2021.*"
 
-This is the backend system that coordinates all student and course activities and is the source of truth for data to run Rocket Academy courses.
+Soyuz is the backend system that coordinates all student and course activities and is the source of truth for data to run Rocket Academy courses.
 
 # Links
 https://soyuz-ra.herokuapp.com/
-https://soyuz-ra.herokuapp.com/api/batches/
+https://soyuz-ra.herokuapp.com/batch/2/hubspot_id/10/email/kai@yahoo.com/first_name/kai/last_name/wow
 
 # Technical Specs
 
@@ -55,10 +55,37 @@ https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 Install EditorConfig for VS Code: https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig
 
+#### pipenv
+https://pipenv-fork.readthedocs.io/en/latest/basics.html
+
+Instructions from this guide:
+https://jayden-chua.medium.com/virtual-environments-pip-and-pipenv-on-macos-8f3178b13b75
+
+Install pipenv:
+
+```
+python3 -m pip install --user pipenv
+```
+
+Print out the pip path:
+```
+python3 -m site --user-base # /Users/jayden/Library/Python/3.7/bin/
+```
+
+Make sure pipenv is in your path:
+```
+echo 'export PATH=/Users/jayden/Library/Python/3.7/bin:$PATH' >> ~/.profile
+```
+
+#### install the soyuz dependencies
+```
+pipenv install
+```
+
+#### soyuz django commands
 ```
 dropdb soyuz_db
 create_db soyuz_db
-pip install -r requirements/local.txt
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
@@ -67,15 +94,20 @@ python manage.py migrate soyuz_app
 python manage.py loaddata soyuz_app/fixtures/seed.json
 ```
 
-Setup the Git precommit hooks:
+#### show all routes
 ```
-pre-commit install
+python manage.py show_urls
 ```
 
 # Setting Local Dev Env Vars
 ```
 echo 'export DJANGO_READ_DOT_ENV_FILE=True' >> ~/.profile
 echo 'export DJANGO_ENV=development' >> ~/.profile
+```
+
+Setup the Git precommit hooks: https://pre-commit.com/
+```
+pre-commit install
 ```
 
 #### Skip Pre Commit
@@ -170,8 +202,6 @@ def test(request):
 
     response = serializers.serialize('python', [batch], ensure_ascii=False)
     return JsonResponse(response, safe=False)
-
-
 ```
 
 # Django Relationships
