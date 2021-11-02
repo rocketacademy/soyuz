@@ -4,12 +4,18 @@ from pprint import pprint
 import hubspot
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
-from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods
-from hubspot.crm.contacts import ApiException, SimplePublicObjectInput
+from hubspot.crm.contacts import (
+    ApiException,
+    Filter,
+    FilterGroup,
+    PublicObjectSearchRequest,
+    SimplePublicObjectInput,
+)
 from sentry_sdk import capture_exception
 
+from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
 from ..models import Batch
 
@@ -33,25 +39,20 @@ def dashboard(request):
 
 
 @require_http_methods(["GET", "POST"])
-def signup(request, batch_number, user_hubspot_id, email, first_name, last_name):
+def signup(request, batch_number, email):
     batch = Batch.objects.get(number=batch_number)
 
     if request.method == "GET":
+
+        first_name = request.GET.get("first_name", "")
+        last_name = request.GET.get("last_name", "")
+
         form = SignUpForm(
-            initial={
-                "email": email,
-                "first_name": first_name,
-                "last_name": last_name,
-                "user_hubspot_id": user_hubspot_id,
-            }
+            initial={"email": email, "first_name": first_name, "last_name": last_name}
         )
 
         context = {
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "batch_number": batch_number,
-            "user_hubspot": user_hubspot_id,
+            "batch": batch,
             "form": form,
         }
 
@@ -64,44 +65,69 @@ def signup(request, batch_number, user_hubspot_id, email, first_name, last_name)
         if form.is_valid() is False:
 
             context = {
-                "email": email,
-                "first_name": first_name,
-                "last_name": last_name,
-                "batch_number": batch_number,
-                "user_hubspot": user_hubspot_id,
                 "form": form,
             }
 
             return render(request, "users/signup.html", context)
 
-        # set hubspot user data
-        update_hubspot(user_hubspot_id)
-
         raw_password = form.cleaned_data.get("password1")
         first_name = form.cleaned_data.get("first_name")
         last_name = form.cleaned_data.get("last_name")
         email = form.cleaned_data.get("email")
-        user_github = form.cleaned_data.get("github_username")
+
+        # set hubspot user data
+        user_hubspot_id = get_hubspot_id(email)
+        update_hubspot(user_hubspot_id)
 
         user = get_user_model().objects.create(
             email=email,
-            github_username=user_github,
             hubspot_id=user_hubspot_id,
             first_name=first_name,
             last_name=last_name,
         )
 
-        user.set_password(raw_password)
-        user.save()
-        batch.users.add(user)
-        section = batch.add_student_to_section(user)
+    user.set_password(raw_password)
+    user.save()
 
-        # send email
-        send_email_notification(user, batch, section)
+    batch.users.add(user)
+    section = batch.add_student_to_section(user)
 
-        login(request, user)
+    # send email
+    send_reg_notification(user, batch, section)
 
-        return redirect("soyuz_app:dashboard")
+    login(request, user)
+
+    return redirect("soyuz_app:dashboard")
+
+
+def get_hubspot_id(email):
+    try:
+        # from: https://github.com/HubSpot/hubspot-api-python/issues/49#issuecomment-811911302
+        email_filter = Filter(property_name="email", operator="EQ", value=email)
+
+        first_group = FilterGroup(filters=[email_filter])
+
+        public_object_search_request = PublicObjectSearchRequest(
+            filter_groups=[first_group]
+        )
+
+        api_response = client.crm.contacts.search_api.do_search(
+            public_object_search_request=public_object_search_request
+        )
+
+        result = api_response.to_dict()
+
+        if (
+            result["total"] == 0
+            or "results" not in result
+            or len(result["results"]) == 0
+        ):
+            raise ValueError("no hubspot user email")
+
+        return result["results"][0]["properties"]["hs_object_id"]
+    except ApiException as e:
+        capture_exception(e)
+        raise ValueError("error getting hubspot user email")
 
 
 def update_hubspot(user_hubspot_id):
@@ -117,19 +143,4 @@ def update_hubspot(user_hubspot_id):
 
     except ApiException as e:
         capture_exception(e)
-
-
-def send_email_notification(user, batch, section):
-
-    email_text_body = f""" Thanks for signing up for {batch.course.name}
-        It starts on {batch.start_date}
-        You are in section {section.number}"""
-
-    # TODO: add relevant batch deailts to email
-    # send them a confirmation email
-    send_mail(
-        f"Rocket Academy {batch.course.name} Signup",
-        email_text_body,
-        "Rocket Academy <hello@rocketacademy.co>",
-        [user.email],
-    )
+        raise ValueError("error updating hubspot")
