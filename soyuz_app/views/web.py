@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.generic import TemplateView
+
 
 from ..forms import AddBatchForm
-from ..models import Batch
+from ..models import Batch, Section
 
 
-def confirm_registration(request):
-    return render(request, "registration_success.html")
-
-
+@require_http_methods(["GET", "POST"])
 def get_batches(request):
     batches = Batch.objects.all()
     print(batches)
@@ -24,14 +25,15 @@ def get_batches(request):
     return render(request, "batch-page.html", context)
 
 
-def get_sections(request, batch_number):
-    batch = Batch.objects.get(number=batch_number)
+@require_GET
+def get_sections(request, batch_id):
+    batch = Batch.objects.get(id=batch_id)
     sections = batch.section_set.all()
     users = batch.users.all()
-    print(users)
     section_array = []
     for section in sections:
         section_obj = {}
+        section_obj['id'] = section.id
         section_obj["number"] = section.number
         section_users = section.users.all()
         section_obj["users"] = section_users
@@ -43,3 +45,38 @@ def get_sections(request, batch_number):
     }
 
     return render(request, "section-page.html", context)
+
+
+@require_POST
+def delete_items(request):
+    # Fetch user id and section name of user we want to remove from a section
+    user_to_delete = request.POST.get("user_id")
+    user_section = request.POST.get('section_id')
+    batch_id = request.POST.get('batch_id')
+
+    # section that user is in
+    selected_section = Section.objects.get(id=int(user_section))
+    # # user that we want to delete
+    user = get_user_model().objects.get(id=int(user_to_delete))
+    selected_section.users.remove(user)
+
+    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+
+
+@require_POST
+# fetch destinaton section number and user id
+def switch_sections(request):
+    section_destination = request.POST.get("section_number")
+    user_to_move = request.POST.get("user_id")
+    batch_id = request.POST.get('batch_id')
+
+    # user that we want to move
+    selected_user = get_user_model().objects.get(id=int(user_to_move))
+    # # user's original section
+    user_section = Section.objects.get(users__id=int(user_to_move))
+    # # user's destination section
+    destination_section = Section.objects.get(id=int(section_destination))
+    user_section.users.remove(selected_user)
+    destination_section.users.add(selected_user)
+
+    return redirect("soyuz_app:get_sections", batch_id=batch_id)

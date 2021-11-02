@@ -4,7 +4,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from . import views
-from .views import dashboard, get_batches, get_sections, signup
+from .views import dashboard, get_batches, get_sections, signup, switch_sections, delete_items
 
 router = routers.DefaultRouter()
 router.register(r"batches", views.BatchView, "batch")
@@ -25,9 +25,8 @@ urlpatterns = [
         name="signup",
     ),
     path("student-admin/batches/", get_batches, name="get_batches"),
-    path("student-admin/batch/<batch_number>", get_sections, name="get_sections"),
-    path(
-        "registration-success", views.confirm_registration, name="registration-success"
-    ),
+    path("student-admin/batch/<batch_id>", get_sections, name="get_sections"),
     path("api/", include(router.urls)),
+    path('student-admin/switch-sections', switch_sections, name="switch_sections"),
+    path('student-admin/delete-from-section', delete_items, name="switch_sections")
 ]
