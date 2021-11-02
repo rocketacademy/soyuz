@@ -49,7 +49,6 @@ def get_sections(request, batch_id):
 
 @require_POST
 def delete_items(request):
-    print('inside delete items')
     # Fetch user id and section name of user we want to remove from a section
     user_to_delete = request.POST.get("user_id")
     user_section = request.POST.get('section_id')
@@ -67,7 +66,6 @@ def delete_items(request):
 @require_POST
 # fetch destinaton section number and user id
 def switch_sections(request):
-    print('switch sections')
     section_destination = request.POST.get("section_number")
     user_to_move = request.POST.get("user_id")
     batch_id = request.POST.get('batch_id')
