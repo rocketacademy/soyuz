@@ -46,8 +46,8 @@ def dashboard(request):
 
 
 @require_http_methods(["GET", "POST"])
-def signup(request, batch_number, email):
-    batch = Batch.objects.get(number=batch_number)
+def signup(request, batch_id, email):
+    batch = Batch.objects.get(pk=batch_id)
 
     if request.method == "GET":
 
