@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.views.decorators.http import require_GET, require_http_methods
 
 from ..forms import AddBatchForm
-from ..models import Batch
+from ..models import Batch, Section
 
 
 def confirm_registration(request):
@@ -40,8 +41,8 @@ def get_sections(request, batch_number):
 
     if "delete_items" in request.POST:
         # Fetch user id and section name of user we want to remove from a section
-        user_to_delete = request.POST.get("delete_items")
-        user_to_delete = user_to_delete.split("/")
+        user_to_delete = request.POST.getlist("delete_items")
+        print('user to delete', user_to_delete)
         # section that user is in
         selected_section = Section.objects.get(number=int(user_to_delete[0]))
         # user that we want to delete
@@ -50,8 +51,8 @@ def get_sections(request, batch_number):
 
         # fetch destinaton section number and user id
     elif "batch_sections" in request.POST:
-        section_to_move = request.POST["batch_sections"]
-        section_to_move = section_to_move.split("/")
+        section_to_move = request.POST.getlist("batch_sections")
+        print('section to movoe', section_to_move)
         # user that we want to move
         selected_user = get_user_model().objects.get(id=int(section_to_move[1]))
         # user's original section

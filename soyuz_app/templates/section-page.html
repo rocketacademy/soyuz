@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="section-page-container">
-  <h1>{{ title }}: {{ batch.course }} {{ batch.number }}</h1>
+  <h1>{{ batch.course }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
   <div class="section-container">
     {% for section in sections %}
@@ -29,17 +29,19 @@
                 <select name="batch_sections" class="section-select">
                   <option selected="selected" disabled>--</option>
                   {% for section in sections %}
-                  <option value="{{ section.number }}/{{ user.id }}">{{ section.number }}</option>
+                  <option value="{{ section.number }}">{{ section.number }}</option>
                   {% endfor %}
                 </select>
+                  <input type="hidden" name="batch_sections" value="{{ user.id }}">
                 <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-sync-alt"></i></button>
               </form>
             </td>
             <td>
               <form method="POST">
                 {% csrf_token %}
-                <button class="btn btn-primary" type="submit" name="delete_items"
-                  value="{{ section.number }}/{{ user.id }}"><i class="fas fa-trash-alt"></i></button>
+                  <input type="hidden" name="delete_items" value="{{ section.number }}">
+                  <input type="hidden" name="delete_items" value="{{ user.id }}">
+                <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
           </tr>
