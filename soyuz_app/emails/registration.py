@@ -1,17 +1,23 @@
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 
 def send_reg_notification(user, batch, section):
 
-    email_text_body = f""" Thanks for signing up for {batch.course.name}
+    msg_plain = f""" Thanks for signing up for {batch.course.name}
         It starts on {batch.start_date}
         You are in section {section.number}"""
 
-    # TODO: add relevant batch deailts to email
-    # send them a confirmation email
+    # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
+    msg_html = render_to_string(
+        "users/batch-registration.html",
+        {"batch": batch, "section": section, "user": user},
+    )
+
     send_mail(
-        f"Rocket Academy {batch.course.name} Signup",
-        email_text_body,
+        f"Rocket Academy {batch.course.name} {batch.start_date} Signup",
+        msg_plain,
         "Rocket Academy <hello@rocketacademy.co>",
         [user.email],
+        html_message=msg_html,
     )

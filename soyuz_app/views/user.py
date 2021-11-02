@@ -27,14 +27,21 @@ def dashboard(request):
     context = {
         "user": request.user,
     }
-    batch_query = request.user.batch_set.filter(start_date__gte=datetime.date.today())
-    if len(batch_query) > 0:
-        batch = batch_query[0]
-        context["batch"] = batch
-        section_query = request.user.section_set.filter(batch_number=batch.id)
-        if len(section_query) > 0:
-            context["section"] = section_query[0]
+    batch_query = request.user.batch_set.filter(
+        start_date__gte=datetime.date.today()
+    ).order_by("start_date")
 
+    batches = []
+    if len(batch_query) > 0:
+        for batch in batch_query:
+            user_batch = {"batch": batch}
+            results = batch.section_set.filter(users=request.user)
+            if len(results) > 0:
+                user_batch["section"] = results[0]
+            batches.append(user_batch)
+        context["batches"] = batches
+
+        pprint(batches[0]["section"].number)
     return render(request, "users/dashboard.html", context)
 
 

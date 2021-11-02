@@ -2,23 +2,15 @@
 {% block page_content %}
 <div class="centered-container">
   <div class="centered-box">
-    <h1>Student Dashboard</h1>
-    {% if batch %}
-      <p>
-      Your upcoming {{batch.course.name}} batch: {{ batch.id }}
-      </p>
-      <p>
-          On: {{ batch.start_date }}
-      </p>
-      <p>
-          Our first meeting is at: 4:00pm!
-      </p>
-      {% if section %}
-        <p>
-            Section Number: {{ section.number }}
-        </p>
-      {% endif %}
+    {% if not batches %}
+      <h1>Student Dashboard</h1>
+    {% else %}
+      {% for batch in batches %}
+          {% include "users/batch-registration.html" with batch=batch.batch section=batch.section user=user %}
+      {% endfor %}
+
     {% endif %}
+    <hr/>
     <p>
         {{ user.email }}
     </p>
