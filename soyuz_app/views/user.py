@@ -52,6 +52,7 @@ def signup(request, batch_number, email):
         )
 
         context = {
+            "email": email,
             "batch": batch,
             "form": form,
         }
@@ -65,6 +66,7 @@ def signup(request, batch_number, email):
         if form.is_valid() is False:
 
             context = {
+                "email": email,
                 "form": form,
             }
 
@@ -86,18 +88,18 @@ def signup(request, batch_number, email):
             last_name=last_name,
         )
 
-    user.set_password(raw_password)
-    user.save()
+        user.set_password(raw_password)
+        user.save()
 
-    batch.users.add(user)
-    section = batch.add_student_to_section(user)
+        batch.users.add(user)
+        section = batch.add_student_to_section(user)
 
-    # send email
-    send_reg_notification(user, batch, section)
+        # send email
+        send_reg_notification(user, batch, section)
 
-    login(request, user)
+        login(request, user)
 
-    return redirect("soyuz_app:dashboard")
+        return redirect("soyuz_app:dashboard")
 
 
 def get_hubspot_id(email):

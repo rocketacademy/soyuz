@@ -5,6 +5,12 @@
   <div class="centered-box">
     <h1>Student Registration</h1>
     <div class="signup-form-container">
+        <p>Email: {{email}}</p>
+        {% if form.errors and 'email' in form.errors %}
+          <div class="alert alert-primary" role="alert">
+          {{ form.errors }}
+          </div>
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}

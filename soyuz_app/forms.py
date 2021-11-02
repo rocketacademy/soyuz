@@ -9,7 +9,7 @@ class SignUpForm(UserCreationForm):
         super(UserCreationForm, self).__init__(*args, **kwargs)
         # email is uneditable because it must be the
         # same as the hubspot link
-        self.fields["email"].widget.attrs["readonly"] = True
+        self.fields["email"].widget = forms.HiddenInput()
 
     class Meta:
         model = User
@@ -18,7 +18,9 @@ class SignUpForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Email is not unique")
+            raise forms.ValidationError("email already exists")
+
+        return email
 
 
 class AddBatchForm(forms.ModelForm):
