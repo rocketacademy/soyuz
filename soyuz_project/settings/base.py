@@ -193,7 +193,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "soyuz_app.context_processors.google_analytics",
+                "soyuz_app.context_processors.frontend_keys",
             ],
         },
     }
@@ -287,4 +287,3 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # ------------------------------------------------------------------------------
 
 MAX_STUDENTS_SECTION = env("MAX_STUDENTS_SECTION", default=4)
-GOOGLE_ANALYTICS_KEY = os.environ.get("GOOGLE_ANALYTICS_KEY", default="")

@@ -183,9 +183,12 @@ LOGGING = {
     },
 }
 
+# Google Analytics
+GOOGLE_ANALYTICS_KEY = env("GOOGLE_ANALYTICS_KEY", default="")
+
 # Sentry
 # ------------------------------------------------------------------------------
-SENTRY_DSN = env("SENTRY_DSN")
+SENTRY_DSN = env("SENTRY_DSN", default="")
 SENTRY_LOG_LEVEL = env.int("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
 
 sentry_logging = LoggingIntegration(
