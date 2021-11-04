@@ -82,4 +82,15 @@
     integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
   {% load sass_tags %}
   <link href="{% sass_src 'sass/main.scss' %}" rel="stylesheet" type="text/css" />
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  {% if GA_KEY %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q3R8PWESE8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ GA_KEY }}');
+  </script>
+  {% endif %}
 </head>
