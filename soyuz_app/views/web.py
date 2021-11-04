@@ -29,8 +29,8 @@ def get_batches(request):
 
 @require_POST
 def add_to_batch(request):
-    batch_id = request.POST.get('batch_id')
-    user_id = request.POST.get('user_id')
+    batch_id = int(request.POST.get('batch_id'))
+    user_id = int(request.POST.get('user_id'))
 
     destination_batch = Batch.objects.get(id=batch_id)
     user = get_user_model().objects.get(id=user_id)
