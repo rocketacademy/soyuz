@@ -11,18 +11,19 @@
         <thead>
           <tr>
             <th class="first-column" scope="col">Email</th>
-            <th scope="col">User ID</th>
-            <th scope="col">Hubspot ID</th>
-            <th scope="col">Switch</th>
-            <th scope="col">Delete</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Switch Sections</th>
+            <th scope="col">Delete from Section</th>
+            <th scope="col">Delete from Batch</th>
           </tr>
         </thead>
         <tbody>
           {% for user in section.users %}
           <tr>
             <th class="first-column" scope="row">{{ user.email }}</th>
-            <td>{{ user.id }}</td>
-            <td>{{ user.hubspot_id }}</td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
             <td>
               <form action="/student-admin/switch-sections" method="POST">
                 {% csrf_token %}
@@ -46,10 +47,57 @@
                 <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
+            <td>
+              <form action="/student-admin/delete-from-batch" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="section_id" value="{{ section.id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="batch_id" value="{{ batch.id }}">
+                <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    {% endfor %}
-    {% endblock %}
+  {% endfor %}
+  </div>
+  {% if users|length > 0 %}
+  <h4>Students that don't belong in a section</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="first-column" scope="col">Email</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Add to Section</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <th class="first-column" scope="row">{{ user.email }}</th>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>
+          <form action="/student-admin/add-to-section" method="POST">
+            {% csrf_token %}
+            <select name="section_id" class="section-select">
+              <option selected="selected" disabled>--</option>
+              {% for section in sections %}
+              <option value="{{ section.id }}">{{ section.number }}</option>
+              {% endfor %}
+            </select>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

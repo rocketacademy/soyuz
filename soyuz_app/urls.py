@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from rest_framework import routers
+from soyuz_app.views.web import delete_from_batch
 
 from . import views
 from .views import (
@@ -11,6 +12,8 @@ from .views import (
     get_sections,
     signup,
     switch_sections,
+    add_to_section,
+    delete_from_batch
 )
 
 router = routers.DefaultRouter()
@@ -36,4 +39,7 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("student-admin/switch-sections", switch_sections, name="switch_sections"),
     path("student-admin/delete-from-section", delete_items, name="switch_sections"),
+    path("student-admin/add-to-section", add_to_section, name="add_to_section"),
+    path("student-admin/delete-from-batch", delete_from_batch, name="delete_from_batch"),
+
 ]
