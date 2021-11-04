@@ -1,16 +1,30 @@
-.registration-form {
-  ul {
-    list-style: none;
-    label {
-      color: $blue;
-      padding-right: 10px;
-    }
-    input {
-      border-radius: 5px;
-      border-width: 0.5px;
-    }
+.batch-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .batch-form-title {
+    width: 50%;
   }
-  .btn-primary{
-    margin-top:1rem;
+  .add-batch-form {
+    width: 50%;
+    margin-bottom: 40px;
+  }
+  .table {
+    width: 80%;
+  }
+  h1,
+  h4 {
+    color: $blue;
+    padding: 20px 0;
+    width: 80%;
+    text-align: left;
+  }
+
+  .table {
+    margin-bottom: 40px;
+  }
+  .submit {
+    margin-top: 10px;
   }
 }

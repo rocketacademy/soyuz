@@ -11,6 +11,10 @@ def get_batches(request):
     batches = Batch.objects.all()
     print(batches)
 
+    # getting all users who do not belong in any batch
+    users = get_user_model().objects.filter(batch__isnull=True, is_superuser=False, is_staff=False)
+    print(users)
+
     if request.method == "GET":
         add_batch_form = AddBatchForm()
     else:
@@ -19,8 +23,21 @@ def get_batches(request):
             new_batch = add_batch_form.save()
             print(new_batch)
 
-    context = {"title": "List of Batches", "batches": batches, "form": add_batch_form}
+    context = {"title": "List of Batches", "batches": batches, "form": add_batch_form, 'users': users}
     return render(request, "batch-page.html", context)
+
+
+@require_POST
+def add_to_batch(request):
+    batch_id = request.POST.get('batch_id')
+    user_id = request.POST.get('user_id')
+
+    destination_batch = Batch.objects.get(id=batch_id)
+    user = get_user_model().objects.get(id=user_id)
+
+    destination_batch.users.add(user)
+
+    return redirect("soyuz_app:get_batches")
 
 
 @require_GET
