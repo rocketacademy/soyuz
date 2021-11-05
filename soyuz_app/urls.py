@@ -11,6 +11,7 @@ from .views import (
     get_sections,
     signup,
     switch_sections,
+    get_student_list
 )
 
 router = routers.DefaultRouter()
@@ -36,4 +37,6 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("student-admin/switch-sections", switch_sections, name="switch_sections"),
     path("student-admin/delete-from-section", delete_items, name="switch_sections"),
+    path("student-admin/student-list", get_student_list, name="get_student_list")
+
 ]

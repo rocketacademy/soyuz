@@ -24,6 +24,14 @@ def get_batches(request):
 
 
 @require_GET
+def get_student_list(request):
+    users = get_user_model().objects.filter(is_superuser=False, is_staff=False)
+    context = {"title": "Student List", "users": users}
+
+    return render(request, 'student-list.html', context)
+
+
+@require_GET
 def get_sections(request, batch_id):
     batch = Batch.objects.get(id=batch_id)
     sections = batch.section_set.all()
