@@ -43,6 +43,7 @@ def add_to_batch(request):
 @require_GET
 def get_sections(request, batch_id):
     batch = Batch.objects.get(id=batch_id)
+    users = get_user_model().objects.filter(batch=batch, section__isnull=True, is_superuser=False, is_staff=False)
     sections = batch.section_set.all()
     section_array = []
     for section in sections:
@@ -56,9 +57,42 @@ def get_sections(request, batch_id):
     context = {
         "batch": batch,
         "sections": section_array,
+        "users": users
     }
 
     return render(request, "section-page.html", context)
+
+
+@require_POST
+def delete_from_batch(request):
+    user_id = int(request.POST.get('user_id'))
+    section_id = int(request.POST.get('section_id'))
+    batch_id = int(request.POST.get('batch_id'))
+
+    print(user_id)
+    print(section_id)
+    print(batch_id)
+    user = get_user_model().objects.get(id=user_id)
+    batch = Batch.objects.get(id=batch_id)
+    section = Section.objects.get(id=section_id)
+
+    section.users.remove(user)
+    batch.users.remove(user)
+
+    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+
+
+@require_POST
+def add_to_section(request):
+    user_id = int(request.POST.get('user_id'))
+    section_id = int(request.POST.get('section_id'))
+    destination_section = Section.objects.get(id=section_id)
+    batch_id = int(request.POST.get('batch_id'))
+
+    user = get_user_model().objects.get(id=user_id)
+    destination_section.users.add(user)
+
+    return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
 @require_POST

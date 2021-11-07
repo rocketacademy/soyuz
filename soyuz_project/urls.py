@@ -16,8 +16,15 @@ Including another URLconf
 from pathlib import Path
 
 import environ
+from django.conf.urls import handler404, handler500  # , handler403, handler400
 from django.contrib import admin
 from django.urls import include, path
+
+from soyuz_app.views.error import error_404, error_500
+
+# assign the custom error handling views
+handler404 = error_404  # noqa: F811
+handler500 = error_500  # noqa: F811
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = ROOT_DIR / "soyuz"

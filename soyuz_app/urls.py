@@ -2,20 +2,14 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import include, path
 from rest_framework import routers
+from soyuz_app.views.web import delete_from_batch
 
-from . import views
-from .views import (
-    dashboard,
-    delete_items,
-    get_batches,
-    get_sections,
-    signup,
-    switch_sections,
-    add_to_batch
-)
+
+from .views import rest, user, web
+
 
 router = routers.DefaultRouter()
-router.register(r"batches", views.BatchView, "batch")
+router.register(r"batches", rest.BatchView, "batch")
 
 app_name = "soyuz_app"
 
@@ -26,17 +20,15 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
-    path("dashboard/", login_required(dashboard), name="dashboard"),
+    path("dashboard/", login_required(user.dashboard), name="dashboard"),
     path(
         "batch/<batch_id>/email/<email>",
-        signup,
+        user.signup,
         name="signup",
     ),
-    path("student-admin/batches/", get_batches, name="get_batches"),
-    path("student-admin/batch/<batch_id>", get_sections, name="get_sections"),
+    path("student-admin/batches/", web.get_batches, name="get_batches"),
+    path("student-admin/batch/<batch_id>", web.get_sections, name="get_sections"),
     path("api/", include(router.urls)),
-    path("student-admin/switch-sections", switch_sections, name="switch_sections"),
-    path("student-admin/delete-from-section", delete_items, name="switch_sections"),
-    path("student-admin/add_to_batch", add_to_batch, name="add_to_batch"),
-
+    path("student-admin/switch-sections", web.switch_sections, name="switch_sections"),
+    path("student-admin/delete-from-section", web.delete_items, name="switch_sections"),
 ]
