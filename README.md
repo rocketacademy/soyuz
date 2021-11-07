@@ -191,6 +191,11 @@ heroku run python manage.py check --deploy
 heroku open
 ```
 
+#### setting postgres backups on Heroku
+```
+heroku pg:backups:schedule DATABASE_URL --at '02:00 Asia/Singapore' --remote staging
+```
+
 # View Testing Code
 ```
 import json
