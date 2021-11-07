@@ -1,11 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  {% include 'layouts/head.html' %}
+  {% include 'layouts/admin-head.html' %}
   <body class="d-flex flex-column h-100">
     {% include 'layouts/header.html' %}
     {% block page_content %}{% endblock %}
-    {% include 'layouts/footer.html' %}
-    {% include 'layouts/footer-snippets.html' %}
   </body>
 </html>
