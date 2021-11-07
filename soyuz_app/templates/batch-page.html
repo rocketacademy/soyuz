@@ -52,7 +52,7 @@
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
         <td>
-          <form action="/student-admin/add_to_batch" method="POST">
+          <form action="/student-admin/add-to-batch" method="POST">
           {% csrf_token %}
             <select name="batch_id" class="section-select">
               <option selected="selected" disabled>--</option>
