@@ -9,11 +9,6 @@ from ..models import Batch, Section
 @require_http_methods(["GET", "POST"])
 def get_batches(request):
     batches = Batch.objects.all()
-    print(batches)
-
-    # getting all users who do not belong in any batch
-    users = get_user_model().objects.filter(batch__isnull=True, is_superuser=False, is_staff=False)
-    print(users)
 
     if request.method == "GET":
         add_batch_form = AddBatchForm()
@@ -23,7 +18,7 @@ def get_batches(request):
             new_batch = add_batch_form.save()
             print(new_batch)
 
-    context = {"title": "List of Batches", "batches": batches, "form": add_batch_form, 'users': users}
+    context = {"title": "List of Batches", "batches": batches, "form": add_batch_form}
     return render(request, "batch-page.html", context)
 
 
@@ -42,8 +37,15 @@ def add_to_batch(request):
 
 @require_GET
 def get_student_list(request):
-    users = get_user_model().objects.filter(is_superuser=False, is_staff=False)
-    context = {"title": "Student List", "users": users}
+    # getting users that are in a batch
+    users = get_user_model().objects.filter(batch__isnull=False, is_superuser=False, is_staff=False)
+
+    # getting users who do not belong in any batch
+    users_no_batch = get_user_model().objects.filter(batch__isnull=True, is_superuser=False, is_staff=False)
+
+    # getting all batches
+    batches = Batch.objects.all()
+    context = {"title": "Student List", "users": users, "users_no_batch": users_no_batch, "batches": batches}
 
     return render(request, 'student-list.html', context)
 

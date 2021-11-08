@@ -1,14 +1,13 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="student-list-container">
-  <h3>{{ title }}</h3>
-  <table class="table table-striped">
+  <h4>{{ title }}</h4>
+  <table class="table table-striped table-hover">
     <thead>
       <tr>
         <th class="first-column" scope="col">Email</th>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
-        <th scope="col">Courses</th>
       </tr>
     </thead>
     <tbody>
@@ -21,5 +20,40 @@
       {% endfor %}
     </tbody>
   </table>
+  {% if users_no_batch|length > 0 %}
+  <h4>Students that do not belong in any batch: </h4>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th class="first-column" scope="col">Email</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Add to Batch</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users_no_batch %}
+      <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>
+          <form action="/student-admin/add-to-batch" method="POST">
+            {% csrf_token %}
+            <select name="batch_id" class="section-select">
+              <option selected="selected" disabled>--</option>
+              {% for batch in batches %}
+              <option value="{{ batch.id }}">{{ batch.course.name }} {{ batch.id }}</option>
+              {% endfor %}
+            </select>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 </div>
 {% endblock %}
