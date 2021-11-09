@@ -102,10 +102,8 @@ def reassign_sections(request):
     # get all users in batch
     batch = Batch.objects.get(id=batch_id)
     batch_users = list(get_user_model().objects.filter(batch=batch))
-    print(batch_users)
     # get number of users in batch
     number_of_users = len(batch_users)
-    print(number_of_users)
 
     # delete batch sections
     Section.objects.filter(batch=batch).delete()
