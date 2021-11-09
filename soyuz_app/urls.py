@@ -31,4 +31,6 @@ urlpatterns = [
     path("student-admin/add-to-batch", web.add_to_batch, name="add_to_batch"),
     path("student-admin/add-to-section", web.add_to_section, name="add_to_section"),
     path("student-admin/student-list", web.get_student_list, name="get_student_list"),
+    path("student-admin/reassign-sections", web.reassign_sections, name="reassign_sections"),
+
 ]

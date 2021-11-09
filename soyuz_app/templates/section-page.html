@@ -4,6 +4,16 @@
   <h1>{{ batch.course }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
   <div class="section-container">
+    <div class="reassign-form">
+    <h4>Reassign Sections</h4>
+    <label>Number per section: </label>
+    <form action="/student-admin/reassign-sections" method="POST">
+      {% csrf_token %}
+      <input type="text" name="number_per_section">
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-sync-alt"></i></button>
+    </form>
+    </div>
     {% for section in sections %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>

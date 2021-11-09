@@ -1,3 +1,4 @@
+import math
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
@@ -88,6 +89,37 @@ def delete_from_batch(request):
 
     section.users.remove(user)
     batch.users.remove(user)
+
+    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+
+
+@require_POST
+def reassign_sections(request):
+    # data from form
+    number_per_section = int(request.POST.get('number_per_section'))
+    batch_id = int(request.POST.get('batch_id'))
+
+    # get all users in batch
+    batch = Batch.objects.get(id=batch_id)
+    batch_users = list(get_user_model().objects.filter(batch=batch))
+    print(batch_users)
+    # get number of users in batch
+    number_of_users = len(batch_users)
+    print(number_of_users)
+
+    # delete batch sections
+    Section.objects.filter(batch=batch).delete()
+
+    number_of_sections = math.ceil(number_of_users / number_per_section)
+
+    for i in range(number_of_sections):
+        # create new section
+        new_section = Section.objects.create(number=i + 1, batch=batch)
+        for j in range(number_per_section):
+            # add users to new sections
+            if len(batch_users) > 0:
+                new_user = batch_users.pop()
+                new_section.users.add(new_user)
 
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
