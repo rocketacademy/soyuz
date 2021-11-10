@@ -106,18 +106,30 @@ def reassign_sections(request):
     number_of_users = len(batch_users)
 
     # delete batch sections
-    Section.objects.filter(batch=batch).delete()
+    sections = Section.objects.filter(batch=batch)
+    num_previous_sections = sections.count()
 
+    # find out how many sections are needed
     number_of_sections = math.ceil(number_of_users / number_per_section)
 
-    for i in range(number_of_sections):
-        # create new section
-        new_section = Section.objects.create(number=i + 1, batch=batch)
+    # create additional sections if required
+    if num_previous_sections < number_of_sections:
+        difference = number_of_sections - num_previous_sections
+        for i in range(difference):
+            Section.objects.create(number=i + 1 + num_previous_sections, batch=batch)
+
+    # disassociate users from their original sections
+    for section in sections:
+        section.users.clear()
+
+    # get current batch sections
+    current_sections = Section.objects.filter(batch=batch)
+    for section in current_sections:
         for j in range(number_per_section):
             # add users to new sections
             if len(batch_users) > 0:
                 new_user = batch_users.pop()
-                new_section.users.add(new_user)
+                section.users.add(new_user)
 
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 

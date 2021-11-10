@@ -15,6 +15,7 @@
     </form>
     </div>
     {% for section in sections %}
+    {% if section.users|length > 0 %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>
       <table class="table table-striped">
@@ -71,6 +72,7 @@
         </tbody>
       </table>
     </div>
+  {% endif %}
   {% endfor %}
   </div>
   {% if users|length > 0 %}
