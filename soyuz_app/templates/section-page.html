@@ -3,10 +3,22 @@
 <div class="section-page-container">
   <h1>{{ batch.course }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
+  <p>Total number of students: {{ batch.users.count }}</p>
   <div class="section-container">
+    <div class="reassign-form">
+    <h4>Reassign Sections</h4>
+    <label>Students per section: </label>
+    <form action="/student-admin/reassign-sections" method="POST">
+      {% csrf_token %}
+      <input type="text" name="number_per_section">
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <button class="btn btn-primary" type="submit" value="Submit"  onclick="return confirm('Are you sure you would like to reassign sections?');"><i class="fas fa-sync-alt"></i></button>
+    </form>
+    </div>
     {% for section in sections %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>
+      <p>Number of students: {{ section.users|length }}</p>
       <table class="table table-striped">
         <thead>
           <tr>
