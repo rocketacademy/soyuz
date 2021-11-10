@@ -3,6 +3,7 @@
 <div class="section-page-container">
   <h1>{{ batch.course }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
+  <p>Total number of students: {{ batch.users.count }}</p>
   <div class="section-container">
     <div class="reassign-form">
     <h4>Reassign Sections</h4>
@@ -17,6 +18,7 @@
     {% for section in sections %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>
+      <p>Number of students: {{ section.users|length }}</p>
       <table class="table table-striped">
         <thead>
           <tr>
