@@ -6,16 +6,15 @@
   <div class="section-container">
     <div class="reassign-form">
     <h4>Reassign Sections</h4>
-    <label>Number per section: </label>
+    <label>Students per section: </label>
     <form action="/student-admin/reassign-sections" method="POST">
       {% csrf_token %}
       <input type="text" name="number_per_section">
       <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-sync-alt"></i></button>
+      <button class="btn btn-primary" type="submit" value="Submit"  onclick="return confirm('Are you sure you would like to reassign sections?');"><i class="fas fa-sync-alt"></i></button>
     </form>
     </div>
     {% for section in sections %}
-    {% if section.users|length > 0 %}
     <div class="section">
       <h3>Section: {{ section.number }}</h3>
       <table class="table table-striped">
@@ -72,7 +71,6 @@
         </tbody>
       </table>
     </div>
-  {% endif %}
   {% endfor %}
   </div>
   {% if users|length > 0 %}
