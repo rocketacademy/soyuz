@@ -16,9 +16,11 @@
     </form>
     </div>
     {% for section in sections %}
-    <button class="btn btn-primary" type="submit" value="Submit">Copy email addresses</button>
-    <div class="section" id="section-{{section.number}}">
-      <h3>Section: {{ section.number }}</h3>
+    <div class="section">
+      <div class="section-header">
+        <h3>Section: {{ section.number }}</h3>
+        <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email addresses</button>
+      </div>
       <p>Number of students: {{ section.users|length }}</p>
       <table class="table table-striped">
         <thead>
@@ -112,5 +114,29 @@
     </tbody>
   </table>
   {% endif %}
+  <script>
+    const copyButtonArray = document.querySelectorAll('.copy-button');
+    copyButtonArray.forEach(button => {
+      button.addEventListener('click', () => {
+        const data = [];
+        const emails = document.querySelectorAll(`.user-email-${button.value}`);
+        emails.forEach(email => {
+          data.push(email.innerText);
+        })
+         // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = data;
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+      })
+    })
+  </script>
 </div>
 {% endblock %}
