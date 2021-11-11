@@ -33,7 +33,7 @@
         <tbody>
           {% for user in section.users %}
           <tr>
-            <th class="user-email first-column" scope="row">{{ user.email }}</th>
+            <th class="user-email-{{ section.number }} first-column" scope="row">{{ user.email }}</th>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>
