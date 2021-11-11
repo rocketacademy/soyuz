@@ -16,6 +16,7 @@
     </form>
     </div>
     {% for section in sections %}
+    <button class="btn btn-primary" type="submit" value="Submit">Copy email addresses</button>
     <div class="section" id="section-{{section.number}}">
       <h3>Section: {{ section.number }}</h3>
       <p>Number of students: {{ section.users|length }}</p>
