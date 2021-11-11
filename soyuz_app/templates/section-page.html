@@ -16,7 +16,7 @@
     </form>
     </div>
     {% for section in sections %}
-    <div class="section">
+    <div class="section" id="section-{{section.number}}">
       <h3>Section: {{ section.number }}</h3>
       <p>Number of students: {{ section.users|length }}</p>
       <table class="table table-striped">
@@ -33,7 +33,7 @@
         <tbody>
           {% for user in section.users %}
           <tr>
-            <th class="first-column" scope="row">{{ user.email }}</th>
+            <th class="user-email first-column" scope="row">{{ user.email }}</th>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>
