@@ -16,7 +16,7 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(ROOT_DIR / ".env"))
 
 HUBSPOT_API_KEY = env("HUBSPOT_API_KEY", default="banana")
-
+DAYS_TO_REGISTRATION_EXPIRE = env("DAYS_TO_REGISTRATION_EXPIRE")
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug

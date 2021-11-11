@@ -20,6 +20,7 @@ from ..forms import SignUpForm
 from ..models import Batch
 
 client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
+days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
 
 
 @require_GET
@@ -47,66 +48,76 @@ def dashboard(request):
 
 @require_http_methods(["GET", "POST"])
 def signup(request, batch_id, email):
+
     batch = Batch.objects.get(pk=batch_id)
+    # get batch start date
+    start_date = batch.start_date
+    # get today's date
+    today = datetime.date.today()
+    # check difference
+    difference = start_date - today
+    # if difference is more than days env var, registration is not allowed
+    if difference.days < int(days_to_expiration):
+        return render(request, "users/registration-expired.html")
+    else:
+        if request.method == "GET":
 
-    if request.method == "GET":
+            first_name = request.GET.get("first_name", "")
+            last_name = request.GET.get("last_name", "")
 
-        first_name = request.GET.get("first_name", "")
-        last_name = request.GET.get("last_name", "")
-
-        form = SignUpForm(
-            initial={"email": email, "first_name": first_name, "last_name": last_name}
-        )
-
-        context = {
-            "email": email,
-            "batch": batch,
-            "form": form,
-        }
-
-        return render(request, "users/signup.html", context)
-
-    elif request.method == "POST":
-
-        form = SignUpForm(request.POST)
-
-        if form.is_valid() is False:
+            form = SignUpForm(
+                initial={"email": email, "first_name": first_name, "last_name": last_name}
+            )
 
             context = {
                 "email": email,
+                "batch": batch,
                 "form": form,
             }
 
             return render(request, "users/signup.html", context)
 
-        raw_password = form.cleaned_data.get("password1")
-        first_name = form.cleaned_data.get("first_name")
-        last_name = form.cleaned_data.get("last_name")
-        email = form.cleaned_data.get("email")
+        elif request.method == "POST":
 
-        # set hubspot user data
-        user_hubspot_id = get_hubspot_id(email)
-        update_hubspot(user_hubspot_id)
+            form = SignUpForm(request.POST)
 
-        user = get_user_model().objects.create(
-            email=email,
-            hubspot_id=user_hubspot_id,
-            first_name=first_name,
-            last_name=last_name,
-        )
+            if form.is_valid() is False:
 
-        user.set_password(raw_password)
-        user.save()
+                context = {
+                    "email": email,
+                    "form": form,
+                }
 
-        batch.users.add(user)
-        section = batch.add_student_to_section(user)
+                return render(request, "users/signup.html", context)
 
-        # send email
-        send_reg_notification(user, batch, section)
+            raw_password = form.cleaned_data.get("password1")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
 
-        login(request, user)
+            # set hubspot user data
+            user_hubspot_id = get_hubspot_id(email)
+            update_hubspot(user_hubspot_id)
 
-        return redirect("soyuz_app:dashboard")
+            user = get_user_model().objects.create(
+                email=email,
+                hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
+            )
+
+            user.set_password(raw_password)
+            user.save()
+
+            batch.users.add(user)
+            section = batch.add_student_to_section(user)
+
+            # send email
+            send_reg_notification(user, batch, section)
+
+            login(request, user)
+
+            return redirect("soyuz_app:dashboard")
 
 
 def get_hubspot_id(email):
