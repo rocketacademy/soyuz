@@ -1,10 +1,23 @@
 import math
+from pprint import pprint
+import hubspot
+from django.conf import settings
+from hubspot.crm.contacts import (
+    ApiException,
+    Filter,
+    FilterGroup,
+    PublicObjectSearchRequest,
+    SimplePublicObjectInput,
+)
+from sentry_sdk import capture_exception
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from ..forms import AddBatchForm
 from ..models import Batch, Section
+
+client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 
 
 @require_http_methods(["GET", "POST"])
@@ -86,6 +99,10 @@ def delete_from_batch(request):
     user = get_user_model().objects.get(id=user_id)
     batch = Batch.objects.get(id=batch_id)
     section = Section.objects.get(id=section_id)
+
+    # set hubspot user data
+    user_hubspot_id = get_hubspot_id(user.email)
+    update_hubspot_funnel_status(user_hubspot_id)
 
     section.users.remove(user)
     batch.users.remove(user)
@@ -180,3 +197,49 @@ def switch_sections(request):
     destination_section.users.add(selected_user)
 
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
+
+
+def get_hubspot_id(email):
+    try:
+        # from: https://github.com/HubSpot/hubspot-api-python/issues/49#issuecomment-811911302
+        email_filter = Filter(property_name="email", operator="EQ", value=email)
+
+        first_group = FilterGroup(filters=[email_filter])
+
+        public_object_search_request = PublicObjectSearchRequest(
+            filter_groups=[first_group]
+        )
+
+        api_response = client.crm.contacts.search_api.do_search(
+            public_object_search_request=public_object_search_request
+        )
+
+        result = api_response.to_dict()
+
+        if (
+            result["total"] == 0
+            or "results" not in result
+            or len(result["results"]) == 0
+        ):
+            raise ValueError("no hubspot user email")
+
+        return result["results"][0]["properties"]["hs_object_id"]
+    except ApiException as e:
+        capture_exception(e)
+        raise ValueError("error getting hubspot user email")
+
+
+def update_hubspot_funnel_status(user_hubspot_id):
+    properties = {"bootcamp_funnel_status": "basics_apply;basics_register;basics_dropout"}
+
+    simple_public_object_input = SimplePublicObjectInput(properties=properties)
+    try:
+        api_response = client.crm.contacts.basic_api.update(
+            contact_id=user_hubspot_id,
+            simple_public_object_input=simple_public_object_input,
+        )
+        pprint(api_response)
+
+    except ApiException as e:
+        capture_exception(e)
+        raise ValueError("error updating hubspot")
