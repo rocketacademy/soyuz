@@ -1,6 +1,13 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
 <div class="section-page-container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'soyuz_app:get_student_list' %}">All Students</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'soyuz_app:get_batches' %}">All Batches</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Batch</li>
+    </ol>
+  </nav>
   <h1>{{ batch.course }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
   <p>Total number of students: {{ batch.users.count }}</p>
