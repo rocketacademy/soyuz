@@ -30,7 +30,7 @@ CACHES = {
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 # mailhog
 EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
+    "DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
 )
 EMAIL_HOST = "localhost"
 EMAIL_PORT = "1025"
