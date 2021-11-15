@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from pathlib import Path
-
+from django.contrib.auth import views as auth_views
 import environ
 from django.conf.urls import handler404, handler500  # , handler403, handler400
 from django.contrib import admin
@@ -38,6 +38,22 @@ if READ_DOT_ENV_FILE:
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("soyuz_app.urls")),
+    path(
+        'password-reset/',
+        auth_views.PasswordResetView.as_view(template_name='users/password-reset.html'),  name="password_reset_email"
+    ),
+    path(
+        'password-reset-done/',
+        auth_views.PasswordResetDoneView.as_view(template_name='users/password-reset-done.html'), name="password_reset_done"
+    ),
+    path(
+        'password-reset-confirm/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(template_name='users/password-reset-confirm.html'), name="password_reset_confirm"
+    ),
+    path(
+        'password-reset-complete/',
+        auth_views.PasswordResetCompleteView.as_view(template_name='users/password-reset-complete.html'), name="password_reset_complete"
+    ),
 ]
 
 if env("DJANGO_ENV") == "development":
