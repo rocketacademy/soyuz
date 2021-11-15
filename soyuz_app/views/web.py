@@ -180,3 +180,7 @@ def switch_sections(request):
     destination_section.users.add(selected_user)
 
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
+
+
+def landing_page(request):
+    return render(request, 'landing-page.html')
