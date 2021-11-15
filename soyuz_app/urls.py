@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
-from django.urls import include, path, reverse_lazy
+from django.urls import include, path
 from rest_framework import routers
 from .views import rest, user, web
 
