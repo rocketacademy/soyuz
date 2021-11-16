@@ -20,6 +20,7 @@
       <div class="section-header">
         <h3>Section: {{ section.number }}</h3>
         <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email addresses</button>
+        <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section Names</button>
       </div>
       <p>Number of students: {{ section.users|length }}</p>
       <table class="table table-striped">
@@ -35,10 +36,10 @@
         </thead>
         <tbody>
           {% for user in section.users %}
-          <tr>
+          <tr class="user-row-{{ section.number }}">
             <th class="user-email-{{ section.number }} first-column" scope="row">{{ user.email }}</th>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
+            <td class="user-fname-td">{{ user.first_name }}</td>
+            <td class="user-lname-td">{{ user.last_name }}</td>
             <td>
               <form action="/student-admin/switch-sections" method="POST">
                 {% csrf_token %}
@@ -125,20 +126,42 @@
         emails.forEach(email => {
           data.push(email.innerText);
         })
-         // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
-        let selBox = document.createElement('textarea');
-        selBox.style.position = 'fixed';
-        selBox.style.left = '0';
-        selBox.style.top = '0';
-        selBox.style.opacity = '0';
-        selBox.value = data;
-        document.body.appendChild(selBox);
-        selBox.focus();
-        selBox.select();
-        document.execCommand('copy');
-        document.body.removeChild(selBox);
+        copyToClipboard(data);
       })
     })
+
+    const copyNameButtonArray = document.querySelectorAll('.copy-name-button');
+    copyNameButtonArray.forEach(button => {
+      button.addEventListener('click', () => {
+        const userRow  = document.querySelectorAll(`.user-row-${button.value}`);
+        const data = [...userRow].map(row => {
+          let fname = row.querySelector(`.user-fname-td`).innerText;
+          let lname = row.querySelector(`.user-lname-td`).innerText;
+          fname = fname.toLowerCase()
+          fname = fname.replace(/\b\w/g, l => l.toUpperCase())
+          lname = lname.toLowerCase()
+          lname = lname.replace(/\b\w/g, l => l.toUpperCase())
+          return `${fname} ${lname}`;
+        });
+
+        copyToClipboard(data);
+      })
+    })
+
+    const copyToClipboard = (data) => {
+       // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = data;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+      document.body.removeChild(selBox);
+    };
   </script>
 </div>
 {% endblock %}
