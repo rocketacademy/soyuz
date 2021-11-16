@@ -44,8 +44,10 @@
                 {% csrf_token %}
                 <select name="section_number" class="section-select">
                   <option selected="selected" disabled>--</option>
-                  {% for section in sections %}
-                  <option value="{{ section.id }}">{{ section.number }}</option>
+                  {% for dropdown_section in sections %}
+                  {% if dropdown_section.id != section.id %}
+                  <option value="{{ dropdown_section.id }}">{{ dropdown_section.number }}</option>
+                  {% endif %}
                   {% endfor %}
                 </select>
                   <input type="hidden" name="user_id" value="{{ user.id }}">
