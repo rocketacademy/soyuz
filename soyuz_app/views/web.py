@@ -80,9 +80,6 @@ def delete_from_batch(request):
     section_id = int(request.POST.get('section_id'))
     batch_id = int(request.POST.get('batch_id'))
 
-    print(user_id)
-    print(section_id)
-    print(batch_id)
     user = get_user_model().objects.get(id=user_id)
     batch = Batch.objects.get(id=batch_id)
     section = Section.objects.get(id=section_id)
