@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from ..forms import AddBatchForm
-from ..models import Batch, Section
+from ..models import Batch, Section, Course
 
 
 @require_http_methods(["GET", "POST"])
@@ -52,8 +52,11 @@ def get_student_list(request):
 
 
 @require_GET
-def get_sections(request, batch_id):
-    batch = Batch.objects.get(id=batch_id)
+def get_sections(request, course_name, batch_number):
+    course = Course.objects.get(name=course_name)
+    print('course', course)
+    batch = Batch.objects.get(number=batch_number, course=course)
+    print('batch', batch)
     users = get_user_model().objects.filter(batch=batch, section__isnull=True, is_superuser=False, is_staff=False)
     sections = batch.section_set.all()
     section_array = []
