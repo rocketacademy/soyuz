@@ -1,4 +1,6 @@
 import math
+
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
@@ -7,6 +9,7 @@ from ..forms import AddBatchForm
 from ..models import Batch, Section
 
 
+@staff_member_required
 @require_http_methods(["GET", "POST"])
 def get_batches(request):
     batches = Batch.objects.all()
@@ -23,10 +26,11 @@ def get_batches(request):
     return render(request, "batch-page.html", context)
 
 
+@staff_member_required
 @require_POST
 def add_to_batch(request):
-    batch_id = int(request.POST.get('batch_id'))
-    user_id = int(request.POST.get('user_id'))
+    batch_id = int(request.POST.get("batch_id"))
+    user_id = int(request.POST.get("user_id"))
 
     destination_batch = Batch.objects.get(id=batch_id)
     user = get_user_model().objects.get(id=user_id)
@@ -36,25 +40,38 @@ def add_to_batch(request):
     return redirect("soyuz_app:get_batches")
 
 
+@staff_member_required
 @require_GET
 def get_student_list(request):
     # getting users that are in a batch
-    users = get_user_model().objects.filter(batch__isnull=False, is_superuser=False, is_staff=False)
+    users = get_user_model().objects.filter(
+        batch__isnull=False, is_superuser=False, is_staff=False
+    )
 
     # getting users who do not belong in any batch
-    users_no_batch = get_user_model().objects.filter(batch__isnull=True, is_superuser=False, is_staff=False)
+    users_no_batch = get_user_model().objects.filter(
+        batch__isnull=True, is_superuser=False, is_staff=False
+    )
 
     # getting all batches
     batches = Batch.objects.all()
-    context = {"title": "Student List", "users": users, "users_no_batch": users_no_batch, "batches": batches}
+    context = {
+        "title": "Student List",
+        "users": users,
+        "users_no_batch": users_no_batch,
+        "batches": batches,
+    }
 
-    return render(request, 'student-list.html', context)
+    return render(request, "student-list.html", context)
 
 
+@staff_member_required
 @require_GET
 def get_sections(request, batch_id):
     batch = Batch.objects.get(id=batch_id)
-    users = get_user_model().objects.filter(batch=batch, section__isnull=True, is_superuser=False, is_staff=False)
+    users = get_user_model().objects.filter(
+        batch=batch, section__isnull=True, is_superuser=False, is_staff=False
+    )
     sections = batch.section_set.all()
     section_array = []
     for section in sections:
@@ -65,20 +82,17 @@ def get_sections(request, batch_id):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
-    context = {
-        "batch": batch,
-        "sections": section_array,
-        "users": users
-    }
+    context = {"batch": batch, "sections": section_array, "users": users}
 
     return render(request, "section-page.html", context)
 
 
+@staff_member_required
 @require_POST
 def delete_from_batch(request):
-    user_id = int(request.POST.get('user_id'))
-    section_id = int(request.POST.get('section_id'))
-    batch_id = int(request.POST.get('batch_id'))
+    user_id = int(request.POST.get("user_id"))
+    section_id = int(request.POST.get("section_id"))
+    batch_id = int(request.POST.get("batch_id"))
 
     print(user_id)
     print(section_id)
@@ -93,11 +107,12 @@ def delete_from_batch(request):
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
+@staff_member_required
 @require_POST
 def reassign_sections(request):
     # data from form
-    number_per_section = int(request.POST.get('number_per_section'))
-    batch_id = int(request.POST.get('batch_id'))
+    number_per_section = int(request.POST.get("number_per_section"))
+    batch_id = int(request.POST.get("batch_id"))
 
     # get all users in batch
     batch = Batch.objects.get(id=batch_id)
@@ -134,12 +149,13 @@ def reassign_sections(request):
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
+@staff_member_required
 @require_POST
 def add_to_section(request):
-    user_id = int(request.POST.get('user_id'))
-    section_id = int(request.POST.get('section_id'))
+    user_id = int(request.POST.get("user_id"))
+    section_id = int(request.POST.get("section_id"))
     destination_section = Section.objects.get(id=section_id)
-    batch_id = int(request.POST.get('batch_id'))
+    batch_id = int(request.POST.get("batch_id"))
 
     user = get_user_model().objects.get(id=user_id)
     destination_section.users.add(user)
@@ -147,6 +163,7 @@ def add_to_section(request):
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
+@staff_member_required
 @require_POST
 def delete_items(request):
     # Fetch user id and section name of user we want to remove from a section
@@ -163,6 +180,7 @@ def delete_items(request):
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
+@staff_member_required
 @require_POST
 # fetch destinaton section number and user id
 def switch_sections(request):
@@ -183,4 +201,4 @@ def switch_sections(request):
 
 
 def landing_page(request):
-    return render(request, 'landing-page.html')
+    return render(request, "landing-page.html")
