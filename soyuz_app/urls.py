@@ -24,7 +24,11 @@ urlpatterns = [
         name="signup",
     ),
     path("student-admin/batches/", web.get_batches, name="get_batches"),
-    path("student-admin/batch/<batch_id>", web.get_sections, name="get_sections"),
+    path(
+        "student-admin/course/<course_name>/batch/<batch_number>",
+        web.get_sections,
+        name="get_sections",
+    ),
     # path("api/", include(router.urls)),
     path("student-admin/switch-sections", web.switch_sections, name="switch_sections"),
     path("student-admin/delete-from-section", web.delete_items, name="switch_sections"),
