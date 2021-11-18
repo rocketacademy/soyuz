@@ -1,10 +1,22 @@
+from ..models import Batch, Section, Course
+from ..forms import AddBatchForm, AddUserForm
 import math
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-
-from ..forms import AddBatchForm
-from ..models import Batch, Section, Course
+from pprint import pprint
+import hubspot
+from django.conf import settings
+from hubspot.crm.contacts import (
+    ApiException,
+    Filter,
+    FilterGroup,
+    PublicObjectSearchRequest,
+    SimplePublicObjectInput,
+)
+from sentry_sdk import capture_exception
+client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 
 
 @require_http_methods(["GET", "POST"])
@@ -51,12 +63,10 @@ def get_student_list(request):
     return render(request, 'student-list.html', context)
 
 
-@require_GET
+@require_http_methods(["GET", "POST"])
 def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
-    print('course', course)
     batch = Batch.objects.get(number=batch_number, course=course)
-    print('batch', batch)
     users = get_user_model().objects.filter(batch=batch, section__isnull=True, is_superuser=False, is_staff=False)
     sections = batch.section_set.all()
     section_array = []
@@ -68,10 +78,51 @@ def get_sections(request, course_name, batch_number):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
+    if request.method == "GET":
+        form = AddUserForm(initial={'password1': 'qwerty1234'})
+        # allows us to prepopulate password field
+        form.fields['password1'].widget.render_value = True
+
+    elif request.method == "POST":
+        form = AddUserForm(request.POST)
+        section_id = request.POST.get('section_id')
+
+        if form.is_valid():
+
+            raw_password = form.cleaned_data.get("password1")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
+            # set hubspot user data
+            user_hubspot_id = get_hubspot_id(email)
+            update_hubspot(user_hubspot_id)
+            chosen_section = Section.objects.get(id=int(section_id))
+
+            user = get_user_model().objects.create(
+                email=email,
+                hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
+            )
+
+            user.set_password(raw_password)
+            user.save()
+            batch.users.add(user)
+            chosen_section.users.add(user)
+
+            # use PassWordResetForm to send password reset email to added user
+            reset_form = PasswordResetForm({'email': user.email})
+            reset_form.is_valid()
+            reset_form.save(from_email="admin@rocketacademy.co", email_template_name="users/password-reset.html")
+
+            # returns AddUserForm to it's original state
+            form = AddUserForm(initial={'password1': 'qwerty1234'})
+
     context = {
         "batch": batch,
         "sections": section_array,
-        "users": users
+        "users": users,
+        "form": form
     }
 
     return render(request, "section-page.html", context)
@@ -182,5 +233,63 @@ def switch_sections(request):
     return redirect("soyuz_app:get_sections", batch_id=batch_id)
 
 
+@require_GET
 def landing_page(request):
     return render(request, 'landing-page.html')
+
+
+def get_hubspot_id(email):
+    try:
+        # from: https://github.com/HubSpot/hubspot-api-python/issues/49#issuecomment-811911302
+        email_filter = Filter(property_name="email", operator="EQ", value=email)
+
+        first_group = FilterGroup(filters=[email_filter])
+
+        public_object_search_request = PublicObjectSearchRequest(
+            filter_groups=[first_group]
+        )
+
+        api_response = client.crm.contacts.search_api.do_search(
+            public_object_search_request=public_object_search_request
+        )
+
+        result = api_response.to_dict()
+
+        if (
+            result["total"] == 0
+            or "results" not in result
+            or len(result["results"]) == 0
+        ):
+            raise ValueError("no hubspot user email")
+
+        return result["results"][0]["properties"]["hs_object_id"]
+    except ApiException as e:
+        capture_exception(e)
+        raise ValueError("error getting hubspot user email")
+
+
+def update_hubspot(user_hubspot_id):
+    properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
+
+    simple_public_object_input = SimplePublicObjectInput(properties=properties)
+    try:
+        api_response = client.crm.contacts.basic_api.update(
+            contact_id=user_hubspot_id,
+            simple_public_object_input=simple_public_object_input,
+        )
+        pprint(api_response)
+
+    except ApiException as e:
+        capture_exception(e)
+        raise ValueError("error updating hubspot")
+
+
+def userResetPassword(request, user):
+    print(user.email)
+    form = UserForgotPasswordForm({'email': 'jlee@gmail.com'})
+    print(form)
+    print('inside post method ======')
+    if form.is_valid():
+        print(form.is_valid())
+        print('inside form is valid')
+        form.save(from_email='admin@rocketacademy.co', email_template_name='users/password_reset.html')

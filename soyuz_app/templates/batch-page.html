@@ -28,7 +28,7 @@
         <td>{{ batch.course.name }}</td>
         <td>{{ batch.number }}</td>
         <td>{{ batch.start_date }}</td>
-        <td><a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' batch_id=batch.id %}" role="button">batch
+        <td><a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' course_name=batch.course.name batch_number=batch.number %}" role="button">batch
             page</a></td>
       </tr>
       {% endfor %}
