@@ -21,11 +21,11 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from soyuz_app.views.error import error_404, error_500
+from soyuz_app.views.error import custom_error_404, custom_error_500
 
 # assign the custom error handling views
-handler404 = error_404  # noqa: F811
-handler500 = error_500  # noqa: F811
+handler404 = custom_error_404  # noqa: F811
+handler500 = custom_error_500  # noqa: F811
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = ROOT_DIR / "soyuz"
