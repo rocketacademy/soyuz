@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 # from rest_framework import routers
-from .views import user, web
+from .views import user, web, slack
 
 # router = routers.DefaultRouter()
 # router.register(r"batches", rest.BatchView, "batch")
@@ -40,10 +40,7 @@ urlpatterns = [
     path("student-admin/add-to-batch", web.add_to_batch, name="add_to_batch"),
     path("student-admin/add-to-section", web.add_to_section, name="add_to_section"),
     path("student-admin/student-list", web.get_student_list, name="get_student_list"),
-    path(
-        "student-admin/reassign-sections",
-        web.reassign_sections,
-        name="reassign_sections",
-    ),
+    path("student-admin/reassign-sections", web.reassign_sections, name="reassign_sections"),
+    path("student-admin/create-channels", slack.create_channels, name="create_channels"),
     path("", web.landing_page, name="landing_page"),
 ]
