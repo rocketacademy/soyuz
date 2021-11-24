@@ -18,17 +18,13 @@ logger = logging.getLogger(__name__)
 def create_channels(request):
 
     batch_id = int(request.POST.get("batch_id"))
-    print(batch_id)
 
     batch = Batch.objects.get(id=batch_id)
-    print(batch)
     sections = Section.objects.filter(batch=batch)
-    print(sections)
 
     for section in sections:
         if section.users.count() > 0:
-            channel_name = f"{batch.course.name}-{batch.number}-{section.number}-test3"
-            print(channel_name)
+            channel_name = f"{batch.course.name}-{batch.number}-{section.number}"
 
             try:
                 # Call the conversations.create method using the WebClient
@@ -38,37 +34,49 @@ def create_channels(request):
                     name=channel_name
                 )
 
+                # set and update slack_channel_id
                 section.slack_channel_id = result["channel"]["id"]
                 section.save()
-                print('section channel id', section.slack_channel_id)
 
                 section_users = get_user_model().objects.filter(section=section)
-                print('section users', section_users)
-
+                # string that will be used in slack api call (users)
                 slack_user_ids = ""
-                for user in section_users:
-                    print(user.email)
-                    try:
-                        email_lookup_result = client.users_lookupByEmail(
-                            email=user.email
-                        )
-
-                        if email_lookup_result["ok"]:
-                            slack_user_ids += email_lookup_result["user"]["id"] + ","
-                        else:
-                            print(email_lookup_result["error"])
-
-                    except SlackApiError as e:
-                        logger.error("Error finding user: {}".format(e))
-
-                print('slack user ids', slack_user_ids)
-                add_user_result = client.conversations_invite(
-                    channel=section.slack_channel_id,
-                    users=slack_user_ids
-                )
-                print('add user result', add_user_result)
+                # function that looks up user emails on slack(gets slack user ids)
+                lookup_by_email(section_users, slack_user_ids)
+                # function that adds user to channel
+                add_user_to_channel(section, slack_user_ids)
 
             except SlackApiError as e:
                 logger.error("Error creating conversation: {}".format(e))
 
     return redirect("soyuz_app:get_sections", course_name=batch.course.name, batch_number=batch.number)
+
+
+def lookup_by_email(section_users, slack_user_ids):
+
+    for user in section_users:
+        try:
+            email_lookup_result = client.users_lookupByEmail(
+                email=user.email
+            )
+
+            if email_lookup_result["ok"]:
+                slack_user_ids += email_lookup_result["user"]["id"] + ","
+            else:
+                print(email_lookup_result["error"])
+
+        except SlackApiError as e:
+            logger.error("Error finding user: {}".format(e))
+
+
+def add_user_to_channel(section, slack_user_ids):
+
+    try:
+        add_user_result = client.conversations_invite(
+            channel=section.slack_channel_id,
+            users=slack_user_ids
+        )
+        print('add user result', add_user_result)
+
+    except SlackApiError as e:
+        logger.error("Error inviting user: {}".format(e))
