@@ -3,17 +3,17 @@
 # HttpResponseForbidden
 # HttpResponseNotAllowed
 # HttpResponseGone
-from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.shortcuts import render
 from sentry_sdk import capture_message
 
 
-def error_404(*args, **kwargs):
-    capture_message("Page not found!", level="error")
+def error_404(request, exception):
+    capture_message("page not found", level="error")
+    message = 'Page not found, my friend!'
+    return render(request, 'error-page.html', {'message': message})
 
-    return HttpResponseNotFound("Sorry!!! Not found, my friend.")
 
-
-def error_500(*args, **kwargs):
+def error_500(request):
     capture_message("Fail whale!", level="error")
-
-    return HttpResponseServerError("Sorry error!")
+    message = 'Sorry! Error'
+    return render(request, 'error-page.html', {'message': message})

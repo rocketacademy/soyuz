@@ -102,12 +102,14 @@ def delete_from_batch(request):
     print(batch_id)
     user = get_user_model().objects.get(id=user_id)
     batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
     section = Section.objects.get(id=section_id)
 
     section.users.remove(user)
     batch.users.remove(user)
 
-    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 @staff_member_required
@@ -119,6 +121,8 @@ def reassign_sections(request):
 
     # get all users in batch
     batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
     batch_users = list(get_user_model().objects.filter(batch=batch))
     # get number of users in batch
     number_of_users = len(batch_users)
@@ -149,7 +153,7 @@ def reassign_sections(request):
                 new_user = batch_users.pop()
                 section.users.add(new_user)
 
-    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 @staff_member_required
@@ -159,11 +163,13 @@ def add_to_section(request):
     section_id = int(request.POST.get("section_id"))
     destination_section = Section.objects.get(id=section_id)
     batch_id = int(request.POST.get("batch_id"))
-
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
     user = get_user_model().objects.get(id=user_id)
     destination_section.users.add(user)
 
-    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 @staff_member_required
@@ -173,6 +179,9 @@ def delete_items(request):
     user_to_delete = request.POST.get("user_id")
     user_section = request.POST.get("section_id")
     batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
 
     # section that user is in
     selected_section = Section.objects.get(id=int(user_section))
@@ -180,7 +189,7 @@ def delete_items(request):
     user = get_user_model().objects.get(id=int(user_to_delete))
     selected_section.users.remove(user)
 
-    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 @staff_member_required
@@ -190,7 +199,9 @@ def switch_sections(request):
     section_destination = request.POST.get("section_number")
     user_to_move = request.POST.get("user_id")
     batch_id = request.POST.get("batch_id")
-
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
     # user that we want to move
     selected_user = get_user_model().objects.get(id=int(user_to_move))
     # # user's original section
@@ -200,7 +211,7 @@ def switch_sections(request):
     user_section.users.remove(selected_user)
     destination_section.users.add(selected_user)
 
-    return redirect("soyuz_app:get_sections", batch_id=batch_id)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 def landing_page(request):
