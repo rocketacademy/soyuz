@@ -1,12 +1,21 @@
+from ..models import Batch, Course, Section
+from ..forms import AddBatchForm
+from .slack import lookup_by_email, add_user_to_channel, remove_from_channel
 import math
-
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+import logging
+# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
-from ..forms import AddBatchForm
-from ..models import Batch, Course, Section
+# WebClient insantiates a client that can call API methods
+# When using Bolt, you can use either `app.client` or the `client` passed to listeners.
+client = WebClient(token=settings.SLACK_BOT_TOKEN)
+logger = logging.getLogger(__name__)
 
 
 @staff_member_required
@@ -75,6 +84,7 @@ def get_sections(request, course_name, batch_number):
     users = get_user_model().objects.filter(
         batch=batch, section__isnull=True, is_superuser=False, is_staff=False
     )
+    print('users', users)
     sections = batch.section_set.all()
     section_array = []
     for section in sections:
@@ -108,6 +118,10 @@ def delete_from_batch(request):
 
     section.users.remove(user)
     batch.users.remove(user)
+
+    # look up user email and remove from channel on slack
+    id_string = lookup_by_email(user)
+    remove_from_channel(section, id_string)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
@@ -169,6 +183,10 @@ def add_to_section(request):
     user = get_user_model().objects.get(id=user_id)
     destination_section.users.add(user)
 
+    # find user email and add to channel on slack
+    id_string = lookup_by_email(user)
+    add_user_to_channel(destination_section, id_string)
+
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
@@ -188,6 +206,9 @@ def delete_items(request):
     # # user that we want to delete
     user = get_user_model().objects.get(id=int(user_to_delete))
     selected_section.users.remove(user)
+    # find user email and add to channel on slack
+    id_string = lookup_by_email(user)
+    remove_from_channel(selected_section, id_string)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
@@ -210,6 +231,10 @@ def switch_sections(request):
     destination_section = Section.objects.get(id=int(section_destination))
     user_section.users.remove(selected_user)
     destination_section.users.add(selected_user)
+    # slack
+    id_string = lookup_by_email(selected_user)
+    remove_from_channel(user_section, id_string)
+    add_user_to_channel(destination_section, id_string)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
