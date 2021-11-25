@@ -24,6 +24,7 @@ def create_channels(request):
 
     for section in sections:
         if section.users.count() > 0:
+            # TODO: need to remove testing
             channel_name = f"{batch.course.name}-{batch.number}-{section.number}-testing"
 
             try:
@@ -33,7 +34,7 @@ def create_channels(request):
                     # The name of the conversation
                     name=channel_name
                 )
-            
+
             except SlackApiError as e:
                 logger.error("Error creating conversation: {}".format(e))
 
