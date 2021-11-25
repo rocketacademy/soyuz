@@ -33,6 +33,9 @@ def create_channels(request):
                     # The name of the conversation
                     name=channel_name
                 )
+            
+            except SlackApiError as e:
+                logger.error("Error creating conversation: {}".format(e))
 
                 # set and update slack_channel_id
                 section.slack_channel_id = result["channel"]["id"]
@@ -42,13 +45,22 @@ def create_channels(request):
                 # string that will be used in slack api call (users)
                 slack_user_ids = ""
                 for user in section_users:
-                    # function that looks up user emails on slack(gets slack user ids)
-                    lookup_by_email(user, slack_user_ids)
+                    # look up user emails on slack(gets slack user ids)
+                    try:
+                        email_lookup_result = client.users_lookupByEmail(
+                            email=user.email
+                        )
+                        print('email lookup result', email_lookup_result)
+
+                        if email_lookup_result["ok"]:
+                            slack_user_ids += email_lookup_result["user"]["id"]
+                        else:
+                            print(email_lookup_result["error"])
+                    except SlackApiError as e:
+                        logger.error("Error finding user: {}".format(e))
+
                 # function that adds user to channel
                 add_user_to_channel(section, slack_user_ids)
-
-            except SlackApiError as e:
-                logger.error("Error creating conversation: {}".format(e))
 
     return redirect("soyuz_app:get_sections", course_name=batch.course.name, batch_number=batch.number)
 
