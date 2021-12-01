@@ -1,6 +1,6 @@
 from ..models import Batch, Course, Section
 from ..forms import AddBatchForm
-from .slack import lookup_by_email, add_user_to_channel, remove_from_channel
+from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
 import math
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -46,7 +46,7 @@ def add_to_batch(request):
 
     destination_batch.users.add(user)
 
-    return redirect("soyuz_app:get_batches")
+    return redirect("soyuz_app:get_student_list")
 
 
 @staff_member_required
@@ -81,10 +81,16 @@ def get_sections(request, course_name, batch_number):
     print("course", course)
     batch = Batch.objects.get(number=batch_number, course=course)
     print("batch", batch)
-    users = get_user_model().objects.filter(
-        batch=batch, section__isnull=True, is_superuser=False, is_staff=False
+    no_section_users = get_user_model().objects.filter(
+        batch=batch, section__isnull=True, slack_id__isnull=False, is_superuser=False, is_staff=False
     )
-    print('users', users)
+    print('no section', no_section_users)
+
+    slack_unregistered = get_user_model().objects.filter(
+        batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
+    )
+    print('slack unregistered', slack_unregistered)
+
     sections = batch.section_set.all()
     section_array = []
     for section in sections:
@@ -95,7 +101,12 @@ def get_sections(request, course_name, batch_number):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
-    context = {"batch": batch, "sections": section_array, "users": users}
+    context = {
+        "batch": batch,
+        "sections": section_array,
+        "no_section_users": no_section_users,
+        "slack_unregistered": slack_unregistered
+    }
 
     return render(request, "section-page.html", context)
 
@@ -119,9 +130,88 @@ def delete_from_batch(request):
     section.users.remove(user)
     batch.users.remove(user)
 
-    # look up user email and remove from channel on slack
-    id_string = lookup_by_email(user)
-    remove_from_channel(section, id_string)
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+@staff_member_required
+@require_POST
+def assign_sections_channels(request):
+    # get batch id from form
+    number_per_section = int(request.POST.get("number_per_section"))
+    batch_id = int(request.POST.get("batch_id"))
+
+    # get all users in batch
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+    batch_users = list(get_user_model().objects.filter(batch=batch))
+
+    # get number of users in batch
+    number_of_users = len(batch_users)
+
+    registered_batch_users = []
+    # check if users are registered on slack
+    for user in batch_users:
+        lookup_by_email(user, registered_batch_users)
+
+    # calculate number of sections required
+    sections_required = math.ceil(number_of_users / number_per_section)
+
+    # create required number of sections
+    for i in range(sections_required):
+        section = Section.objects.create(number=i + 1, batch=batch)
+
+        # array of user ids to add to slack channel
+        user_ids = []
+        # for each section created
+        for j in range(number_per_section):
+            # add users to new sections
+            if len(registered_batch_users) > 0:
+                new_user = registered_batch_users.pop()
+                section.users.add(new_user)
+                user_ids.append(new_user.slack_id)
+
+        print('user ids', user_ids)
+        # create slack channel
+        channel_name = f"{batch.course.name}-{batch.number}-{section.number}-testchannel"
+        print('channel name', channel_name)
+        create_channel(section, channel_name)
+
+        # add users to slack channel
+        add_users_to_channel(section, user_ids)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+@staff_member_required
+@require_POST
+def check_slack_registration(request):
+    batch_id = int(request.POST.get("batch_id"))
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    # get users in batch that have no slack id
+    slack_unregistered = get_user_model().objects.filter(
+        batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
+    )
+
+    for user in slack_unregistered:
+        lookup_by_email(user, None)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+@staff_member_required
+@require_POST
+def create_batch_channel(request):
+    batch_id = int(request.POST.get("batch_id"))
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    channel_name = f"{batch.course.name}-{batch.number}-all"
+    create_channel(None, channel_name)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
@@ -141,7 +231,7 @@ def reassign_sections(request):
     # get number of users in batch
     number_of_users = len(batch_users)
 
-    # delete batch sections
+    # get number of sections
     sections = Section.objects.filter(batch=batch)
     num_previous_sections = sections.count()
 
@@ -183,10 +273,6 @@ def add_to_section(request):
     user = get_user_model().objects.get(id=user_id)
     destination_section.users.add(user)
 
-    # find user email and add to channel on slack
-    id_string = lookup_by_email(user)
-    add_user_to_channel(destination_section, id_string)
-
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
@@ -206,9 +292,6 @@ def delete_items(request):
     # # user that we want to delete
     user = get_user_model().objects.get(id=int(user_to_delete))
     selected_section.users.remove(user)
-    # find user email and add to channel on slack
-    id_string = lookup_by_email(user)
-    remove_from_channel(selected_section, id_string)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
@@ -231,10 +314,6 @@ def switch_sections(request):
     destination_section = Section.objects.get(id=int(section_destination))
     user_section.users.remove(selected_user)
     destination_section.users.add(selected_user)
-    # slack
-    id_string = lookup_by_email(selected_user)
-    remove_from_channel(user_section, id_string)
-    add_user_to_channel(destination_section, id_string)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 

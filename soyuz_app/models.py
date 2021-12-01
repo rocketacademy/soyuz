@@ -55,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=254, unique=True)
     hubspot_id = models.CharField(max_length=200, null=True, blank=True)
     github_username = models.CharField(max_length=200, null=True, blank=True)
+    slack_id = models.CharField(max_length=200, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

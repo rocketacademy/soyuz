@@ -41,6 +41,9 @@ urlpatterns = [
     path("student-admin/add-to-section", web.add_to_section, name="add_to_section"),
     path("student-admin/student-list", web.get_student_list, name="get_student_list"),
     path("student-admin/reassign-sections", web.reassign_sections, name="reassign_sections"),
-    path("student-admin/create-channels", slack.create_channels, name="create_channels"),
+    path("student-admin/check-slack-registration", web.check_slack_registration, name="check_slack_registration"),
+    path("student-admin/create-batch-channel", web.create_batch_channel, name="create_batch_channel"),
+    # path("student-admin/create-channels", slack.create_channels, name="create_channels"),
+    path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
     path("", web.landing_page, name="landing_page"),
 ]

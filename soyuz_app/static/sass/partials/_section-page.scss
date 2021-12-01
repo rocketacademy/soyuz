@@ -3,14 +3,16 @@
     margin: 0 0 10px 0;
     padding: 0 12px;
   }
+  h1 {
+    margin-top: 40px;
+  }
   color: $blue;
   padding: 40px;
   .section-container {
     display: flex;
     flex-direction: column;
-    padding: 40px 0;
-    .reassign-form {
-      padding: 40px;
+    form {
+      margin-bottom: 40px;
     }
     .section {
       padding: 20px 40px;
@@ -29,5 +31,9 @@
         text-align: left;
       }
     }
+  }
+  .unregistered-users {
+    display: flex;
+    justify-content: space-between;
   }
 }

@@ -14,79 +14,50 @@ client = WebClient(token=settings.SLACK_BOT_TOKEN)
 logger = logging.getLogger(__name__)
 
 
-@require_POST
-def create_channels(request):
+def create_channel(section, channel_name):
+    try:
+        # Call the conversations.create method using the WebClient
+        # conversations_create requires the channels:manage bot scope
+        result = client.conversations_create(
+            # The name of the conversation
+            name=channel_name
+        )
+        print('result', result)
 
-    batch_id = int(request.POST.get("batch_id"))
+    except SlackApiError as e:
+        logger.error("Error creating conversation: {}".format(e))
 
-    batch = Batch.objects.get(id=batch_id)
-    sections = Section.objects.filter(batch=batch)
-
-    for section in sections:
-        if section.users.count() > 0:
-            # TODO: need to remove testing
-            channel_name = f"{batch.course.name}-{batch.number}-{section.number}-testing"
-
-            try:
-                # Call the conversations.create method using the WebClient
-                # conversations_create requires the channels:manage bot scope
-                result = client.conversations_create(
-                    # The name of the conversation
-                    name=channel_name
-                )
-
-            except SlackApiError as e:
-                logger.error("Error creating conversation: {}".format(e))
-
-                # set and update slack_channel_id
-                section.slack_channel_id = result["channel"]["id"]
-                section.save()
-
-                section_users = get_user_model().objects.filter(section=section)
-                # string that will be used in slack api call (users)
-                slack_user_ids = ""
-                for user in section_users:
-                    # look up user emails on slack(gets slack user ids)
-                    try:
-                        email_lookup_result = client.users_lookupByEmail(
-                            email=user.email
-                        )
-                        print('email lookup result', email_lookup_result)
-
-                        if email_lookup_result["ok"]:
-                            slack_user_ids += email_lookup_result["user"]["id"]
-                        else:
-                            print(email_lookup_result["error"])
-                    except SlackApiError as e:
-                        logger.error("Error finding user: {}".format(e))
-
-                # function that adds user to channel
-                add_user_to_channel(section, slack_user_ids)
-
-    return redirect("soyuz_app:get_sections", course_name=batch.course.name, batch_number=batch.number)
+    # set and update slack_channel_id
+    if section is not None:
+        section.slack_channel_id = result["channel"]["id"]
+        section.save()
 
 
-def lookup_by_email(user):
-    id_string = ''
+def lookup_by_email(user, user_list):
     try:
         email_lookup_result = client.users_lookupByEmail(
             email=user.email
         )
         print('email lookup result', email_lookup_result)
 
-        if email_lookup_result["ok"]:
-            id_string += email_lookup_result["user"]["id"]
-        else:
-            print(email_lookup_result["error"])
-
     except SlackApiError as e:
-        logger.error("Error finding user: {}".format(e))
+        logger.error("Error looking up email: {}".format(e))
 
-    return id_string
+    # save slack id if user is found in workspace and does not have a slack id
+    if email_lookup_result["ok"]:
+        if user.slack_id is None:
+            user.slack_id = email_lookup_result["user"]["id"]
+            user.save()
+
+        if user_list is not None:
+            user_list.append(user)
+
+    else:
+        print(email_lookup_result["error"])
+        # TODO: send reminder email to student
 
 
-def add_user_to_channel(section, id_string):
-
+def add_users_to_channel(section, id_string):
     try:
         add_user_result = client.conversations_invite(
             channel=section.slack_channel_id,
@@ -99,7 +70,6 @@ def add_user_to_channel(section, id_string):
 
 
 def remove_from_channel(section, id_string):
-
     try:
         remove_user_result = client.conversations_kick(
             channel=section.slack_channel_id,

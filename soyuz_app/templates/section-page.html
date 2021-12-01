@@ -13,7 +13,20 @@
   <h2>Start Date: {{ batch.start_date }}</h2>
   <p>Total number of students: {{ batch.users.count }}</p>
   <div class="section-container">
-    <div class="reassign-form">
+    <form action="/student-admin/create-batch-channel" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input class="btn btn-primary" type="submit" value="create batch channel">
+    </form>
+    <h4>Assign Sections and Create Slack Channels</h4>
+    <label>Students per section: </label>
+    <form action="/student-admin/assign-sections-channels" method="POST">
+      {% csrf_token %}
+      <input type="text" name="number_per_section">
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+    <!-- <div class="reassign-form">
     <h4>Reassign Sections</h4>
     <label>Students per section: </label>
     <form action="/student-admin/reassign-sections" method="POST">
@@ -22,14 +35,14 @@
       <input type="hidden" name="batch_id" value="{{ batch.id }}">
       <button class="btn btn-primary" type="submit" value="Submit"  onclick="return confirm('Are you sure you would like to reassign sections?');"><i class="fas fa-sync-alt"></i></button>
     </form>
-    </div>
-    <div class="create-channels">
+    </div> -->
+    <!-- <div class="create-channels">
       <form action="/student-admin/create-channels" method="POST">
         {%csrf_token %}
         <input type="hidden" name="batch_id" value="{{ batch.id }}">
         <input type="submit" class="btn btn-primary" value="create channels" />
       </form>
-    </div>
+    </div> -->
     {% for section in sections %}
     <div class="section">
       <div class="section-header">
@@ -96,8 +109,16 @@
     </div>
   {% endfor %}
   </div>
-  {% if users|length > 0 %}
-  <h4>Students that don't belong in a section</h4>
+  {% if slack_unregistered|length > 0 %}
+  <div class="unregistered-users">
+    <h4>Students that aren't registered on slack</h4>
+    <form action="/student-admin/check-slack-registration" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+      <input class="btn btn-primary" type="submit" value="check slack registration">
+    </form>
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -108,7 +129,44 @@
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for user in slack_unregistered %}
+      <tr>
+        <th class="first-column" scope="row">{{ user.email }}</th>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>
+          <form action="/student-admin/add-to-section" method="POST">
+            {% csrf_token %}
+            <select name="section_id" class="section-select">
+              <option selected="selected" disabled>--</option>
+              {% for section in sections %}
+              <option value="{{ section.id }}">{{ section.number }}</option>
+              {% endfor %}
+            </select>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  {% if no_section_users|length > 0 %}
+  <h4>Students that don't belong in a section</h4>
+  <p>but are registered on slack</p>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="first-column" scope="col">Email</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Add to Section</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in no_section_users %}
       <tr>
         <th class="first-column" scope="row">{{ user.email }}</th>
         <td>{{ user.first_name }}</td>
