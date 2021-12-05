@@ -2,7 +2,7 @@
 {% block page_content %}
 <div class="student-list-container">
   <a href="{% url 'soyuz_app:get_batches' %}">Batches Page</a>
-  <h4>{{ title }}</h4>
+  <h4>Students that belong to batches</h4>
   <table class="table table-striped table-hover">
     <thead>
       <tr>
@@ -14,7 +14,7 @@
     <tbody>
       {% for user in users %}
       <tr>
-        <th class="first-column" scope="row">{{ user.email }}</th>
+        <td class="first-column" scope="row">{{ user.email }}</td>
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
       </tr>

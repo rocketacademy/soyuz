@@ -84,6 +84,7 @@ class Batch(models.Model):
     start_date = models.DateField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
+    slack_channel_id = models.CharField(max_length=200, null=True, blank=True)
 
     def add_student_to_section(self, user):
 

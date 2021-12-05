@@ -28,9 +28,8 @@ def create_channel(section, channel_name):
         logger.error("Error creating conversation: {}".format(e))
 
     # set and update slack_channel_id
-    if section is not None:
-        section.slack_channel_id = result["channel"]["id"]
-        section.save()
+    section.slack_channel_id = result["channel"]["id"]
+    section.save()
 
 
 def lookup_by_email(user, user_list):

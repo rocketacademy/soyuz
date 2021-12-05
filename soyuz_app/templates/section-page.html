@@ -125,7 +125,10 @@
         <th class="first-column" scope="col">Email</th>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
+        <th scope="col">Delete from Batch</th>
+        {% if sections|length > 0 %}
         <th scope="col">Add to Section</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -135,42 +138,14 @@
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
         <td>
-          <form action="/student-admin/add-to-section" method="POST">
+          <form action="/student-admin/delete-from-batch-only" method="POST">
             {% csrf_token %}
-            <select name="section_id" class="section-select">
-              <option selected="selected" disabled>--</option>
-              {% for section in sections %}
-              <option value="{{ section.id }}">{{ section.number }}</option>
-              {% endfor %}
-            </select>
             <input type="hidden" name="user_id" value="{{ user.id }}">
             <input type="hidden" name="batch_id" value="{{ batch.id }}">
-            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+            <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
           </form>
         </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
-  {% if no_section_users|length > 0 %}
-  <h4>Students that don't belong in a section</h4>
-  <p>but are registered on slack</p>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th class="first-column" scope="col">Email</th>
-        <th scope="col">First Name</th>
-        <th scope="col">Last Name</th>
-        <th scope="col">Add to Section</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in no_section_users %}
-      <tr>
-        <th class="first-column" scope="row">{{ user.email }}</th>
-        <td>{{ user.first_name }}</td>
-        <td>{{ user.last_name }}</td>
+        {% if sections|length > 0 %}
         <td>
           <form action="/student-admin/add-to-section" method="POST">
             {% csrf_token %}
@@ -185,11 +160,65 @@
             <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
           </form>
         </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
   {% endif %}
+
+  {% if no_section_users|length > 0 %}
+  <div class="no-section">
+  <h4>Students that don't belong in a section</h4>
+  <p>but are registered on slack</p>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="first-column" scope="col">Email</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Delete from Batch</th>
+        {% if sections|length > 0 %}
+        <th scope="col">Add to Section</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in no_section_users %}
+      <tr>
+        <th class="first-column" scope="row">{{ user.email }}</th>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>
+          <form action="/student-admin/delete-from-batch-only" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
+          </form>
+        </td>
+        {% if sections|length > 0 %}
+        <td>
+          <form action="/student-admin/add-to-section" method="POST">
+            {% csrf_token %}
+            <select name="section_id" class="section-select">
+              <option selected="selected" disabled>--</option>
+              {% for section in sections %}
+              <option value="{{ section.id }}">{{ section.number }}</option>
+              {% endfor %}
+            </select>
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  </div>
   <script>
     const copyButtonArray = document.querySelectorAll('.copy-button');
     copyButtonArray.forEach(button => {
