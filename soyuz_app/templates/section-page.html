@@ -26,23 +26,6 @@
       <input type="hidden" name="batch_id" value="{{ batch.id }}">
       <input class="btn btn-primary" type="submit" value="Submit">
     </form>
-    <!-- <div class="reassign-form">
-    <h4>Reassign Sections</h4>
-    <label>Students per section: </label>
-    <form action="/student-admin/reassign-sections" method="POST">
-      {% csrf_token %}
-      <input type="text" name="number_per_section">
-      <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <button class="btn btn-primary" type="submit" value="Submit"  onclick="return confirm('Are you sure you would like to reassign sections?');"><i class="fas fa-sync-alt"></i></button>
-    </form>
-    </div> -->
-    <!-- <div class="create-channels">
-      <form action="/student-admin/create-channels" method="POST">
-        {%csrf_token %}
-        <input type="hidden" name="batch_id" value="{{ batch.id }}">
-        <input type="submit" class="btn btn-primary" value="create channels" />
-      </form>
-    </div> -->
     {% for section in sections %}
     <div class="section">
       <div class="section-header">
@@ -111,14 +94,15 @@
   </div>
   {% if slack_unregistered|length > 0 %}
   <div class="unregistered-users">
-    <h4>Students that aren't registered on slack</h4>
-    <form action="/student-admin/check-slack-registration" method="POST">
-      {% csrf_token %}
-      <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
-      <input class="btn btn-primary" type="submit" value="check slack registration">
-    </form>
-  </div>
+    <div class="header">
+      <h4>Students that aren't registered on slack</h4>
+      <form action="/student-admin/check-slack-registration" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+        <input class="btn btn-primary" type="submit" value="check slack registration">
+      </form>
+    </div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -166,7 +150,7 @@
     </tbody>
   </table>
   {% endif %}
-
+  </div>
   {% if no_section_users|length > 0 %}
   <div class="no-section">
   <h4>Students that don't belong in a section</h4>
@@ -219,6 +203,7 @@
   </table>
   {% endif %}
   </div>
+</div>
   <script>
     const copyButtonArray = document.querySelectorAll('.copy-button');
     copyButtonArray.forEach(button => {

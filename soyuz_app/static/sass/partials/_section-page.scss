@@ -32,18 +32,15 @@
       }
     }
   }
-  .unregistered-users {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 40px;
-    margin: 40px 20px 0 0;
-    border: 1px solid lightgray;
-    border-radius: 10px;
-  }
+  .unregistered-users,
   .no-section {
     padding: 20px 40px;
     margin: 40px 20px 0 0;
     border: 1px solid lightgray;
     border-radius: 10px;
+    .header {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }
