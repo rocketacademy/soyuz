@@ -1,15 +1,9 @@
 <h2>Welcome to Rocket Academy!</h2>
 
 <h4>Hi {{user.first_name}},</h4>
-{% if 'section' in batch %}
-<p>
-  You have been registered into Section {{section.number}} of {{batch.course.name}} - {{batch.number}}!
-</p>
-{% else %}
 <p>
   You have been registered into {{batch.course.name}} - {{batch.number}}!
 </p>
-{% endif %}
 
 <p>
   Please join us for the kick-off meeting on {{batch.start_date}} at 4-5pm.
