@@ -42,7 +42,7 @@ def dashboard(request):
             batches.append(user_batch)
         context["batches"] = batches
 
-        pprint(batches[0]["section"].number)
+        # pprint(batches[0]["section"].number)
     return render(request, "users/dashboard.html", context)
 
 
@@ -113,7 +113,11 @@ def signup(request, batch_id, email):
             # section = batch.add_student_to_section(user)
 
             # send email
+<<<<<<< HEAD
             # send_reg_notification(user, batch, section)
+=======
+            send_reg_notification(user, batch)
+>>>>>>> c97ebd6121b520b1eb7f4c682c76c8943083b15b
 
             login(request, user)
 
