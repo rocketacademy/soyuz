@@ -42,7 +42,7 @@ def dashboard(request):
             batches.append(user_batch)
         context["batches"] = batches
 
-        pprint(batches[0]["section"].number)
+        # pprint(batches[0]["section"].number)
     return render(request, "users/dashboard.html", context)
 
 
