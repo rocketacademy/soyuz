@@ -112,12 +112,8 @@ def signup(request, batch_id, email):
             batch.users.add(user)
             # section = batch.add_student_to_section(user)
 
-            # send email
-<<<<<<< HEAD
-            # send_reg_notification(user, batch, section)
-=======
+            # send emails
             send_reg_notification(user, batch)
->>>>>>> c97ebd6121b520b1eb7f4c682c76c8943083b15b
 
             login(request, user)
 
