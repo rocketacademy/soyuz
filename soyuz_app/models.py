@@ -55,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=254, unique=True)
     hubspot_id = models.CharField(max_length=200, null=True, blank=True)
     github_username = models.CharField(max_length=200, null=True, blank=True)
+    slack_id = models.CharField(max_length=200, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -83,6 +84,7 @@ class Batch(models.Model):
     start_date = models.DateField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     course = models.ForeignKey(Course, on_delete=models.DO_NOTHING)
+    slack_channel_id = models.CharField(max_length=200, null=True, blank=True)
 
     def add_student_to_section(self, user):
 
@@ -107,6 +109,7 @@ class Section(models.Model):
     number = models.IntegerField()
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     batch = models.ForeignKey(Batch, on_delete=models.DO_NOTHING)
+    slack_channel_id = models.CharField(max_length=200, null=True, blank=True)
 
 
 class Workflow_type(models.Model):
