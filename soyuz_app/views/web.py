@@ -56,8 +56,6 @@ def add_to_batch(request):
     destination_batch.users.add(user)
     slack_id = user.slack_id
 
-    print('destination batch', destination_batch)
-    print('slack id', slack_id)
     add_users_to_channel(destination_batch, slack_id)
     return redirect("soyuz_app:get_student_list")
 
