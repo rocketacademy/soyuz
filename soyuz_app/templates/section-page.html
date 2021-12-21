@@ -16,11 +16,6 @@
   <p>Total number of students: {{ batch.users.count }}</p>
 
   <div class="section-container">
-    <form action="/student-admin/create-batch-channel" method="POST">
-      {% csrf_token %}
-      <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <input class="btn btn-primary" type="submit" value="create batch channel">
-    </form>
     <h4>Assign Sections and Create Slack Channels</h4>
     <label>Students per section: </label>
     <form action="/student-admin/assign-sections-channels" method="POST">
@@ -100,18 +95,11 @@
     </div>
     {% endfor %}
   </div>
-
   {% if slack_unregistered|length > 0 %}
   <div class="unregistered-users">
 
     <div class="header">
       <h4>Students that aren't registered on slack</h4>
-      <form action="/student-admin/check-slack-registration" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="batch_id" value="{{ batch.id }}">
-        <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
-        <input class="btn btn-primary" type="submit" value="check slack registration">
-      </form>
     </div>
 
     <table class="table table-striped">
