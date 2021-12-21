@@ -100,6 +100,12 @@
 
     <div class="header">
       <h4>Students that aren't registered on slack</h4>
+      <form action="/student-admin/check-slack-registration" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+        <input class="btn btn-primary" type="submit" value="check slack registration">
+      </form>
     </div>
 
     <table class="table table-striped">
