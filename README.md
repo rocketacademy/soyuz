@@ -239,6 +239,34 @@ https://docs.djangoproject.com/en/dev/topics/db/queries/#backwards-related-objec
 
 # Slack API
 
+Slack API documentation:
+https://api.slack.com
+
+There are 2 slack apps set up:
+
+##### Soyuz-staging
+
+which is linked to [soyuz-ra-staging] (https://dashboard.heroku.com/apps/soyuz-ra-staging)
+This app lives in Rocket Academy HQ
+
+##### Soyuz
+
+which is linked to [soyuz-production] (https://dashboard.heroku.com/apps/soyuz-ra-production)
+This app lives in Rocket Academy Basics
+
+Both apps are accessible on the Slack API page.
+
+#### Local testing
+
+set up ngrok:
+
+```
+npm install ngrok
+ngrok http 8000
+```
+
+use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page
+
 #### Slack Web API
 
 https://api.slack.com/web
