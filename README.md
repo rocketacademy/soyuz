@@ -244,12 +244,12 @@ https://api.slack.com
 
 There are 2 slack apps set up:
 
-##### Soyuz-staging
+##### [Soyuz-staging] (https://api.slack.com/apps/A02PPV0TGAG)
 
 which is linked to [soyuz-ra-staging] (https://dashboard.heroku.com/apps/soyuz-ra-staging)
 This app lives in Rocket Academy HQ
 
-##### Soyuz
+##### [Soyuz] (https://api.slack.com/apps/A02RJBTPKRQ)
 
 which is linked to [soyuz-production] (https://dashboard.heroku.com/apps/soyuz-ra-production)
 This app lives in Rocket Academy Basics
@@ -265,7 +265,9 @@ npm install ngrok
 ngrok http 8000
 ```
 
-use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page
+use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page:
+[Soyuz-staging] (https://api.slack.com/apps/A02PPV0TGAG/event-subscriptions?)
+[Soyuz] (https://api.slack.com/apps/A02RJBTPKRQ/event-subscriptions?)
 
 #### Slack Web API
 
