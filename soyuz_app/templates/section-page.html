@@ -106,6 +106,12 @@
         <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
         <input class="btn btn-primary" type="submit" value="check slack registration">
       </form>
+      <form action="/student-admin/send-reminder-email" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+        <input class="btn btn-primary" type="submit" value="send reminder email">
+      </form>
     </div>
 
     <table class="table table-striped">

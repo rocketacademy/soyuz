@@ -1,5 +1,6 @@
 from ..models import Batch, Course, Section
 from ..forms import AddBatchForm
+from ..emails.reminder import send_reminder
 from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
 import math
 from django.conf import settings
@@ -208,6 +209,25 @@ def check_slack_registration(request):
 
     for user in slack_unregistered:
         lookup_by_email(user, None)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+@staff_member_required
+@require_POST
+def send_reminder_email(request):
+    batch_id = int(request.POST.get("batch_id"))
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    # get users in batch that have no slack id
+    slack_unregistered = get_user_model().objects.filter(
+        batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
+    )
+
+    for user in slack_unregistered:
+        send_reminder(user, batch)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
