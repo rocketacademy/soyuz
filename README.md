@@ -239,25 +239,36 @@ https://docs.djangoproject.com/en/dev/topics/db/queries/#backwards-related-objec
 
 # Slack API
 
+##### Rocket Academy Slack Account
+
+Sign in with `engineering@rocketacademy.co` on slack's homepage
+A login code will be sent to you via email
+passwords can also be found in Rocket's 1Password account
+
+Log into Rocket's Slack account to access these apps:
+
 Slack API documentation:
 https://api.slack.com
 
-There are 2 slack apps set up:
+There are 3 slack apps set up:
 
-##### [Soyuz-staging] (https://api.slack.com/apps/A02PPV0TGAG)
+##### [Soyuz-staging] (https://api.slack.com/apps/A02RRV1FA75)
 
 which is linked to [soyuz-ra-staging] (https://dashboard.heroku.com/apps/soyuz-ra-staging)
 This app lives in Rocket Academy HQ
 
-##### [Soyuz] (https://api.slack.com/apps/A02RJBTPKRQ)
+##### [Soyuz] (https://api.slack.com/apps/A02RU68SQA0)
 
 which is linked to [soyuz-production] (https://dashboard.heroku.com/apps/soyuz-ra-production)
 This app lives in Rocket Academy Basics
 
-Both apps are accessible on the Slack API page.
+##### [Soyuz-test] (https://api.slack.com/apps/A02RT0ZKHBL)
+
+which is linked to a test workspace called Django-Test
 
 #### Local testing
 
+The ngrok server is used in local testing of the Events API
 set up ngrok:
 
 ```
@@ -265,14 +276,13 @@ npm install ngrok
 ngrok http 8000
 ```
 
-use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page:
-[Soyuz-staging] (https://api.slack.com/apps/A02PPV0TGAG/event-subscriptions?)
-[Soyuz] (https://api.slack.com/apps/A02RJBTPKRQ/event-subscriptions?)
+use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page of the local test workspace:
+https://api.slack.com/apps/A02RT0ZKHBL/event-subscriptions?
 
-#### Slack Web API
+#### [Slack Web API] (https://api.slack.com/web)
 
-https://api.slack.com/web
+The Slack Web API is an interface for querying information from and enacting change in a Slack workspace.
 
-#### Slack Events API
+#### [Slack Events API] (https://api.slack.com/apis/connections/events-api)
 
-https://api.slack.com/apis/connections/events-api
+The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
