@@ -17,6 +17,8 @@ if READ_DOT_ENV_FILE:
 
 HUBSPOT_API_KEY = env("HUBSPOT_API_KEY", default="banana")
 DAYS_TO_REGISTRATION_EXPIRE = env("DAYS_TO_REGISTRATION_EXPIRE")
+MAX_CAPACITY = env("MAX_CAPACITY")
+
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
