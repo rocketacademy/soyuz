@@ -25,6 +25,12 @@
       <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 
+    <form action="/student-admin/create-zoom-room" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+      <input class="btn btn-primary" type="submit" value="create-zoom-room">
+    </form>
     {% for section in sections %}
     <div class="section">
       <div class="section-header">

@@ -1,6 +1,7 @@
 from ..models import Batch, Course, Section
 from ..forms import AddBatchForm
 from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
+from .zoom import create_room
 import math
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -372,6 +373,17 @@ def switch_sections(request):
     destination_section.users.add(selected_user)
     # add to destination slack channel
     add_users_to_channel(destination_section, selected_user.slack_id)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+def create_zoom_room(request):
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+    # from zoom.py, creates zoom room
+    create_room()
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
