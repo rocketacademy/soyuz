@@ -98,6 +98,10 @@ def get_sections(request, course_name, batch_number):
         batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
     )
 
+    section_leaders = get_user_model().objects.filter(
+        is_superuser=False, is_staff=True
+    )
+
     sections = batch.section_set.all()
     section_array = []
     for section in sections:
@@ -112,7 +116,8 @@ def get_sections(request, course_name, batch_number):
         "batch": batch,
         "sections": section_array,
         "no_section_users": no_section_users,
-        "slack_unregistered": slack_unregistered
+        "slack_unregistered": slack_unregistered,
+        "section_leaders": section_leaders
     }
 
     return render(request, "section-page.html", context)
@@ -182,12 +187,12 @@ def assign_sections_channels(request):
                 section.users.add(new_user)
                 user_ids.append(new_user.slack_id)
 
-        # create slack channel
-        channel_name = f"{batch.course.name}-{batch.number}-{section.number}-soyuz-test"
-        create_channel(section, channel_name)
+        # # create slack channel
+        # channel_name = f"{batch.course.name}-{batch.number}-{section.number}-soyuz-test"
+        # create_channel(section, channel_name)
 
-        # add users to slack channel
-        add_users_to_channel(section, user_ids)
+        # # add users to slack channel
+        # add_users_to_channel(section, user_ids)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
@@ -373,6 +378,20 @@ def switch_sections(request):
     destination_section.users.add(selected_user)
     # add to destination slack channel
     add_users_to_channel(destination_section, selected_user.slack_id)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+
+
+@require_POST
+def choose_section_leader(request):
+    section_leader_id = request.POST.get("section_leader_id")
+    section_id = request.POST.get("section_id")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+    print('section leader id', section_leader_id)
+    print('section id', section_id)
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 

@@ -41,7 +41,19 @@
           Names</button>
       </div>
       <p>Number of students: {{ section.users|length }}</p>
-
+      <p>Choose section leader</p>
+      <form action="/student-admin/choose-section-leader" method="POST">
+        {% csrf_token %}
+        <select name="section_leader_id" class="section-select">
+          <option selected="selected" disabled>--</option>
+          {% for leader in section_leaders %}
+          <option value="{{ leader.id }}">{{ leader.email }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="section_id" value="{{ section.id }}">
+        <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+      </form>
       <table class="table table-striped">
         <thead>
           <tr>

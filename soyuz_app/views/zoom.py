@@ -23,15 +23,15 @@ def generate_token():
 
 
 # create json data for post requests
-room_details = {"topic": "The title of your zoom meeting",
+room_details = {"topic": "test meeting",
                 "type": 3,
                 "settings": {
                     "host_video": "true",
                     "participant_video": "true",
-                    "join_before_host": "True",
+                    "join_before_host": "true",
                     "jbh_time": 0,
-                    "mute_upon_entry": "False",
-                    "use_pmi": "False",
+                    "mute_upon_entry": "false",
+                    "use_pmi": "false",
                     "audio": "both",
                     "auto_recording": "cloud"
                 }
