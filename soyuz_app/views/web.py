@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from ..forms import AddBatchForm, AddUserForm
-from ..lib.hubspot import Hubspot
+from ..library.hubspot import Hubspot
 from ..models import Batch, Course, Section
 
 

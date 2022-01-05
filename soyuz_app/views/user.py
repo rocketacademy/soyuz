@@ -1,25 +1,15 @@
 import datetime
-from pprint import pprint
 
-import hubspot
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods
-from hubspot.crm.contacts import (
-    ApiException,
-    Filter,
-    FilterGroup,
-    PublicObjectSearchRequest,
-    SimplePublicObjectInput,
-)
-from sentry_sdk import capture_exception
 
 from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
+from ..library.hubspot import Hubspot
 from ..models import Batch
 
-client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
 
 
@@ -66,7 +56,11 @@ def signup(request, batch_id, email):
             last_name = request.GET.get("last_name", "")
 
             form = SignUpForm(
-                initial={"email": email, "first_name": first_name, "last_name": last_name}
+                initial={
+                    "email": email,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                }
             )
 
             context = {
@@ -96,8 +90,9 @@ def signup(request, batch_id, email):
             email = form.cleaned_data.get("email")
 
             # set hubspot user data
-            user_hubspot_id = get_hubspot_id(email)
-            update_hubspot(user_hubspot_id)
+            hubspot_client = Hubspot()
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            hubspot_client.update_hubspot(user_hubspot_id)
 
             user = get_user_model().objects.create(
                 email=email,
@@ -118,49 +113,3 @@ def signup(request, batch_id, email):
             login(request, user)
 
             return redirect("soyuz_app:dashboard")
-
-
-def get_hubspot_id(email):
-    try:
-        # from: https://github.com/HubSpot/hubspot-api-python/issues/49#issuecomment-811911302
-        email_filter = Filter(property_name="email", operator="EQ", value=email)
-
-        first_group = FilterGroup(filters=[email_filter])
-
-        public_object_search_request = PublicObjectSearchRequest(
-            filter_groups=[first_group]
-        )
-
-        api_response = client.crm.contacts.search_api.do_search(
-            public_object_search_request=public_object_search_request
-        )
-
-        result = api_response.to_dict()
-
-        if (
-            result["total"] == 0
-            or "results" not in result
-            or len(result["results"]) == 0
-        ):
-            raise ValueError("no hubspot user email")
-
-        return result["results"][0]["properties"]["hs_object_id"]
-    except ApiException as e:
-        capture_exception(e)
-        raise ValueError("error getting hubspot user email")
-
-
-def update_hubspot(user_hubspot_id):
-    properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
-
-    simple_public_object_input = SimplePublicObjectInput(properties=properties)
-    try:
-        api_response = client.crm.contacts.basic_api.update(
-            contact_id=user_hubspot_id,
-            simple_public_object_input=simple_public_object_input,
-        )
-        pprint(api_response)
-
-    except ApiException as e:
-        capture_exception(e)
-        raise ValueError("error updating hubspot")
