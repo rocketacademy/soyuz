@@ -2,7 +2,12 @@
 {% block page_content %}
 {% load crispy_forms_tags %}
 <div class="batch-page-container">
-
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">all batches</a></li>
+      </ol>
+    </nav>
+    <a href="{% url 'soyuz_app:get_student_list' %}">All Students</a>
   <h4 class="batch-form-title">Add Batch</h4>
   <form class="add-batch-form" action="{% url 'soyuz_app:get_batches' %}" method="POST">
     {% csrf_token %}

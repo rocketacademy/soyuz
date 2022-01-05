@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm
 
-from .models import Batch, User, Section
+from .models import Batch, User
 
 
 class SignUpForm(UserCreationForm):
@@ -26,8 +26,8 @@ class SignUpForm(UserCreationForm):
 class AddUserForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
-        del self.fields['password2']
-        self.fields['password1'].help_text = None
+        del self.fields["password2"]
+        self.fields["password1"].help_text = None
 
     class Meta:
         model = User
