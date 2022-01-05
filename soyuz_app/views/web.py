@@ -2,10 +2,12 @@ import math
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from ..forms import AddBatchForm
+from ..forms import AddBatchForm, AddUserForm
+from ..library.hubspot import Hubspot
 from ..models import Batch, Course, Section
 
 
@@ -65,13 +67,11 @@ def get_student_list(request):
     return render(request, "student-list.html", context)
 
 
+@require_http_methods(["GET", "POST"])
 @staff_member_required
-@require_GET
 def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
-    print("course", course)
     batch = Batch.objects.get(number=batch_number, course=course)
-    print("batch", batch)
     users = get_user_model().objects.filter(
         batch=batch, section__isnull=True, is_superuser=False, is_staff=False
     )
@@ -85,7 +85,52 @@ def get_sections(request, course_name, batch_number):
         section_obj["users"] = section_users
         section_array.append(section_obj)
 
-    context = {"batch": batch, "sections": section_array, "users": users}
+    if request.method == "GET":
+        form = AddUserForm(initial={"password1": "qwerty1234"})
+        # allows us to prepopulate password field
+        form.fields["password1"].widget.render_value = True
+
+    elif request.method == "POST":
+        form = AddUserForm(request.POST)
+        section_id = request.POST.get("section_id")
+
+        if form.is_valid():
+
+            hubspot_client = Hubspot()
+
+            raw_password = form.cleaned_data.get("password1")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
+            # set hubspot user data
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            hubspot_client.update_hubspot(user_hubspot_id)
+            chosen_section = Section.objects.get(id=int(section_id))
+
+            user = get_user_model().objects.create(
+                email=email,
+                hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
+            )
+
+            user.set_password(raw_password)
+            user.save()
+            batch.users.add(user)
+            chosen_section.users.add(user)
+
+            # use PassWordResetForm to send password reset email to added user
+            reset_form = PasswordResetForm({"email": user.email})
+            reset_form.is_valid()
+            reset_form.save(
+                from_email="admin@rocketacademy.co",
+                email_template_name="users/password-reset.html",
+            )
+
+            # returns AddUserForm to it's original state
+            form = AddUserForm(initial={"password1": "qwerty1234"})
+
+    context = {"batch": batch, "sections": section_array, "users": users, "form": form}
 
     return render(request, "section-page.html", context)
 
@@ -97,9 +142,6 @@ def delete_from_batch(request):
     section_id = int(request.POST.get("section_id"))
     batch_id = int(request.POST.get("batch_id"))
 
-    print(user_id)
-    print(section_id)
-    print(batch_id)
     user = get_user_model().objects.get(id=user_id)
     batch = Batch.objects.get(id=batch_id)
     batch_number = batch.number
@@ -109,7 +151,9 @@ def delete_from_batch(request):
     section.users.remove(user)
     batch.users.remove(user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -153,7 +197,9 @@ def reassign_sections(request):
                 new_user = batch_users.pop()
                 section.users.add(new_user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -169,7 +215,9 @@ def add_to_section(request):
     user = get_user_model().objects.get(id=user_id)
     destination_section.users.add(user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -189,7 +237,9 @@ def delete_items(request):
     user = get_user_model().objects.get(id=int(user_to_delete))
     selected_section.users.remove(user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -211,8 +261,11 @@ def switch_sections(request):
     user_section.users.remove(selected_user)
     destination_section.users.add(selected_user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
+@require_GET
 def landing_page(request):
     return render(request, "landing-page.html")

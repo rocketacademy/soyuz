@@ -23,6 +23,24 @@ class SignUpForm(UserCreationForm):
         return email
 
 
+class AddUserForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        del self.fields["password2"]
+        self.fields["password1"].help_text = None
+
+    class Meta:
+        model = User
+        fields = ("email", "first_name", "last_name")
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("email already exists")
+
+        return email
+
+
 class AddBatchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(forms.ModelForm, self).__init__(*args, **kwargs)

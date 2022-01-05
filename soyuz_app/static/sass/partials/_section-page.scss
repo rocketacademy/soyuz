@@ -12,6 +12,16 @@
     .reassign-form {
       padding: 40px;
     }
+    .add-student-form-container {
+      display: flex;
+      .add-student-form {
+        padding: 40px;
+        .add-user-select {
+          padding: 15px 0;
+        }
+      }
+    }
+
     .section {
       padding: 20px 40px;
       margin: 0 20px 0 0;
