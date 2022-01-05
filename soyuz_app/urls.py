@@ -48,6 +48,7 @@ urlpatterns = [
     path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
     path("student-admin/choose-section-leader", web.choose_section_leader, name="choose_section_leader"),
     path('student-admin/create-zoom-room', web.create_zoom_room, name="create_zoom_room"),
+    path('student-admin/delete-section-leader', web.delete_section_leader, name="delete_section_leader"),
     path('event/hook', slack.event_hook, name='event_hook'),
     path("", web.landing_page, name="landing_page"),
 ]

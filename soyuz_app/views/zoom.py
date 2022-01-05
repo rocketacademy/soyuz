@@ -23,34 +23,35 @@ def generate_token():
 
 
 # create json data for post requests
-room_details = {"topic": "test meeting",
-                "type": 3,
-                "settings": {
-                    "host_video": "true",
-                    "participant_video": "true",
-                    "join_before_host": "true",
-                    "jbh_time": 0,
-                    "mute_upon_entry": "false",
-                    "use_pmi": "false",
-                    "audio": "both",
-                    "auto_recording": "cloud"
-                }
-                }
+# TODO: add alternative hosts!!
+meeting_details = {"topic": "test meeting",
+                   "type": 3,
+                   "settings": {
+                       "host_video": "true",
+                       "participant_video": "true",
+                       "join_before_host": "true",
+                       "jbh_time": 0,
+                       "mute_upon_entry": "false",
+                       "use_pmi": "false",
+                       "audio": "both",
+                       "auto_recording": "cloud"
+                   }
+                   }
 
 
 # send request with headers
-def create_room():
+def create_room(host_email):
+    print(host_email)
     headers = {'authorization': 'Bearer %s' % generate_token(),
                'content-type': 'application/json'}
     r = requests.post(
-        'https://api.zoom.us/v2/users/michelle@rocketacademy.co/meetings',
-        headers=headers, data=json.dumps(room_details))
+        f'https://api.zoom.us/v2/users/{host_email}/meetings',
+        headers=headers, data=json.dumps(meeting_details))
 
-    print("creating zoom meeting")
     print(r.text)
     # converting the output into json and extracting the details
     y = json.loads(r.text)
     join_URL = y["join_url"]
+    id = y["id"]
 
-    print(
-        f'\n here is your zoom meeting link {join_URL} "\n')
+    return id
