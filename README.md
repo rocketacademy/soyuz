@@ -282,7 +282,10 @@ https://api.slack.com/apps/A02RT0ZKHBL/event-subscriptions?
 #### [Slack Web API] (https://api.slack.com/web)
 
 The Slack Web API is an interface for querying information from and enacting change in a Slack workspace.
+Is is primarily used to create section and batch channels.
+It is also used to check if a user has been registered on slack.
 
 #### [Slack Events API] (https://api.slack.com/apis/connections/events-api)
 
 The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
+It notifies Soyuz when a user has registered on Slack and their slack id is added to the Soyuz database
