@@ -24,6 +24,8 @@
         <th scope="col">Course</th>
         <th scope="col">Batch Number</th>
         <th scope="col">Start Date</th>
+        <th scope="col">Max Capacity</th>
+        <th scope="col">Change Capacity</th>
         <th scope="col">Link to Batch Page</th>
       </tr>
     </thead>
@@ -33,6 +35,16 @@
         <td>{{ batch.course.name }}</td>
         <td>{{ batch.number }}</td>
         <td>{{ batch.start_date }}</td>
+        <td>{{ batch.max_capacity }}</td>
+        <td>
+          <form action="/student-admin/change-batch-capacity" method="POST">
+            {% csrf_token %}
+            <input type="text" name="new_batch_capacity">
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <button class="btn btn-primary" type="submit" value="Submit"><i
+                class="fas fa-sync-alt"></i></button>
+          </form>
+        </td>
         <td><a class="btn btn-primary" href="{% url 'soyuz_app:get_sections' course_name=batch.course.name batch_number=batch.number %}" role="button">batch
             page</a></td>
       </tr>
