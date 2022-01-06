@@ -45,9 +45,13 @@ class Hubspot:
             capture_exception(e)
             raise ValueError("error getting hubspot user email")
 
-    def update_hubspot(self, user_hubspot_id):
+    # update funnel status and basics_batch_num on registration
+    def update_hubspot(self, user_hubspot_id, batch_number):
 
-        properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
+        properties = {
+            "bootcamp_funnel_status": "basics_apply;basics_register",
+            "basics_batch_num": f"{batch_number}"
+        }
 
         simple_public_object_input = SimplePublicObjectInput(properties=properties)
         try:
