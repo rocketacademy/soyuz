@@ -1,11 +1,13 @@
+from ..library.hubspot import Hubspot
+from ..forms import AddBatchForm, AddUserForm
 from ..models import Batch, Course, Section
-from ..forms import AddBatchForm
 from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
 from .zoom import create_room
 import math
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 import logging
@@ -85,8 +87,8 @@ def get_student_list(request):
     return render(request, "student-list.html", context)
 
 
+@require_http_methods(["GET", "POST"])
 @staff_member_required
-@require_GET
 def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
     batch = Batch.objects.get(number=batch_number, course=course)
@@ -117,13 +119,58 @@ def get_sections(request, course_name, batch_number):
         for leader in section_leaders:
             if leader == section["section_leader"]:
                 section_leaders.remove(leader)
+    if request.method == "GET":
+        form = AddUserForm(initial={"password1": "qwerty1234"})
+        # allows us to prepopulate password field
+        form.fields["password1"].widget.render_value = True
+
+    elif request.method == "POST":
+        form = AddUserForm(request.POST)
+        section_id = request.POST.get("section_id")
+
+        if form.is_valid():
+
+            hubspot_client = Hubspot()
+
+            raw_password = form.cleaned_data.get("password1")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
+            # set hubspot user data
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            hubspot_client.update_hubspot(user_hubspot_id)
+            chosen_section = Section.objects.get(id=int(section_id))
+
+            user = get_user_model().objects.create(
+                email=email,
+                hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
+            )
+
+            user.set_password(raw_password)
+            user.save()
+            batch.users.add(user)
+            chosen_section.users.add(user)
+
+            # use PassWordResetForm to send password reset email to added user
+            reset_form = PasswordResetForm({"email": user.email})
+            reset_form.is_valid()
+            reset_form.save(
+                from_email="admin@rocketacademy.co",
+                email_template_name="users/password-reset.html",
+            )
+
+            # returns AddUserForm to it's original state
+            form = AddUserForm(initial={"password1": "qwerty1234"})
 
     context = {
         "batch": batch,
         "sections": section_array,
         "no_section_users": no_section_users,
         "slack_unregistered": slack_unregistered,
-        "section_leaders": section_leaders
+        "section_leaders": section_leaders,
+        "form": form
     }
 
     return render(request, "section-page.html", context)
@@ -250,7 +297,9 @@ def create_batch_channel(request):
     # add slack registered students to batch channel
     add_users_to_channel(batch, batch_users_ids)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -294,7 +343,9 @@ def reassign_sections(request):
                 new_user = batch_users.pop()
                 section.users.add(new_user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -313,7 +364,9 @@ def add_to_section(request):
     # add user to destination slack channel
     add_users_to_channel(destination_section, user.slack_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -336,7 +389,9 @@ def delete_items(request):
     # remove from slack section channel
     remove_from_channel(batch, user.slack_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -385,7 +440,9 @@ def switch_sections(request):
     # add to destination slack channel
     add_users_to_channel(destination_section, selected_user.slack_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
