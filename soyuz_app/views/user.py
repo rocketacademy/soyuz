@@ -11,7 +11,7 @@ from ..library.hubspot import Hubspot
 from ..models import Batch
 
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
-max_capacity = settings.MAX_CAPACITY
+batch_max_capacity = settings.BATCH_MAX_CAPACITY
 
 
 @require_GET
@@ -49,11 +49,10 @@ def signup(request, batch_id, email):
     difference = start_date - today
     # get number of students in batch
     num_students_in_batch = batch.users.count()
-    print('number of students', num_students_in_batch)
     # if difference is more than days env var, registration is not allowed
     if difference.days < int(days_to_expiration):
         return render(request, "users/registration-expired.html")
-    elif num_students_in_batch > int(max_capacity):
+    elif num_students_in_batch >= int(batch_max_capacity):
         return render(request, "users/max-capacity.html")
     else:
         if request.method == "GET":
