@@ -97,8 +97,10 @@ def signup(request, batch_id, email):
 
             # set hubspot user data
             hubspot_client = Hubspot()
+            # get batch number
+            batch_number = batch.number
             user_hubspot_id = hubspot_client.get_hubspot_id(email)
-            hubspot_client.update_hubspot(user_hubspot_id)
+            hubspot_client.update_hubspot(user_hubspot_id, batch_number)
 
             user = get_user_model().objects.create(
                 email=email,
