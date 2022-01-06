@@ -58,12 +58,17 @@
     <div class="section">
       <div class="section-header">
         <h3>Section: {{ section.number }}</h3>
-        <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email
-          addresses</button>
-        <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section
-          Names</button>
+        <div>
+          <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email
+            addresses</button>
+          <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section
+            Names</button>
+        </div>
       </div>
       <p>Number of students: {{ section.users|length }}</p>
+      {% if section.zoom_meeting_id %}
+      <p>Zoom meeting link: <a href="https://us02web.zoom.us/j/{{ section.zoom_meeting_id }}">https://us02web.zoom.us/j/{{ section.zoom_meeting_id }}</a></p>
+      {% endif %}
       {% if section.section_leader %}
       <div class="section-leader">
         <p>Section leader: {{ section.section_leader }}</p>

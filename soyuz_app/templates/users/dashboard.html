@@ -12,8 +12,19 @@
     {% endif %}
     <hr/>
     <p>
-        {{ user.email }}
+      You are currently enrolled in: {{ current_batch.course.name|title }} {{ current_batch.number }}
     </p>
+    {% if current_section != None %}
+    <p>
+      Section: {{ current_section.number }}
+    </p>
+    {% if current_section.zoom_meeting_id != None %}
+    <p>
+    Zoom meeting link: <a href="https://us02web.zoom.us/j/{{ current_section.zoom_meeting_id }}">https://us02web.zoom.us/j/{{ current_section.zoom_meeting_id }}</a>
+    </p>
+    {% endif %}
+    {% endif %}
+
     <a href="{% url 'soyuz_app:logout' %}">Logout</a>
   </div>
 </div>

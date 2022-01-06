@@ -113,12 +113,15 @@ def get_sections(request, course_name, batch_number):
         section_users = section.users.all()
         section_obj["users"] = section_users
         section_obj["section_leader"] = section.section_leader
+        section_obj["zoom_meeting_id"] = section.zoom_meeting_id
         section_array.append(section_obj)
 
+    # get list of section leaders that have not already been assigned a section
     for section in section_array:
         for leader in section_leaders:
             if leader == section["section_leader"]:
                 section_leaders.remove(leader)
+
     if request.method == "GET":
         form = AddUserForm(initial={"password1": "qwerty1234"})
         # allows us to prepopulate password field
