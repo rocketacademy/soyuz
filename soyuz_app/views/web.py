@@ -1,7 +1,6 @@
 from ..library.hubspot import Hubspot
 from ..forms import AddBatchForm, AddUserForm
 from ..models import Batch, Course, Section
-from ..forms import AddBatchForm
 from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
 import math
 from django.conf import settings
@@ -155,7 +154,13 @@ def get_sections(request, course_name, batch_number):
             # returns AddUserForm to it's original state
             form = AddUserForm(initial={"password1": "qwerty1234"})
 
-    context = {"batch": batch, "sections": section_array, "users": users, "form": form}
+    context = {
+        "batch": batch,
+        "sections": section_array,
+        "no_section_users": no_section_users,
+        "slack_unregistered": slack_unregistered,
+        "form": form
+    }
 
     return render(request, "section-page.html", context)
 
