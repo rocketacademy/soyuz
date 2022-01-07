@@ -158,7 +158,7 @@ def delete_from_batch(request):
     # get user's hubspot id
     user_hubspot_id = hubspot_client.get_hubspot_id(email)
     # update user's funnel status
-    hubspot_client.dropout_funnel_status(user_hubspot_id, funnel_status)
+    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
 
     section.users.remove(user)
     batch.users.remove(user)
@@ -273,7 +273,7 @@ def delete_from_batch_only(request):
     # get user's hubspot id
     user_hubspot_id = hubspot_client.get_hubspot_id(email)
     # update user's funnel status
-    hubspot_client.dropout_funnel_status(user_hubspot_id, funnel_status)
+    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
 
     batch.users.remove(user)
 
