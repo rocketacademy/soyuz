@@ -43,7 +43,7 @@
             <select name="batch_id" class="section-select">
               <option selected="selected" disabled>--</option>
               {% for batch in batches %}
-              <option value="{{ batch.id }}">{{ batch.course.name }} {{ batch.id }}</option>
+              <option value="{{ batch.id }}">{{ batch.course.name|title }} {{ batch.id }}</option>
               {% endfor %}
             </select>
             <input type="hidden" name="user_id" value="{{ user.id }}">
