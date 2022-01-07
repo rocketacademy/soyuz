@@ -266,6 +266,18 @@ def switch_sections(request):
     )
 
 
+@require_POST
+def change_batch_capacity(request):
+    new_batch_capacity = request.POST.get("new_batch_capacity")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=int(batch_id))
+    # update batch's max capacity
+    batch.max_capacity = int(new_batch_capacity)
+    batch.save()
+
+    return redirect("soyuz_app:get_batches")
+
+
 @require_GET
 def landing_page(request):
     return render(request, "landing-page.html")
