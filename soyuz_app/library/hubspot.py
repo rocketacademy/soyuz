@@ -63,3 +63,22 @@ class Hubspot:
         except ApiException as e:
             capture_exception(e)
             raise ValueError("error updating hubspot")
+
+    # update funnel status on dropout from batch
+
+    def dropout_funnel_status(self, user_hubspot_id, funnel_status):
+
+        properties = {
+            "bootcamp_funnel_status": f"basics_apply;basics_register;{funnel_status}"
+        }
+
+        simple_public_object_input = SimplePublicObjectInput(properties=properties)
+        try:
+            self.client.crm.contacts.basic_api.update(
+                contact_id=user_hubspot_id,
+                simple_public_object_input=simple_public_object_input,
+            )
+
+        except ApiException as e:
+            capture_exception(e)
+            raise ValueError("error updating hubspot")
