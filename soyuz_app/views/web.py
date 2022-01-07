@@ -147,7 +147,6 @@ def delete_from_batch(request):
     section_id = request.POST.get("section_id")
     batch_id = request.POST.get("batch_id")
     funnel_status = request.POST.get("funnel_status")
-    print('funnel status', funnel_status)
     user = get_user_model().objects.get(id=int(user_id))
     email = user.email
     batch = Batch.objects.get(id=int(batch_id))
@@ -262,7 +261,6 @@ def delete_from_batch_only(request):
     user_id = request.POST.get("user_id")
     batch_id = request.POST.get("batch_id")
     funnel_status = request.POST.get("funnel_status")
-    print('funnel status', funnel_status)
     batch = Batch.objects.get(id=int(batch_id))
     batch_number = batch.number
     course_name = batch.course.name
