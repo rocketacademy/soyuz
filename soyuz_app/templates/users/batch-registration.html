@@ -9,10 +9,11 @@
   Please join us for the kick-off meeting on {{batch.start_date}} at 1-3pm.
 </p>
 
+{% if batch.gcal_link != None %}
 <p>
-  <a target="_blank" href="https://calendar.google.com/event?action=TEMPLATE&tmeid=M2xpMnRhMWVmdDFmamVyODM5aWtuMTdzdGYgY19zdWIzaDFvNmplNzdwNXI2aGlxdGEyM3RhZ0Bn&tmsrc=c_sub3h1o6je77p5r6hiqta23tag%40group.calendar.google.com"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en-GB.gif"></a>
+  <a target="_blank" href="{{ batch.gcal_link }}"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en-GB.gif"></a>
 </p>
-
+{% endif %}
 
 <p>
   **Before the First meeting please ensure that you are prepared!**
