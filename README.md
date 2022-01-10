@@ -266,6 +266,12 @@ This app lives in Rocket Academy Basics
 
 which is linked to a test workspace called Django-Test
 
+#### Slack credentials
+
+On the slack api app page, the app's slack credentials can be found under Settings > Basic Information
+
+The slack bot token can be found under Features > OAuth & Permissions
+
 #### Local testing
 
 The ngrok server is used in local testing of the Events API
@@ -276,8 +282,20 @@ npm install ngrok
 ngrok http 8000
 ```
 
+Under Features > Event Subscriptions:
+
+turn on Enable Events
+
 use `<ngrok https url>/event/hook` as the verification url required on the Event Subscriptions page of the local test workspace:
 https://api.slack.com/apps/A02RT0ZKHBL/event-subscriptions?
+
+Subscribe to the relevant events. The current list of events being used by soyuz is:
+
+```
+team_join
+```
+
+Add the ngrok url to allowed hosts in base.py (soyuz_project > settings > base.py)
 
 #### [Slack Web API] (https://api.slack.com/web)
 
