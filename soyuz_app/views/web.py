@@ -278,6 +278,18 @@ def change_batch_capacity(request):
     return redirect("soyuz_app:get_batches")
 
 
+@require_POST
+def change_gcal_link(request):
+    new_gcal_link = request.POST.get("new_gcal_link")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=int(batch_id))
+    # update batch's max capacity
+    batch.gcal_link = new_gcal_link
+    batch.save()
+
+    return redirect("soyuz_app:get_batches")
+
+
 @require_GET
 def landing_page(request):
     return render(request, "landing-page.html")

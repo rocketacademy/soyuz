@@ -46,5 +46,6 @@ urlpatterns = [
         name="reassign_sections",
     ),
     path("student-admin/change-batch-capacity", web.change_batch_capacity, name="change_batch_capacity"),
+    path("student-admin/change-gcal-link", web.change_gcal_link, name="change_gcal_link"),
     path("", web.landing_page, name="landing_page"),
 ]
