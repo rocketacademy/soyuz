@@ -47,5 +47,5 @@ class AddBatchForm(forms.ModelForm):
 
     class Meta:
         model = Batch
-        fields = ["course", "start_date", "number"]
+        fields = ["course", "start_date", "number", "max_capacity"]
         widgets = {"start_date": forms.DateInput(attrs={"type": "date"})}
