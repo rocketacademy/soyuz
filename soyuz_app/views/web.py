@@ -2,7 +2,7 @@ from ..library.hubspot import Hubspot
 from ..forms import AddBatchForm, AddUserForm
 from ..models import Batch, Course, Section
 from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
-from .zoom import create_room
+from ..library.zoom import Zoom
 import math
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -485,7 +485,8 @@ def create_zoom_room(request):
         # from zoom.py, creates zoom room and returns meeting id
         # TODO: remove this if condition
         if host.email != 'sam@rocketacademy.co':
-            meeting_id = create_room(host.email)
+            zoom = Zoom()
+            meeting_id = zoom.create_room(host.email)
             # save zoom meeting id
             section.zoom_meeting_id = meeting_id
             section.save()
