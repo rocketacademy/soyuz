@@ -48,6 +48,10 @@ django-anymail = {version = "==8.4", extras = ["sendgrid"]}
 Django = "==3.2.7"
 PyYAML = "==6.0"
 pyjwt = "*"
+google-api-python-client = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
+oauth2client = "*"
 
 [dev-packages]
 isort = "==5.9.3"
