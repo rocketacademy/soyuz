@@ -12,7 +12,7 @@
   </nav>
 
   <a href="{% url 'soyuz_app:get_student_list' %}">Student List</a>
-  <h1>{{ batch.course }} {{ batch.number }}</h1>
+  <h1>{{ batch.course|title }} {{ batch.number }}</h1>
   <h2>Start Date: {{ batch.start_date }}</h2>
   <p>Total number of students: {{ batch.users.count }}</p>
 
@@ -103,6 +103,12 @@
             <td>
               <form action="/student-admin/delete-from-batch" method="POST">
                 {% csrf_token %}
+                <select name="funnel_status" class="section-select">
+                  <option selected="selected" disabled>--</option>
+                  {% for reason in dropout_reasons %}
+                  <option value="{{ reason }}">{{ reason }}</option>
+                  {% endfor %}
+                </select>
                 <input type="hidden" name="section_id" value="{{ section.id }}">
                 <input type="hidden" name="user_id" value="{{ user.id }}">
                 <input type="hidden" name="batch_id" value="{{ batch.id }}">
@@ -151,6 +157,12 @@
           <td>
             <form action="/student-admin/delete-from-batch-only" method="POST">
               {% csrf_token %}
+              <select name="funnel_status" class="section-select">
+                <option selected="selected" disabled>--</option>
+                {% for reason in dropout_reasons %}
+                <option value="{{ reason }}">{{ reason }}</option>
+                {% endfor %}
+              </select>
               <input type="hidden" name="user_id" value="{{ user.id }}">
               <input type="hidden" name="batch_id" value="{{ batch.id }}">
               <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
@@ -205,6 +217,12 @@
           <td>
             <form action="/student-admin/delete-from-batch-only" method="POST">
               {% csrf_token %}
+              <select name="funnel_status" class="section-select">
+                <option selected="selected" disabled>--</option>
+                {% for reason in dropout_reasons %}
+                <option value="{{ reason }}">{{ reason }}</option>
+                {% endfor %}
+              </select>
               <input type="hidden" name="user_id" value="{{ user.id }}">
               <input type="hidden" name="batch_id" value="{{ batch.id }}">
               <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
@@ -233,18 +251,19 @@
     {% endif %}
   </div>
 </div>
-<script>
-  const copyButtonArray = document.querySelectorAll('.copy-button');
-  copyButtonArray.forEach(button => {
-    button.addEventListener('click', () => {
-      const data = [];
-      const emails = document.querySelectorAll(`.user-email-${button.value}`);
-      emails.forEach(email => {
-        data.push(email.innerText);
+  <script>
+    const copyButtonArray = document.querySelectorAll('.copy-button');
+    copyButtonArray.forEach(button => {
+      button.addEventListener('click', () => {
+        const data = [];
+        const emails = document.querySelectorAll(`.user-email-${button.value}`);
+        emails.forEach(email => {
+          data.push(email.innerText);
+        })
+        copyToClipboard(data);
       })
       copyToClipboard(data);
     })
-  })
 
   const copyNameButtonArray = document.querySelectorAll('.copy-name-button');
   copyNameButtonArray.forEach(button => {

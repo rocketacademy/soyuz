@@ -45,10 +45,9 @@ class Hubspot:
             capture_exception(e)
             raise ValueError("error getting hubspot user email")
 
-    def update_hubspot(self, user_hubspot_id):
+    # hubspot api call
 
-        properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
-
+    def update_hubspot(self, user_hubspot_id, properties):
         simple_public_object_input = SimplePublicObjectInput(properties=properties)
         try:
             self.client.crm.contacts.basic_api.update(
@@ -59,3 +58,24 @@ class Hubspot:
         except ApiException as e:
             capture_exception(e)
             raise ValueError("error updating hubspot")
+
+    # update funnel status and basics_batch_num on registration
+
+    def update_funnel_basics_apply(self, user_hubspot_id, batch_number):
+
+        properties = {
+            "bootcamp_funnel_status": "basics_apply;basics_register",
+            "basics_batch_num": f"{batch_number}"
+        }
+
+        self.update_hubspot(user_hubspot_id, properties)
+
+    # update funnel status on dropout from batch
+
+    def update_funnel_dropout(self, user_hubspot_id, funnel_status):
+
+        properties = {
+            "bootcamp_funnel_status": f"basics_apply;basics_register;{funnel_status}"
+        }
+
+        self.update_hubspot(user_hubspot_id, properties)

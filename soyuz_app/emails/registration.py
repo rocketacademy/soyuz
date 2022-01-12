@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 
 def send_reg_notification(user, batch):
 
-    msg_plain = f""" Thanks for signing up for {batch.course.name}
+    msg_plain = f""" Thanks for signing up for {batch.course.name.capitalize()}
         It starts on {batch.start_date}"""
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
@@ -14,7 +14,7 @@ def send_reg_notification(user, batch):
     )
 
     send_mail(
-        f"Rocket Academy {batch.course.name} {batch.start_date} Signup",
+        f"Rocket Academy {batch.course.name.capitalize()} {batch.start_date} Signup",
         msg_plain,
         "Rocket Academy <hello@rocketacademy.co>",
         [user.email],

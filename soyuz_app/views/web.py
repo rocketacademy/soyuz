@@ -154,12 +154,17 @@ def get_sections(request, course_name, batch_number):
             # returns AddUserForm to it's original state
             form = AddUserForm(initial={"password1": "qwerty1234"})
 
+    # select dropdown for updating funnel status in hubspot
+    dropout_reasons = ["basics_deferred", "basics_dropout", "basics_dropout_logistics",
+                       "basics_dropout_noshow", "basics_dropout_other"]
+
     context = {
         "batch": batch,
         "sections": section_array,
         "no_section_users": no_section_users,
         "slack_unregistered": slack_unregistered,
-        "form": form
+        "form": form,
+        "dropout_reasons": dropout_reasons
     }
 
     return render(request, "section-page.html", context)
@@ -168,15 +173,22 @@ def get_sections(request, course_name, batch_number):
 @staff_member_required
 @require_POST
 def delete_from_batch(request):
-    user_id = int(request.POST.get("user_id"))
-    section_id = int(request.POST.get("section_id"))
-    batch_id = int(request.POST.get("batch_id"))
-
-    user = get_user_model().objects.get(id=user_id)
-    batch = Batch.objects.get(id=batch_id)
+    user_id = request.POST.get("user_id")
+    section_id = request.POST.get("section_id")
+    batch_id = request.POST.get("batch_id")
+    funnel_status = request.POST.get("funnel_status")
+    user = get_user_model().objects.get(id=int(user_id))
+    email = user.email
+    batch = Batch.objects.get(id=int(batch_id))
     batch_number = batch.number
     course_name = batch.course.name
-    section = Section.objects.get(id=section_id)
+    section = Section.objects.get(id=int(section_id))
+
+    hubspot_client = Hubspot()
+    # get user's hubspot id
+    user_hubspot_id = hubspot_client.get_hubspot_id(email)
+    # update user's funnel status
+    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
 
     section.users.remove(user)
     slack_id = user.slack_id
@@ -389,24 +401,31 @@ def delete_from_batch_only(request):
 
     user_id = request.POST.get("user_id")
     batch_id = request.POST.get("batch_id")
-
+    funnel_status = request.POST.get("funnel_status")
     batch = Batch.objects.get(id=int(batch_id))
     batch_number = batch.number
     course_name = batch.course.name
 
     user = get_user_model().objects.get(id=int(user_id))
 
-    batch.users.remove(user)
     if user.slack_id:
         remove_from_channel(batch, user.slack_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    email = user.email
+    hubspot_client = Hubspot()
+    # get user's hubspot id
+    user_hubspot_id = hubspot_client.get_hubspot_id(email)
+    # update user's funnel status
+    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
 
-# not being used
+    batch.users.remove(user)
+
+    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
 
 @staff_member_required
 @require_POST
+# fetch destinaton section number and user id
 def switch_sections(request):
     section_destination = request.POST.get("section_number")
     user_to_move = request.POST.get("user_id")
@@ -432,6 +451,18 @@ def switch_sections(request):
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
     )
+
+
+@require_POST
+def change_batch_capacity(request):
+    new_batch_capacity = request.POST.get("new_batch_capacity")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=int(batch_id))
+    # update batch's max capacity
+    batch.max_capacity = int(new_batch_capacity)
+    batch.save()
+
+    return redirect("soyuz_app:get_batches")
 
 
 @require_GET
