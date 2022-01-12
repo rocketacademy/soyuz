@@ -32,6 +32,7 @@
         <form action="{% url 'soyuz_app:get_sections' course_name=batch.course batch_number=batch.number %}" method="POST">
           {% csrf_token %}
           {{ form|crispy }}
+          <div class="add-user">
           <div class="add-user-select">
             <label>Choose section:</label>
             <select name="section_id" class="section-select">
@@ -43,6 +44,7 @@
           </div>
           <div class="add-user-actions">
             <button class="submit btn btn-primary">Add Student</button>
+          </div>
           </div>
         </form>
       </div>
