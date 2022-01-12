@@ -13,17 +13,8 @@ from ..forms import AddBatchForm, AddUserForm
 from ..library.hubspot import Hubspot
 from ..library.slack import Slack
 from ..models import Batch, Course, Section
-from .slack import (
-    add_users_to_channel,
-    create_channel,
-    lookup_by_email,
-    remove_from_channel,
-)
 
 # from slack_sdk.errors import SlackApiError
-# WebClient insantiates a client that can call API methods
-# When using Bolt, you can use either `app.client` or the `client` passed to listeners.
-client = WebClient(token=settings.SLACK_BOT_TOKEN)
 logger = logging.getLogger(__name__)
 
 
