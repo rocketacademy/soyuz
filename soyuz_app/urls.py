@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 # from rest_framework import routers
-from .views import user, web, slack
+from .views import slack, user, web
 
 # router = routers.DefaultRouter()
 # router.register(r"batches", rest.BatchView, "batch")
@@ -40,10 +40,26 @@ urlpatterns = [
     path("student-admin/add-to-batch", web.add_to_batch, name="add_to_batch"),
     path("student-admin/add-to-section", web.add_to_section, name="add_to_section"),
     path("student-admin/student-list", web.get_student_list, name="get_student_list"),
-    path("student-admin/reassign-sections", web.reassign_sections, name="reassign_sections"),
-    path("student-admin/check-slack-registration", web.check_slack_registration, name="check_slack_registration"),
-    path("student-admin/delete-from-batch-only", web.delete_from_batch_only, name="delete_from_batch_only"),
-    path("student-admin/create-batch-channel", web.create_batch_channel, name="create_batch_channel"),
+    path(
+        "student-admin/reassign-sections",
+        web.reassign_sections,
+        name="reassign_sections",
+    ),
+    path(
+        "student-admin/check-slack-registration",
+        web.check_slack_registration,
+        name="check_slack_registration",
+    ),
+    path(
+        "student-admin/delete-from-batch-only",
+        web.delete_from_batch_only,
+        name="delete_from_batch_only",
+    ),
+    path(
+        "student-admin/create-batch-channel",
+        web.create_batch_channel,
+        name="create_batch_channel",
+    ),
     # path("student-admin/create-channels", slack.create_channels, name="create_channels"),
     path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
     path('event/hook', slack.event_hook, name='event_hook'),

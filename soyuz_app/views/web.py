@@ -1,19 +1,25 @@
-from ..library.hubspot import Hubspot
-from ..forms import AddBatchForm, AddUserForm
-from ..models import Batch, Course, Section
-from .slack import add_users_to_channel, create_channel, lookup_by_email, remove_from_channel
+import logging
 import math
+
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-import logging
-# Import WebClient from Python SDK (github.com/slackapi/python-slack-sdk)
 from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
 
+from ..forms import AddBatchForm, AddUserForm
+from ..library.hubspot import Hubspot
+from ..models import Batch, Course, Section
+from .slack import (
+    add_users_to_channel,
+    create_channel,
+    lookup_by_email,
+    remove_from_channel,
+)
+
+# from slack_sdk.errors import SlackApiError
 # WebClient insantiates a client that can call API methods
 # When using Bolt, you can use either `app.client` or the `client` passed to listeners.
 client = WebClient(token=settings.SLACK_BOT_TOKEN)
@@ -36,11 +42,7 @@ def get_batches(request):
             channel_name = f"{new_batch.course.name}-{new_batch.number}-all"
             create_channel(new_batch, channel_name)
 
-    context = {
-        "title": "List of Batches",
-        "batches": batches,
-        "form": add_batch_form
-    }
+    context = {"title": "List of Batches", "batches": batches, "form": add_batch_form}
 
     return render(request, "batch-page.html", context)
 
@@ -92,7 +94,11 @@ def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
     batch = Batch.objects.get(number=batch_number, course=course)
     no_section_users = get_user_model().objects.filter(
-        batch=batch, section__isnull=True, slack_id__isnull=False, is_superuser=False, is_staff=False
+        batch=batch,
+        section__isnull=True,
+        slack_id__isnull=False,
+        is_superuser=False,
+        is_staff=False,
     )
 
     slack_unregistered = get_user_model().objects.filter(
@@ -199,7 +205,9 @@ def delete_from_batch(request):
     # remove from batch slack channel
     remove_from_channel(batch, slack_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -213,8 +221,11 @@ def assign_sections_channels(request):
     batch = Batch.objects.get(id=batch_id)
     batch_number = batch.number
     course_name = batch.course.name
-    registered_batch_users = list(get_user_model().objects.filter(
-        batch=batch, slack_id__isnull=False, is_superuser=False, is_staff=False))
+    registered_batch_users = list(
+        get_user_model().objects.filter(
+            batch=batch, slack_id__isnull=False, is_superuser=False, is_staff=False
+        )
+    )
 
     # get number of users in batch
     number_of_users = len(registered_batch_users)
@@ -248,7 +259,10 @@ def assign_sections_channels(request):
         # add users to slack channel
         add_users_to_channel(section, user_ids)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
 
 # no longer needed
 
@@ -269,7 +283,9 @@ def check_slack_registration(request):
     for user in slack_unregistered:
         lookup_by_email(user, None)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
