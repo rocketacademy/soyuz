@@ -10,8 +10,9 @@ from ..forms import SignUpForm
 from ..library.hubspot import Hubspot
 from ..models import Batch, Section
 
+# from env vars
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
-max_capacity = settings.MAX_CAPACITY
+batch_max_capacity = settings.BATCH_MAX_CAPACITY
 
 
 @require_GET
@@ -58,6 +59,14 @@ def dashboard(request):
 def signup(request, batch_id, email):
 
     batch = Batch.objects.get(pk=batch_id)
+    # get batch's max capacity
+    if batch.max_capacity is None:
+        # from env var
+        batch_capacity = batch_max_capacity
+    else:
+        # from database
+        batch_capacity = batch.max_capacity
+
     # get batch start date
     start_date = batch.start_date
     # get today's date
@@ -66,11 +75,11 @@ def signup(request, batch_id, email):
     difference = start_date - today
     # get number of students in batch
     num_students_in_batch = batch.users.count()
-    print('number of students', num_students_in_batch)
     # if difference is more than days env var, registration is not allowed
     if difference.days < int(days_to_expiration):
         return render(request, "users/registration-expired.html")
-    elif num_students_in_batch > int(max_capacity):
+    # if number of students in batch exceeds batch capacity, registration is not allowed
+    elif num_students_in_batch >= int(batch_capacity):
         return render(request, "users/max-capacity.html")
     else:
         if request.method == "GET":
@@ -114,8 +123,10 @@ def signup(request, batch_id, email):
 
             # set hubspot user data
             hubspot_client = Hubspot()
+            # get batch number
+            batch_number = batch.number
             user_hubspot_id = hubspot_client.get_hubspot_id(email)
-            hubspot_client.update_hubspot(user_hubspot_id)
+            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
 
             user = get_user_model().objects.create(
                 email=email,

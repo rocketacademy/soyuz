@@ -52,6 +52,7 @@ google-api-python-client = "*"
 google-auth-oauthlib = "*"
 google-auth-httplib2 = "*"
 oauth2client = "*"
+slack-sdk = "*"
 
 [dev-packages]
 isort = "==5.9.3"

@@ -21,7 +21,7 @@ HUBSPOT_API_KEY = env("HUBSPOT_API_KEY", default="banana")
 DAYS_TO_REGISTRATION_EXPIRE = env("DAYS_TO_REGISTRATION_EXPIRE")
 ZOOM_API_KEY = env("ZOOM_API_KEY")
 ZOOM_API_SECRET = env("ZOOM_API_SECRET")
-MAX_CAPACITY = env("MAX_CAPACITY")
+BATCH_MAX_CAPACITY = env("BATCH_MAX_CAPACITY")
 
 # GENERAL
 # ------------------------------------------------------------------------------
