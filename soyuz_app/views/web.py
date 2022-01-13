@@ -520,7 +520,8 @@ def create_zoom_room(request):
         # TODO: remove this if condition
         if host.email != 'sam@rocketacademy.co':
             zoom = Zoom()
-            meeting_id = zoom.create_room(host.email)
+            # TODO: change host.email back
+            meeting_id = zoom.create_room(host.email, batch, section)
             # save zoom meeting id
             section.zoom_meeting_id = meeting_id
             section.save()

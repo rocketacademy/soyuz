@@ -116,6 +116,11 @@ class Section(models.Model):
     zoom_meeting_id = models.CharField(max_length=200, null=True, blank=True)
 
 
+class Recordings(models.Model):
+    url = models.CharField(max_length=255)
+    section = models.ForeignKey(Section, on_delete=models.DO_NOTHING)
+
+
 class Workflow_type(models.Model):
     name = models.CharField(max_length=200)
     course = models.ManyToManyField(Course)

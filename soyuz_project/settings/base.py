@@ -6,6 +6,7 @@ from pathlib import Path
 
 import environ
 
+
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = ROOT_DIR / "soyuz_app"
 env = environ.Env()
@@ -22,6 +23,10 @@ DAYS_TO_REGISTRATION_EXPIRE = env("DAYS_TO_REGISTRATION_EXPIRE")
 ZOOM_API_KEY = env("ZOOM_API_KEY")
 ZOOM_API_SECRET = env("ZOOM_API_SECRET")
 BATCH_MAX_CAPACITY = env("BATCH_MAX_CAPACITY")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_BUCKET = env("AWS_BUCKET")
+AWS_REGION = env("AWS_REGION")
 
 # GENERAL
 # ------------------------------------------------------------------------------

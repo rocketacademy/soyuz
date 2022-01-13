@@ -20,17 +20,19 @@ class Zoom:
             algorithm='HS256'
         )
 
-    def create_room(self, host_email):
-        print(host_email)
-        headers = {
-            'authorization': 'Bearer %s' % self.token,
+        self.headers = {
+            'authorization': f'Bearer {self.token}',
             'content-type': 'application/json'
         }
 
+    def create_room(self, host_email, batch, section):
+        host_email = 'michelle@rocketacademy.co'
+
         # create json data for post requests
         # TODO: add alternative hosts!!
+        meeting_topic = f'{batch.course.name.capitalize()} {batch.number} Section {section.number}'
         meeting_details = {
-            "topic": "refactor zoom",
+            "topic": meeting_topic,
             "type": 3,
             "settings": {
                 "host_video": "true",
@@ -46,7 +48,7 @@ class Zoom:
 
         r = requests.post(
             f'https://api.zoom.us/v2/users/{host_email}/meetings',
-            headers=headers,
+            headers=self.headers,
             data=json.dumps(meeting_details)
         )
 
@@ -56,3 +58,17 @@ class Zoom:
         id = y["id"]
 
         return id
+
+    def delete_recording(self, uuid):
+
+        recording_details = {
+            "action": "trash"
+        }
+
+        r = requests.delete(
+            f'https://api.zoom.us/v2/meetings/{uuid}/recordings',
+            headers=self.headers,
+            data=json.dumps(recording_details)
+        )
+
+        print(r.text)
