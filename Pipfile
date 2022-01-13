@@ -50,7 +50,6 @@ PyYAML = "==6.0"
 pyjwt = "*"
 slack-sdk = "*"
 boto3 = "*"
-django-storages = "*"
 
 [dev-packages]
 isort = "==5.9.3"
