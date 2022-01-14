@@ -1,6 +1,6 @@
 import logging
 import math
-
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
@@ -14,6 +14,8 @@ from ..models import Batch, Course, Section
 
 # from slack_sdk.errors import SlackApiError
 logger = logging.getLogger(__name__)
+
+BATCH_MAX_CAPACITY = settings.BATCH_MAX_CAPACITY
 
 
 @staff_member_required
@@ -210,7 +212,7 @@ def delete_from_batch(request):
 
 @staff_member_required
 @require_POST
-def assign_sections_channels(request):
+def assign_sections(request):
     # get batch id from form
     number_per_section = int(request.POST.get("number_per_section"))
     batch_id = int(request.POST.get("batch_id"))
@@ -227,11 +229,6 @@ def assign_sections_channels(request):
 
     # get number of users in batch
     number_of_users = len(registered_batch_users)
-
-    # registered_batch_users = []
-    # # check if users are registered on slack
-    # for user in batch_users:
-    #     lookup_by_email(user, registered_batch_users)
 
     # calculate number of sections required
     sections_required = math.ceil(number_of_users / number_per_section)
@@ -263,11 +260,52 @@ def assign_sections_channels(request):
     )
 
 
-# no longer needed
-
-
 @staff_member_required
 @require_POST
+def create_channels(request):
+    batch_id = int(request.POST.get("batch_id"))
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    sections = Section.objects.all()
+    num_of_sections = sections.count()
+    print('number of sections', num_of_sections)
+
+    # array of user ids to add to slack channel
+
+    for section in sections:
+
+        user_ids = []
+
+        section_users = list(
+            get_user_model().objects.filter(
+                # slack id is needed to add user to slack channel
+                section=section, slack_id__isnull=False, is_superuser=False, is_staff=False
+            ))
+        print('section users ====', section_users)
+
+        if len(section_users) > 0:
+            for user in section_users:
+                user_ids.append(user.slack_id)
+
+        print('user ids', user_ids)
+
+        # create slack channel
+        channel_name = f"{batch.course.name}-{batch.number}-{section.number}-soyuz-test"
+        slack_client = Slack()
+        slack_client.create_channel(section, channel_name)
+
+        # add users to slack channel
+        slack_client.add_users_to_channel(section, user_ids)
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
+
+@ staff_member_required
+@ require_POST
 def check_slack_registration(request):
     batch_id = int(request.POST.get("batch_id"))
     batch = Batch.objects.get(id=batch_id)
@@ -288,8 +326,8 @@ def check_slack_registration(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 def create_batch_channel(request):
     batch_id = int(request.POST.get("batch_id"))
     batch = Batch.objects.get(id=batch_id)
@@ -320,8 +358,8 @@ def create_batch_channel(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 def reassign_sections(request):
     # data from form
     number_per_section = int(request.POST.get("number_per_section"))
@@ -366,8 +404,8 @@ def reassign_sections(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 def add_to_section(request):
     user_id = int(request.POST.get("user_id"))
     section_id = int(request.POST.get("section_id"))
@@ -388,8 +426,8 @@ def add_to_section(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 def delete_items(request):
     # Fetch user id and section name of user we want to remove from a section
     user_to_delete = request.POST.get("user_id")
@@ -414,8 +452,8 @@ def delete_items(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 def delete_from_batch_only(request):
 
     user_id = request.POST.get("user_id")
@@ -445,8 +483,8 @@ def delete_from_batch_only(request):
     )
 
 
-@staff_member_required
-@require_POST
+@ staff_member_required
+@ require_POST
 # fetch destinaton section number and user id
 def switch_sections(request):
     section_destination = request.POST.get("section_number")
@@ -476,7 +514,7 @@ def switch_sections(request):
     )
 
 
-@require_POST
+@ require_POST
 def change_batch_capacity(request):
     new_batch_capacity = request.POST.get("new_batch_capacity")
     batch_id = request.POST.get("batch_id")
@@ -488,6 +526,6 @@ def change_batch_capacity(request):
     return redirect("soyuz_app:get_batches")
 
 
-@require_GET
+@ require_GET
 def landing_page(request):
     return render(request, "landing-page.html")

@@ -17,14 +17,22 @@
   <p>Total number of students: {{ batch.users.count }}</p>
 
   <div class="section-container">
-    <h4>Assign Sections and Create Slack Channels</h4>
-    <label>Students per section: </label>
-    <form action="/student-admin/assign-sections-channels" method="POST">
-      {% csrf_token %}
-      <input type="text" name="number_per_section">
-      <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
+    <div>
+      <div class="assign-sections">
+        <h4>Assign Sections and Create Slack Channels</h4>
+        <label>Students per section: </label>
+        <form action="/student-admin/assign-sections-channels" method="POST">
+          {% csrf_token %}
+          <input type="text" name="number_per_section">
+          <input type="hidden" name="batch_id" value="{{ batch.id }}">
+          <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+      </div>
+      <form action="/student-admin/create-channels" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input class="btn btn-primary" type="submit" value="create channels">
+      </form>
     </div>
     <div class="add-student-form-container">
       <div class="add-student-form">
