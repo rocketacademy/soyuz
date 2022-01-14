@@ -1,12 +1,12 @@
 import logging
 import math
 
-from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+
 from ..forms import AddBatchForm, AddUserForm
 from ..library.hubspot import Hubspot
 from ..library.slack import Slack
@@ -153,8 +153,13 @@ def get_sections(request, course_name, batch_number):
             form = AddUserForm(initial={"password1": "qwerty1234"})
 
     # select dropdown for updating funnel status in hubspot
-    dropout_reasons = ["basics_deferred", "basics_dropout", "basics_dropout_logistics",
-                       "basics_dropout_noshow", "basics_dropout_other"]
+    dropout_reasons = [
+        "basics_deferred",
+        "basics_dropout",
+        "basics_dropout_logistics",
+        "basics_dropout_noshow",
+        "basics_dropout_other",
+    ]
 
     context = {
         "batch": batch,
@@ -162,7 +167,7 @@ def get_sections(request, course_name, batch_number):
         "no_section_users": no_section_users,
         "slack_unregistered": slack_unregistered,
         "form": form,
-        "dropout_reasons": dropout_reasons
+        "dropout_reasons": dropout_reasons,
     }
 
     return render(request, "section-page.html", context)
@@ -274,8 +279,8 @@ def check_slack_registration(request):
         batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
     )
 
+    slack_client = Slack()
     for user in slack_unregistered:
-        slack_client = Slack()
         slack_client.lookup_by_email(user, None)
 
     return redirect(
@@ -435,7 +440,9 @@ def delete_from_batch_only(request):
 
     batch.users.remove(user)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
