@@ -28,7 +28,7 @@ class S3:
         print('course name', course_name)
 
         # include time to make filename unique
-        date_time = datetime.now().strftime('%d-%m %Y-%H-%M')
+        date_time = datetime.now().strftime('%d-%m-%Y %H-%M')
         # key is the name of file on your bucket
         key = f'{course_name}/{meeting_topic}-{date_time}'
 
