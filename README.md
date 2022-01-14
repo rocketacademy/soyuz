@@ -307,3 +307,13 @@ It is also used to check if a user has been registered on slack.
 
 The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
 It notifies Soyuz when a user has registered on Slack and their slack id is added to the Soyuz database
+
+# Zoom API
+
+Soyuz zoom app is accessible at [Zoom Marketplace] (https://marketplace.zoom.us/)
+Sign in with your rocketacademy account, access Created Apps page by clicking on manage in the top right hand corner and click on [Soyuz](https://marketplace.zoom.us/develop/apps/tblRpuhAQlWXwwvx8vrgTA/information).
+
+The Zoom API is used to automatically create, record and delete zoom meetings
+
+On the created Apps page, in the left hand sidebar, click on Feature to access the Event subscriptions dropdown where event subscriptions can be added.
+The recording.completed webhook is used to notify Soyuz when a zoom recording is complete.
