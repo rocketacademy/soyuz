@@ -30,7 +30,7 @@ class Zoom:
 
         # create json data for post requests
         # TODO: add alternative hosts!!
-        meeting_topic = f'{batch.course.name.capitalize()} {batch.number} Section {section.number}'
+        meeting_topic = f'{batch.course.name}-{batch.number}-{section.number}'
         meeting_details = {
             "topic": meeting_topic,
             "type": 3,
