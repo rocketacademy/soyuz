@@ -15,6 +15,8 @@ if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
 
+SLACK_VERIFICATION_TOKEN = env("SLACK_VERIFICATION_TOKEN")
+SLACK_BOT_TOKEN = env("SLACK_BOT_TOKEN")
 HUBSPOT_API_KEY = env("HUBSPOT_API_KEY", default="banana")
 DAYS_TO_REGISTRATION_EXPIRE = env("DAYS_TO_REGISTRATION_EXPIRE")
 BATCH_MAX_CAPACITY = env("BATCH_MAX_CAPACITY")

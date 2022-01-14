@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 # from rest_framework import routers
-from .views import user, web
+from .views import slack, user, web
 
 # router = routers.DefaultRouter()
 # router.register(r"batches", rest.BatchView, "batch")
@@ -45,7 +45,24 @@ urlpatterns = [
         web.reassign_sections,
         name="reassign_sections",
     ),
-    path("student-admin/delete-from-batch-only", web.delete_from_batch_only, name="delete_from_batch_only"),
+    path(
+        "student-admin/check-slack-registration",
+        web.check_slack_registration,
+        name="check_slack_registration",
+    ),
+    path(
+        "student-admin/delete-from-batch-only",
+        web.delete_from_batch_only,
+        name="delete_from_batch_only",
+    ),
+    path(
+        "student-admin/create-batch-channel",
+        web.create_batch_channel,
+        name="create_batch_channel",
+    ),
+    # path("student-admin/create-channels", slack.create_channels, name="create_channels"),
+    path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
+    path('event/hook', slack.event_hook, name='event_hook'),
     path("student-admin/change-batch-capacity", web.change_batch_capacity, name="change_batch_capacity"),
     path("", web.landing_page, name="landing_page"),
 ]
