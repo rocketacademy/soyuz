@@ -57,6 +57,9 @@ class Slack:
                 send_reminder(user, batch)
 
     def add_users_to_channel(self, section, id_string):
+        print('section', section)
+        print('id ', id_string)
+
         try:
             add_user_result = self.client.conversations_invite(
                 channel=section.slack_channel_id, users=id_string
@@ -99,11 +102,6 @@ class Slack:
             for user in section_users:
                 user_ids.append(user.slack_id)
 
-        # send reminder email if user does not have a slack_id
-        if len(unregistered_users) > 0:
-            for user in unregistered_users:
-                send_reminder(user, batch)
-
             # create slack channel only if there are slack registered students in the section
             if len(user_ids) > 0:
                 channel_name = f"{batch.course.name}-{batch.number}-{section.number}-test"
@@ -111,3 +109,7 @@ class Slack:
 
                 # add users to slack channel
                 self.add_users_to_channel(section, user_ids)
+        # send reminder email if user does not have a slack_id
+        if len(unregistered_users) > 0:
+            for user in unregistered_users:
+                send_reminder(user, batch)

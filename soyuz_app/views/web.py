@@ -393,9 +393,10 @@ def add_to_section(request):
 @ staff_member_required
 @ require_POST
 def create_section_channel(request):
-    section = request.POST.get("section_id")
+    section_id = request.POST.get("section_id")
+    section = Section.objects.get(id=int(section_id))
     batch_id = request.POST.get("batch_id")
-    batch = Batch.objects.get(id=batch_id)
+    batch = Batch.objects.get(id=int(batch_id))
     batch_number = batch.number
     course_name = batch.course.name
 

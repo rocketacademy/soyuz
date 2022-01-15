@@ -43,6 +43,8 @@ def event_hook(request):
 
 
 def team_join_event(event_obj):
+    print('event obj', event_obj)
+
     # get user email from event obj
     user_email = event_obj["user"]["profile"]["email"]
     # get user's slack id from event obj
