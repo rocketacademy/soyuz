@@ -19,9 +19,9 @@
   <div class="section-container">
     <div>
       <div class="assign-sections">
-        <h4>Assign Sections and Create Slack Channels</h4>
+        <h4>Assign Sections</h4>
         <label>Students per section: </label>
-        <form action="/student-admin/assign-sections-channels" method="POST">
+        <form action="/student-admin/assign-sections" method="POST">
           {% csrf_token %}
           <input type="text" name="number_per_section">
           <input type="hidden" name="batch_id" value="{{ batch.id }}">

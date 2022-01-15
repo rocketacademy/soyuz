@@ -214,46 +214,32 @@ def delete_from_batch(request):
 @require_POST
 def assign_sections(request):
     # get batch id from form
-    number_per_section = int(request.POST.get("number_per_section"))
+    num_per_section = int(request.POST.get("number_per_section"))
     batch_id = int(request.POST.get("batch_id"))
 
-    # get all users in batch
+    # get all slack_registered users in batch
     batch = Batch.objects.get(id=batch_id)
     batch_number = batch.number
     course_name = batch.course.name
     registered_batch_users = list(
         get_user_model().objects.filter(
+            # slack_id is required as we need it to put students in slack channels
             batch=batch, slack_id__isnull=False, is_superuser=False, is_staff=False
         )
     )
 
-    # get number of users in batch
-    number_of_users = len(registered_batch_users)
-
     # calculate number of sections required
-    sections_required = math.ceil(number_of_users / number_per_section)
+    sections_required = math.ceil(int(BATCH_MAX_CAPACITY) / num_per_section)
 
     # create required number of sections
     for i in range(sections_required):
         section = Section.objects.create(number=i + 1, batch=batch)
-
-        # array of user ids to add to slack channel
-        user_ids = []
-        # for each section created
-        for j in range(number_per_section):
-            # add users to new sections
+        # assigns required number of students to section
+        for j in range(num_per_section):
             if len(registered_batch_users) > 0:
                 new_user = registered_batch_users.pop()
+                print('new user', new_user)
                 section.users.add(new_user)
-                user_ids.append(new_user.slack_id)
-
-        # create slack channel
-        channel_name = f"{batch.course.name}-{batch.number}-{section.number}-soyuz-test"
-        slack_client = Slack()
-        slack_client.create_channel(section, channel_name)
-
-        # add users to slack channel
-        slack_client.add_users_to_channel(section, user_ids)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -269,13 +255,10 @@ def create_channels(request):
     course_name = batch.course.name
 
     sections = Section.objects.all()
-    num_of_sections = sections.count()
-    print('number of sections', num_of_sections)
-
-    # array of user ids to add to slack channel
 
     for section in sections:
 
+        # array of user ids to add to slack channel
         user_ids = []
 
         section_users = list(
@@ -283,13 +266,10 @@ def create_channels(request):
                 # slack id is needed to add user to slack channel
                 section=section, slack_id__isnull=False, is_superuser=False, is_staff=False
             ))
-        print('section users ====', section_users)
 
         if len(section_users) > 0:
             for user in section_users:
                 user_ids.append(user.slack_id)
-
-        print('user ids', user_ids)
 
         # create slack channel
         channel_name = f"{batch.course.name}-{batch.number}-{section.number}-soyuz-test"

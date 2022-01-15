@@ -30,7 +30,7 @@ class Slack:
         section.slack_channel_id = result["channel"]["id"]
         section.save()
 
-    # no longer needed
+    # no longer needed after b13, slack registration is automated using webhook
 
     def lookup_by_email(self, user, user_list):
         try:
