@@ -15,7 +15,7 @@ def send_reminder(user, batch):
     )
 
     send_mail(
-        f"Rocket Academy {batch.course.name} {batch.number} Slack Registration Reminder",
+        f"Rocket Academy {batch.course.name.capitalize()} {batch.number} Slack Registration Reminder",
         msg_plain,
         "Rocket Academy <hello@rocketacademy.co>",
         [user.email],

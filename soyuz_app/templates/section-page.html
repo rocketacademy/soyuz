@@ -31,6 +31,7 @@
         </form>
       </div>
       {% endif %}
+      {% if channels_created == False %}
       <div>
         <h4>Create Slack Channels</h4>
         <form action="/student-admin/create-channels" method="POST">
@@ -39,6 +40,7 @@
           <input class="btn btn-primary" type="submit" value="create channels">
         </form>
       </div>
+      {% endif %}
     <div class="add-student-form-container">
       <div class="add-student-form">
         <h4 class="batch-form-title">Add Student to Batch</h4>
@@ -70,7 +72,7 @@
           <p>Number of students: {{ section.users|length }}</p>
         </div>
         <div class="section-buttons">
-          {% if not section.slack_channel_id %}
+          {% if not section.slack_channel_id and channels_created == True and section.users|length > 0 %}
           <form action="/student-admin/create-section-channel" method="POST">
             {% csrf_token %}
             <input type="hidden" name="batch_id" value="{{ batch.id }}">
@@ -78,9 +80,9 @@
             <input class="btn btn-primary" type="submit" value="create section channel">
           </form>
           {% endif %}
-          <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email
+          <button class="btn btn-info copy-button" type="submit" value="{{ section.number }}">Copy email
             addresses</button>
-          <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section
+          <button class="btn btn-info copy-name-button" type="submit" value="{{ section.number }}">Copy Section
             Names</button>
         </div>
       </div>
@@ -100,7 +102,7 @@
         <tbody>
           {% for user in section.users %}
           <tr class="user-row-{{ section.number }}">
-            <th class="user-email-{{ section.number }} first-column" scope="row">{{ user.email }}</th>
+            <th class="user-email-{{ section.number }} first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
             <td class="user-fname-td">{{ user.first_name }}</td>
             <td class="user-lname-td">{{ user.last_name }}</td>
             {% if user.slack_id == None %}
@@ -182,7 +184,7 @@
       <tbody>
         {% for user in slack_unregistered %}
         <tr>
-          <th class="first-column" scope="row">{{ user.email }}</th>
+          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
           <td>{{ user.first_name }}</td>
           <td>{{ user.last_name }}</td>
           <td>
@@ -214,9 +216,9 @@
       {% if sections|length > 0 %}
       <form action="/student-admin/assign-sectionless-students" method="POST">
         {% csrf_token %}
-        <input type="number" name="number_per_section">
+        <input type="number" name="num_per_section">
         <input type="hidden" name="batch_id" value="{{ batch.id }}">
-        <input class="btn btn-primary" type="submit" value="assign to sections">
+        <input class="btn btn-primary" type="submit" value="assign to section(s)">
       </form>
       {% endif %}
     </div>
@@ -236,7 +238,7 @@
       <tbody>
         {% for user in no_section_users %}
         <tr>
-          <th class="first-column" scope="row">{{ user.email }}</th>
+          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
           <td>{{ user.first_name }}</td>
           <td>{{ user.last_name }}</td>
           {% if user.slack_id == None %}
