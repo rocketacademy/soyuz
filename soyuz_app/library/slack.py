@@ -37,7 +37,6 @@ class Slack:
     def lookup_by_email(self, user, user_list):
         try:
             email_lookup_result = self.client.users_lookupByEmail(email=user.email)
-            print('emil', email_lookup_result)
 
         except SlackApiError as e:
             logger.error("Error looking up email: {}".format(e))
@@ -57,8 +56,6 @@ class Slack:
                 send_reminder(user, batch)
 
     def add_users_to_channel(self, section, id_string):
-        print('section', section)
-        print('id ', id_string)
 
         try:
             add_user_result = self.client.conversations_invite(
@@ -71,8 +68,6 @@ class Slack:
             logger.error("Error inviting user: {}".format(e))
 
     def remove_from_channel(self, section, id_string):
-        print('section.slack_channel_id', section.slack_channel_id)
-        print('id string', id_string)
 
         try:
             remove_user_result = self.client.conversations_kick(
@@ -107,7 +102,7 @@ class Slack:
 
             # create slack channel only if there are slack registered students in the section
             if len(user_ids) > 0:
-                channel_name = f"{batch.course.name}-{batch.number}-{section.number}-test"
+                channel_name = f"{batch.course.name}-{batch.number}-{section.number}"
                 self.create_channel(section, channel_name)
 
                 # add users to slack channel

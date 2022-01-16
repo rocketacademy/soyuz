@@ -37,7 +37,6 @@ def event_hook(request):
         # threading is used here because we want this code to run in the background
         t = threading.Thread(target=team_join_event, args=(event_obj,))
         t.start()
-        team_join_event(event_obj)
 
         return HttpResponse(status=200)
 
