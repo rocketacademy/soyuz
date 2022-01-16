@@ -19,7 +19,6 @@
   </div>
 
   <div class="section-container">
-    <div>
       {% if sections|length == 0 %}
       <div class="assign-sections">
         <h4>Assign Sections</h4>
@@ -40,7 +39,6 @@
           <input class="btn btn-primary" type="submit" value="create channels">
         </form>
       </div>
-    </div>
     <div class="add-student-form-container">
       <div class="add-student-form">
         <h4 class="batch-form-title">Add Student to Batch</h4>
@@ -213,12 +211,14 @@
   <div class="no-section">
     <div class="no-section-header">
       <h4>Students that don't belong in a section</h4>
+      {% if sections|length > 0 %}
       <form action="/student-admin/assign-sectionless-students" method="POST">
         {% csrf_token %}
         <input type="number" name="number_per_section">
         <input type="hidden" name="batch_id" value="{{ batch.id }}">
         <input class="btn btn-primary" type="submit" value="assign to sections">
       </form>
+      {% endif %}
     </div>
     <table class="table table-striped">
       <thead>

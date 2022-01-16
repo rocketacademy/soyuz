@@ -48,7 +48,7 @@ class Slack:
             user.save()
 
             if user_list is not None:
-                user_list.append(user)
+                user_list.append(user.slack_id)
 
         finally:
             var_exists = 'email_lookup_result' in locals() or 'email_lookup_result' in globals()

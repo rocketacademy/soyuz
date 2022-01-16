@@ -68,8 +68,7 @@
       }
     }
   }
-  .unregistered-users,
-  .no-section {
+  .unregistered-users {
     color: $blue;
     padding: 20px 40px;
     margin: 40px 30px 10px 10px;
@@ -79,12 +78,10 @@
       display: flex;
       justify-content: space-between;
     }
+
     td,
     th {
       text-align: center;
-    }
-    .first-column {
-      text-align: left;
     }
     .user-slackid-td {
       .fa-check-circle {
@@ -94,5 +91,35 @@
         color: red;
       }
     }
+    .first-column {
+      text-align: left;
+    }
+  }
+}
+.no-section {
+  color: $blue;
+  padding: 20px 40px;
+  margin: 40px 30px 10px 10px;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  td,
+  th {
+    text-align: center;
+  }
+  .user-slackid-td {
+    .fa-check-circle {
+      color: $blue;
+    }
+    .fa-times-circle {
+      color: red;
+    }
+  }
+  .first-column {
+    text-align: left;
   }
 }

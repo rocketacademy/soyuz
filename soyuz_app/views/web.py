@@ -173,7 +173,7 @@ def get_sections(request, course_name, batch_number):
         "no_section_users": no_section_users,
         "slack_unregistered": slack_unregistered,
         "form": form,
-        "dropout_reasons": dropout_reasons,
+        "dropout_reasons": dropout_reasons
     }
 
     return render(request, "section-page.html", context)
@@ -233,8 +233,13 @@ def assign_sections(request):
         )
     )
 
+    if batch.max_capacity is None:
+        max_capacity = BATCH_MAX_CAPACITY
+    else:
+        max_capacity = batch.max_capacity
+
     # calculate number of sections required
-    sections_required = math.ceil(int(BATCH_MAX_CAPACITY) / num_per_section)
+    sections_required = math.ceil(int(max_capacity) / num_per_section)
 
     # create required number of sections
     for i in range(sections_required):
@@ -283,8 +288,13 @@ def check_slack_registration(request):
     )
 
     slack_client = Slack()
+    slack_ids = []
+
     for user in slack_unregistered:
-        slack_client.lookup_by_email(user, None)
+        slack_client.lookup_by_email(user, slack_ids)
+
+    print('slack ids', slack_ids)
+    slack_client.add_users_to_channel(batch, slack_ids)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
