@@ -211,7 +211,15 @@
 
   {% if no_section_users|length > 0 %}
   <div class="no-section">
-    <h4>Students that don't belong in a section</h4>
+    <div class="no-section-header">
+      <h4>Students that don't belong in a section</h4>
+      <form action="/student-admin/assign-sectionless-students" method="POST">
+        {% csrf_token %}
+        <input type="number" name="number_per_section">
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input class="btn btn-primary" type="submit" value="assign to sections">
+      </form>
+    </div>
     <table class="table table-striped">
       <thead>
         <tr>

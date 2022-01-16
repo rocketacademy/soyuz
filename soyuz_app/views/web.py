@@ -51,10 +51,13 @@ def add_to_batch(request):
 
     # adding to batch and slack batch channel
     destination_batch.users.add(user)
-    slack_id = user.slack_id
 
-    slack_client = Slack()
-    slack_client.add_users_to_channel(destination_batch, slack_id)
+    if user.slack_id is not None:
+        slack_id = user.slack_id
+
+        slack_client = Slack()
+        slack_client.add_users_to_channel(destination_batch, slack_id)
+
     return redirect("soyuz_app:get_student_list")
 
 
@@ -197,14 +200,16 @@ def delete_from_batch(request):
     hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
 
     section.users.remove(user)
-    slack_id = user.slack_id
-    slack_client = Slack()
-    # remove from section slack channel
-    slack_client.remove_from_channel(section, slack_id)
-
     batch.users.remove(user)
-    # remove from batch slack channel
-    slack_client.remove_from_channel(batch, slack_id)
+
+    if user.slack_id is not None:
+        slack_id = user.slack_id
+        slack_client = Slack()
+        # remove from section slack channel
+        slack_client.remove_from_channel(section, slack_id)
+
+        # remove from batch slack channel
+        slack_client.remove_from_channel(batch, slack_id)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -382,8 +387,9 @@ def add_to_section(request):
     # add user to destination section
     destination_section.users.add(user)
     # add user to destination slack channel
-    slack_client = Slack()
-    slack_client.add_users_to_channel(destination_section, user.slack_id)
+    if user.slack_id is not None:
+        slack_client = Slack()
+        slack_client.add_users_to_channel(destination_section, user.slack_id)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -425,9 +431,11 @@ def delete_items(request):
     user = get_user_model().objects.get(id=int(user_to_delete))
     # remove from section
     selected_section.users.remove(user)
-    # remove from slack section channel
-    slack_client = Slack()
-    slack_client.remove_from_channel(batch, user.slack_id)
+
+    if user.slack_id is not None:
+        # remove from slack section channel
+        slack_client = Slack()
+        slack_client.remove_from_channel(batch, user.slack_id)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -446,8 +454,9 @@ def delete_from_batch_only(request):
     course_name = batch.course.name
 
     user = get_user_model().objects.get(id=int(user_id))
+    batch.users.remove(user)
 
-    if user.slack_id:
+    if user.slack_id is not None:
         slack_client = Slack()
         slack_client.remove_from_channel(batch, user.slack_id)
 
@@ -457,8 +466,6 @@ def delete_from_batch_only(request):
     user_hubspot_id = hubspot_client.get_hubspot_id(email)
     # update user's funnel status
     hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
-
-    batch.users.remove(user)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -483,13 +490,52 @@ def switch_sections(request):
     destination_section = Section.objects.get(id=int(section_destination))
     # remove from original section
     user_section.users.remove(selected_user)
-    # remove from original slack section channel
-    slack_client = Slack()
-    slack_client.remove_from_channel(user_section, selected_user.slack_id)
     # add to destination section
     destination_section.users.add(selected_user)
-    # add to destination slack channel
-    slack_client.add_users_to_channel(destination_section, selected_user.slack_id)
+
+    # if user is registered on slack
+    if selected_user.slack_id is not None:
+        # remove from original slack section channel
+        slack_client = Slack()
+        slack_client.remove_from_channel(user_section, selected_user.slack_id)
+
+        # add to destination slack channel
+        slack_client.add_users_to_channel(destination_section, selected_user.slack_id)
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
+
+@staff_member_required
+@require_POST
+def sectionless_assign(request):
+    num_per_section = request.POST.get("num_per_section")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=int(batch_id))
+    course_name = batch.course.name
+    batch_number = batch.number
+
+    sectionless_students = list(get_user_model().objects.filter(
+        batch=batch,
+        section__isnull=True,
+        is_superuser=False,
+        is_staff=False,
+    ))
+
+    sections = Section.objects.all()
+
+    slack_client = Slack()
+
+    for section in sections:
+        num_students = section.users.count()
+        if num_students <= num_per_section and len(sectionless_students) > 0:
+            new_student = sectionless_students.pop()
+            print('new student', new_student)
+            section.users.add(new_student)
+            if new_student.slack_id is not None:
+                # add to section's slack channel
+                slack_client.add_users_to_channel(section, new_student.slack_id)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number

@@ -71,6 +71,9 @@ class Slack:
             logger.error("Error inviting user: {}".format(e))
 
     def remove_from_channel(self, section, id_string):
+        print('section.slack_channel_id', section.slack_channel_id)
+        print('id string', id_string)
+
         try:
             remove_user_result = self.client.conversations_kick(
                 channel=section.slack_channel_id, user=id_string
