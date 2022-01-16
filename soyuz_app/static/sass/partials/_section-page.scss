@@ -16,6 +16,10 @@
     }
   }
 }
+.section-page-header {
+  display: flex;
+  justify-content: space-between;
+}
 .add-student-form-container {
   display: flex;
   justify-content: center;
