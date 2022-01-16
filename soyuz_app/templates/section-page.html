@@ -12,9 +12,21 @@
   </nav>
 
   <a href="{% url 'soyuz_app:get_student_list' %}">Student List</a>
-  <h1>{{ batch.course|title }} {{ batch.number }}</h1>
-  <h2>Start Date: {{ batch.start_date }}</h2>
-  <p>Total number of students: {{ batch.users.count }}</p>
+  <div class="section-page-header">
+    <div class="section-page-text">
+      <h1>{{ batch.course|title }} {{ batch.number }}</h1>
+      <h2>Start Date: {{ batch.start_date }}</h2>
+      <p>Total number of students: {{ batch.users.count }}</p>
+    </div>
+    <div class="section-page-buttons">
+      <form action="/student-admin/course-completed" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input class="btn btn-primary" type="submit" value="course complete!">
+      </form>
+    </div>
+  </div>
+
 
   <div class="section-container">
     <h4>Assign Sections and Create Slack Channels</h4>

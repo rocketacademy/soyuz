@@ -72,7 +72,7 @@ class Hubspot:
 
     # update funnel status on dropout from batch
 
-    def update_funnel_dropout(self, user_hubspot_id, funnel_status):
+    def update_funnel_status(self, user_hubspot_id, funnel_status):
 
         properties = {
             "bootcamp_funnel_status": f"basics_apply;basics_register;{funnel_status}"

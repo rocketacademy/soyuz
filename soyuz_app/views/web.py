@@ -191,7 +191,7 @@ def delete_from_batch(request):
     # get user's hubspot id
     user_hubspot_id = hubspot_client.get_hubspot_id(email)
     # update user's funnel status
-    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
+    hubspot_client.update_funnel_status(user_hubspot_id, funnel_status)
 
     section.users.remove(user)
     slack_id = user.slack_id
@@ -436,7 +436,7 @@ def delete_from_batch_only(request):
     # get user's hubspot id
     user_hubspot_id = hubspot_client.get_hubspot_id(email)
     # update user's funnel status
-    hubspot_client.update_funnel_dropout(user_hubspot_id, funnel_status)
+    hubspot_client.update_funnel_status(user_hubspot_id, funnel_status)
 
     batch.users.remove(user)
 
@@ -486,6 +486,28 @@ def change_batch_capacity(request):
     batch.save()
 
     return redirect("soyuz_app:get_batches")
+
+
+@require_POST
+def course_completed(request):
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    batch_users = get_user_model().objects.filter(batch=batch, is_superuser=False, is_staff=False)
+
+    hubspot_client = Hubspot()
+
+    for user in batch_users:
+        # get user's hubspot id
+        user_hubspot_id = hubspot_client.get_hubspot_id(user.email)
+        # update user's funnel status
+        hubspot_client.update_funnel_status(user_hubspot_id, "basics_completion")
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @require_GET
