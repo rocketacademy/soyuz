@@ -42,7 +42,6 @@ def event_hook(request):
 
 
 def team_join_event(event_obj):
-    print('event obj', event_obj)
 
     # get user email from event obj
     user_email = event_obj["user"]["profile"]["email"]
@@ -69,7 +68,6 @@ def team_join_event(event_obj):
 
             slack_client.add_users_to_channel(user_batch, slack_id)
 
-            # TODO: do we want to implement this?
             try:
                 user_section = user.section_set.get(batch=user_batch)
                 print('user section', user_section)

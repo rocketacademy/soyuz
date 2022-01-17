@@ -41,6 +41,11 @@ class Slack:
         except SlackApiError as e:
             logger.error("Error looking up email: {}".format(e))
 
+            if e.response['error'] == 'users_not_found':
+                # send reminder email if user is not registered on slack
+                batch = Batch.objects.get(users__email=user.email)
+                send_reminder(user, batch)
+
         else:
             # save slack id if user is found in workspace and does not have a slack id
             user.slack_id = email_lookup_result["user"]["id"]
@@ -48,12 +53,6 @@ class Slack:
 
             if user_list is not None:
                 user_list.append(user.slack_id)
-
-        finally:
-            var_exists = 'email_lookup_result' in locals() or 'email_lookup_result' in globals()
-            if var_exists is False:
-                batch = Batch.objects.get(users__email=user.email)
-                send_reminder(user, batch)
 
     def add_users_to_channel(self, section, id_string):
 

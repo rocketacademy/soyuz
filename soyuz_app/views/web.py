@@ -300,8 +300,8 @@ def check_slack_registration(request):
     for user in slack_unregistered:
         slack_client.lookup_by_email(user, slack_ids)
 
-    if len(slack_ids) > 0:
-        slack_client.add_users_to_channel(batch, slack_ids)
+    # if len(slack_ids) > 0:
+    #     slack_client.add_users_to_channel(batch, slack_ids)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
