@@ -138,8 +138,7 @@ def get_sections(request, course_name, batch_number):
             email = form.cleaned_data.get("email")
             # set hubspot user data
             user_hubspot_id = hubspot_client.get_hubspot_id(email)
-            hubspot_client.update_hubspot(user_hubspot_id)
-            chosen_section = Section.objects.get(id=int(section_id))
+            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
 
             user = get_user_model().objects.create(
                 email=email,
@@ -151,7 +150,11 @@ def get_sections(request, course_name, batch_number):
             user.set_password(raw_password)
             user.save()
             batch.users.add(user)
-            chosen_section.users.add(user)
+
+            # if a section was chosen in the form, add the section
+            if section_id is not None:
+                chosen_section = Section.objects.get(id=int(section_id))
+                chosen_section.users.add(user)
 
             # use PassWordResetForm to send password reset email to added user
             reset_form = PasswordResetForm({"email": user.email})
