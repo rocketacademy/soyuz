@@ -60,9 +60,11 @@ urlpatterns = [
         web.create_batch_channel,
         name="create_batch_channel",
     ),
-    # path("student-admin/create-channels", slack.create_channels, name="create_channels"),
-    path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
+    path("student-admin/assign-sections", web.assign_sections, name="assign_sections"),
+    path("student-admin/create-channels", web.create_channels, name="create_channels"),
     path('event/hook', slack.event_hook, name='event_hook'),
     path("student-admin/change-batch-capacity", web.change_batch_capacity, name="change_batch_capacity"),
+    path("student-admin/create-section-channel", web.create_section_channel, name="create_section_channel"),
+    path("student-admin/assign-sectionless-students", web.sectionless_assign, name="sectionless_assign"),
     path("", web.landing_page, name="landing_page"),
 ]
