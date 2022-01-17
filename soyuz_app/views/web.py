@@ -1,5 +1,6 @@
 import logging
 import math
+
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
@@ -116,7 +117,7 @@ def get_sections(request, course_name, batch_number):
         section_obj["number"] = section.number
         section_users = section.users.all()
         section_obj["users"] = section_users
-        section_obj['slack_channel_id'] = section.slack_channel_id
+        section_obj["slack_channel_id"] = section.slack_channel_id
         section_array.append(section_obj)
 
     if request.method == "GET":
@@ -126,7 +127,6 @@ def get_sections(request, course_name, batch_number):
 
     elif request.method == "POST":
         form = AddUserForm(request.POST)
-        section_id = request.POST.get("section_id")
 
         if form.is_valid():
 
@@ -150,11 +150,6 @@ def get_sections(request, course_name, batch_number):
             user.set_password(raw_password)
             user.save()
             batch.users.add(user)
-
-            # if a section was chosen in the form, add the section
-            if section_id is not None:
-                chosen_section = Section.objects.get(id=int(section_id))
-                chosen_section.users.add(user)
 
             # use PassWordResetForm to send password reset email to added user
             reset_form = PasswordResetForm({"email": user.email})
@@ -183,7 +178,7 @@ def get_sections(request, course_name, batch_number):
         "slack_unregistered": slack_unregistered,
         "form": form,
         "dropout_reasons": dropout_reasons,
-        "channels_created": channels_created
+        "channels_created": channels_created,
     }
 
     return render(request, "section-page.html", context)
@@ -238,9 +233,7 @@ def assign_sections(request):
     batch_number = batch.number
     course_name = batch.course.name
     batch_users = list(
-        get_user_model().objects.filter(
-            batch=batch, is_superuser=False, is_staff=False
-        )
+        get_user_model().objects.filter(batch=batch, is_superuser=False, is_staff=False)
     )
 
     if batch.max_capacity is None:
@@ -284,8 +277,8 @@ def create_channels(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def check_slack_registration(request):
     batch_id = int(request.POST.get("batch_id"))
     batch = Batch.objects.get(id=batch_id)
@@ -310,11 +303,12 @@ def check_slack_registration(request):
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
     )
 
+
 # no longer required, batch channel is getting created when batch is created
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def create_batch_channel(request):
     batch_id = int(request.POST.get("batch_id"))
     batch = Batch.objects.get(id=batch_id)
@@ -344,11 +338,12 @@ def create_batch_channel(request):
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
     )
 
+
 # no longer required, workflow has changed
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def reassign_sections(request):
     # data from form
     number_per_section = int(request.POST.get("number_per_section"))
@@ -393,8 +388,8 @@ def reassign_sections(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def add_to_section(request):
     user_id = int(request.POST.get("user_id"))
     section_id = int(request.POST.get("section_id"))
@@ -416,8 +411,8 @@ def add_to_section(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def create_section_channel(request):
     section_id = request.POST.get("section_id")
     section = Section.objects.get(id=int(section_id))
@@ -434,8 +429,8 @@ def create_section_channel(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def delete_items(request):
     # Fetch user id and section name of user we want to remove from a section
     user_to_delete = request.POST.get("user_id")
@@ -462,8 +457,8 @@ def delete_items(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 def delete_from_batch_only(request):
 
     user_id = request.POST.get("user_id")
@@ -492,8 +487,8 @@ def delete_from_batch_only(request):
     )
 
 
-@ staff_member_required
-@ require_POST
+@staff_member_required
+@require_POST
 # fetch destinaton section number and user id
 def switch_sections(request):
     section_destination = request.POST.get("section_number")
@@ -519,7 +514,10 @@ def switch_sections(request):
         # remove from original slack section channel
         slack_client.remove_from_channel(user_section, selected_user.slack_id)
 
-    if selected_user.slack_id is not None and destination_section.slack_channel_id is not None:
+    if (
+        selected_user.slack_id is not None
+        and destination_section.slack_channel_id is not None
+    ):
         # add to destination slack channel
         slack_client.add_users_to_channel(destination_section, selected_user.slack_id)
 
@@ -537,12 +535,14 @@ def sectionless_assign(request):
     course_name = batch.course.name
     batch_number = batch.number
 
-    sectionless_students = list(get_user_model().objects.filter(
-        batch=batch,
-        section__isnull=True,
-        is_superuser=False,
-        is_staff=False,
-    ))
+    sectionless_students = list(
+        get_user_model().objects.filter(
+            batch=batch,
+            section__isnull=True,
+            is_superuser=False,
+            is_staff=False,
+        )
+    )
 
     sections = Section.objects.filter(batch=batch).order_by("number")
 
@@ -558,25 +558,33 @@ def sectionless_assign(request):
                 if len(sectionless_students) > 0:
                     new_student = sectionless_students.pop()
                     section.users.add(new_student)
-                    if new_student.slack_id is not None and section.slack_channel_id is not None:
+                    if (
+                        new_student.slack_id is not None
+                        and section.slack_channel_id is not None
+                    ):
                         # add to section's slack channel
                         slack_client.add_users_to_channel(section, new_student.slack_id)
 
         elif num_students >= num_per_section:
             difference = num_students - num_per_section
 
-            section_users = list(get_user_model().objects.filter(
-                section=section,
-                is_superuser=False,
-                is_staff=False,
-            ))
+            section_users = list(
+                get_user_model().objects.filter(
+                    section=section,
+                    is_superuser=False,
+                    is_staff=False,
+                )
+            )
 
             for i in range(difference):
                 removed_student = section_users.pop()
                 section.users.remove(removed_student)
                 sectionless_students.append(removed_student)
 
-                if removed_student.slack_id is not None and section.slack_channel_id is not None:
+                if (
+                    removed_student.slack_id is not None
+                    and section.slack_channel_id is not None
+                ):
                     slack_client.remove_from_channel(section, removed_student.slack_id)
 
         else:
@@ -587,7 +595,7 @@ def sectionless_assign(request):
     )
 
 
-@ require_POST
+@require_POST
 def change_batch_capacity(request):
     new_batch_capacity = request.POST.get("new_batch_capacity")
     batch_id = request.POST.get("batch_id")
@@ -599,6 +607,6 @@ def change_batch_capacity(request):
     return redirect("soyuz_app:get_batches")
 
 
-@ require_GET
+@require_GET
 def landing_page(request):
     return render(request, "landing-page.html")
