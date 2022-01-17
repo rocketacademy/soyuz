@@ -81,6 +81,7 @@ class Hubspot:
 
         self.update_hubspot(user_hubspot_id, properties)
 
+    # update funnel status of multiple students
     def bulk_update_funnel_completion(self, batch_users):
 
         property_list = []
