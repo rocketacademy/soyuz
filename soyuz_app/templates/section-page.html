@@ -33,18 +33,7 @@
           {% csrf_token %}
           {{ form|crispy }}
           <div class="add-user">
-          <div class="add-user-select">
-            <label>Choose section:</label>
-            <select name="section_id" class="section-select">
-              <option selected="selected" disabled>--</option>
-              {% for dropdown_section in sections %}
-              <option value="{{ dropdown_section.id }}">{{ dropdown_section.number }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="add-user-actions">
             <button class="submit btn btn-primary">Add Student</button>
-          </div>
           </div>
         </form>
       </div>
