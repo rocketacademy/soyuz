@@ -499,11 +499,7 @@ def course_completed(request):
 
     hubspot_client = Hubspot()
 
-    for user in batch_users:
-        # get user's hubspot id
-        user_hubspot_id = hubspot_client.get_hubspot_id(user.email)
-        # update user's funnel status
-        hubspot_client.update_funnel_status(user_hubspot_id, "basics_completion")
+    hubspot_client.bulk_update_funnel_completion(batch_users)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number

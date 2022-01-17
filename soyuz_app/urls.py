@@ -64,5 +64,6 @@ urlpatterns = [
     path("student-admin/assign-sections-channels", web.assign_sections_channels, name="assign_sections_channels"),
     path('event/hook', slack.event_hook, name='event_hook'),
     path("student-admin/change-batch-capacity", web.change_batch_capacity, name="change_batch_capacity"),
+    path('student-admin/course-completed', web.course_completed, name="course_completed"),
     path("", web.landing_page, name="landing_page"),
 ]
