@@ -144,7 +144,6 @@ def get_sections(request, course_name, batch_number):
             reset_form.is_valid()
             reset_form.save(
                 from_email="admin@rocketacademy.co",
-                email_template_name="users/password-reset.html",
             )
 
             # returns AddUserForm to it's original state
