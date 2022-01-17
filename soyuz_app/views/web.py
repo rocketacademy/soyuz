@@ -541,8 +541,7 @@ def sectionless_assign(request):
         is_staff=False,
     ))
 
-    sections = Section.objects.all().order_by("number")
-    print(sections)
+    sections = Section.objects.filter(batch=batch).order_by("number")
 
     slack_client = Slack()
 

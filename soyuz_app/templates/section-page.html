@@ -15,7 +15,7 @@
   <div class="section-top-header">
     <h1>{{ batch.course|title }} {{ batch.number }}</h1>
     <h4>Start Date: {{ batch.start_date }}</h4>
-    <p>Total number of students: {{ batch.users.count }}</p>
+    <p>Total number of students: {{ batch.users.count }} / {{ batch.max_capacity }}</p>
   </div>
 
   <div class="section-container">
@@ -155,10 +155,10 @@
           {% endfor %}
         </tbody>
       </table>
-
     </div>
-    {% endfor %}
+  {%endfor %}
   </div>
+
   {% if no_section_users|length > 0 %}
   <div class="no-section">
     <div class="no-section-header">
@@ -166,9 +166,10 @@
       {% if sections|length > 0 %}
       <form action="/student-admin/assign-sectionless-students" method="POST">
         {% csrf_token %}
+        <label>Number per section:</label>
         <input type="number" name="num_per_section">
         <input type="hidden" name="batch_id" value="{{ batch.id }}">
-        <input class="btn btn-primary" type="submit" value="assign to section(s)">
+        <input class="btn btn-primary" type="submit" value="Reassign to sections">
       </form>
       {% endif %}
     </div>
@@ -230,8 +231,9 @@
         {% endfor %}
       </tbody>
     </table>
-    {% endif %}
   </div>
+  {% endif %}
+
   {% if slack_unregistered|length > 0 %}
   <div class="unregistered-users">
 
@@ -241,7 +243,7 @@
         {% csrf_token %}
         <input type="hidden" name="batch_id" value="{{ batch.id }}">
         <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
-        <input class="btn btn-primary" type="submit" value="check slack registration">
+        <input class="btn btn-primary" type="submit" value="check slack registration / send reminder email">
       </form>
     </div>
 
@@ -278,9 +280,8 @@
         {% endfor %}
       </tbody>
     </table>
-    {% endif %}
   </div>
-
+  {% endif %}
 </div>
   <script>
     const copyButtonArray = document.querySelectorAll('.copy-button');
