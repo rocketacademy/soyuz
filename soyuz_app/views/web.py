@@ -126,7 +126,7 @@ def get_sections(request, course_name, batch_number):
             email = form.cleaned_data.get("email")
             # set hubspot user data
             user_hubspot_id = hubspot_client.get_hubspot_id(email)
-            hubspot_client.update_hubspot(user_hubspot_id)
+            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
             chosen_section = Section.objects.get(id=int(section_id))
 
             user = get_user_model().objects.create(
