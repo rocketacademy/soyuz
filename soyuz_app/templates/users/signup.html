@@ -4,7 +4,7 @@
 <div class="centered-container">
   <div class="centered-box">
     <h2>Student Registration</h2>
-    <h2>{{batch.course.name}} - Batch {{batch.number}}</h2>
+    <h2>{{batch.course.name|title}} - Batch {{batch.number}}</h2>
     <div class="signup-form-container">
         <h6>Email: {{email}}</h6>
         {% if form.errors and 'email' in form.errors %}

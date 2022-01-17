@@ -1,6 +1,8 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
+{% load crispy_forms_tags %}
 <div class="section-page-container">
+
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'soyuz_app:get_batches' %}">all batches</a></li>
@@ -8,35 +10,79 @@
       <li class="breadcrumb-item active" aria-current="page">{{ batch.number }}</li>
     </ol>
   </nav>
+
   <a href="{% url 'soyuz_app:get_student_list' %}">Student List</a>
-  <h1>{{ batch.course }} {{ batch.number }}</h1>
-  <h2>Start Date: {{ batch.start_date }}</h2>
-  <p>Total number of students: {{ batch.users.count }}</p>
+  <div class="section-top-header">
+    <h1>{{ batch.course|title }} {{ batch.number }}</h1>
+    <h4>Start Date: {{ batch.start_date }}</h4>
+    <p>Total number of students: {{ batch.users.count }} / {{ batch.max_capacity }}</p>
+  </div>
+
   <div class="section-container">
-    <div class="reassign-form">
-    <h4>Reassign Sections</h4>
-    <label>Students per section: </label>
-    <form action="/student-admin/reassign-sections" method="POST">
-      {% csrf_token %}
-      <input type="text" name="number_per_section">
-      <input type="hidden" name="batch_id" value="{{ batch.id }}">
-      <button class="btn btn-primary" type="submit" value="Submit"  onclick="return confirm('Are you sure you would like to reassign sections?');"><i class="fas fa-sync-alt"></i></button>
-    </form>
+      {% if sections|length == 0 %}
+      <div class="assign-sections">
+        <h4>Assign Sections</h4>
+        <label>Students per section: </label>
+        <form action="/student-admin/assign-sections" method="POST">
+          {% csrf_token %}
+          <input type="text" name="number_per_section">
+          <input type="hidden" name="batch_id" value="{{ batch.id }}">
+          <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+      </div>
+      {% endif %}
+      {% if channels_created == False %}
+      <div>
+        <h4>Create Slack Channels</h4>
+        <form action="/student-admin/create-channels" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="batch_id" value="{{ batch.id }}">
+          <input class="btn btn-primary" type="submit" value="create channels">
+        </form>
+      </div>
+      {% endif %}
+    <div class="add-student-form-container">
+      <div class="add-student-form">
+        <h4 class="batch-form-title">Add Student to Batch</h4>
+        <form action="{% url 'soyuz_app:get_sections' course_name=batch.course batch_number=batch.number %}" method="POST">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="add-user">
+            <button class="submit btn btn-primary">Add Student</button>
+          </div>
+        </form>
+      </div>
     </div>
     {% for section in sections %}
     <div class="section">
       <div class="section-header">
-        <h3>Section: {{ section.number }}</h3>
-        <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email addresses</button>
-        <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section Names</button>
+        <div class="section-text">
+          <h3>Section: {{ section.number }}</h3>
+          <p>Number of students: {{ section.users|length }}</p>
+        </div>
+        <div class="section-buttons">
+          {% if not section.slack_channel_id and channels_created == True and section.users|length > 0 %}
+          <form action="/student-admin/create-section-channel" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="batch_id" value="{{ batch.id }}">
+            <input type="hidden" name="section_id" value="{{ section.id }}">
+            <input class="btn btn-primary" type="submit" value="create section channel">
+          </form>
+          {% endif %}
+          <button class="btn btn-info copy-button" type="submit" value="{{ section.number }}">Copy email
+            addresses</button>
+          <button class="btn btn-info copy-name-button" type="submit" value="{{ section.number }}">Copy Section
+            Names</button>
+        </div>
       </div>
-      <p>Number of students: {{ section.users|length }}</p>
+
       <table class="table table-striped">
         <thead>
           <tr>
             <th class="first-column" scope="col">Email</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
+            <th scope="col">Slack Registered</th>
             <th scope="col">Switch Sections</th>
             <th scope="col">Delete from Section</th>
             <th scope="col">Delete from Batch</th>
@@ -45,9 +91,15 @@
         <tbody>
           {% for user in section.users %}
           <tr class="user-row-{{ section.number }}">
-            <th class="user-email-{{ section.number }} first-column" scope="row">{{ user.email }}</th>
+            <th class="user-email-{{ section.number }} first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
             <td class="user-fname-td">{{ user.first_name }}</td>
             <td class="user-lname-td">{{ user.last_name }}</td>
+            {% if user.slack_id == None %}
+            <td class="user-slackid-td"><i class="fas fa-times-circle"></i></td>
+            {% else %}
+            <td class="user-slackid-td"><i class="far fa-check-circle"></i></td>
+
+            {% endif %}
             <td>
               <form action="/student-admin/switch-sections" method="POST">
                 {% csrf_token %}
@@ -59,23 +111,29 @@
                   {% endif %}
                   {% endfor %}
                 </select>
-                  <input type="hidden" name="user_id" value="{{ user.id }}">
-                  <input type="hidden" name="batch_id" value="{{ batch.id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="batch_id" value="{{ batch.id }}">
                 <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-sync-alt"></i></button>
               </form>
             </td>
             <td>
               <form action="/student-admin/delete-from-section" method="POST">
                 {% csrf_token %}
-                  <input type="hidden" name="section_id" value="{{ section.id }}">
-                  <input type="hidden" name="user_id" value="{{ user.id }}">
-                  <input type="hidden" name="batch_id" value="{{ batch.id }}">
+                <input type="hidden" name="section_id" value="{{ section.id }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="batch_id" value="{{ batch.id }}">
                 <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
               </form>
             </td>
             <td>
               <form action="/student-admin/delete-from-batch" method="POST">
                 {% csrf_token %}
+                <select name="funnel_status" class="section-select">
+                  <option selected="selected" disabled>--</option>
+                  {% for reason in dropout_reasons %}
+                  <option value="{{ reason }}">{{ reason }}</option>
+                  {% endfor %}
+                </select>
                 <input type="hidden" name="section_id" value="{{ section.id }}">
                 <input type="hidden" name="user_id" value="{{ user.id }}">
                 <input type="hidden" name="batch_id" value="{{ batch.id }}">
@@ -87,44 +145,133 @@
         </tbody>
       </table>
     </div>
-  {% endfor %}
+  {%endfor %}
   </div>
-  {% if users|length > 0 %}
-  <h4>Students that don't belong in a section</h4>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th class="first-column" scope="col">Email</th>
-        <th scope="col">First Name</th>
-        <th scope="col">Last Name</th>
-        <th scope="col">Add to Section</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-      <tr>
-        <th class="first-column" scope="row">{{ user.email }}</th>
-        <td>{{ user.first_name }}</td>
-        <td>{{ user.last_name }}</td>
-        <td>
-          <form action="/student-admin/add-to-section" method="POST">
-            {% csrf_token %}
-            <select name="section_id" class="section-select">
-              <option selected="selected" disabled>--</option>
-              {% for section in sections %}
-              <option value="{{ section.id }}">{{ section.number }}</option>
-              {% endfor %}
-            </select>
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-            <input type="hidden" name="batch_id" value="{{ batch.id }}">
-            <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+
+  {% if no_section_users|length > 0 %}
+  <div class="no-section">
+    <div class="no-section-header">
+      <h4>Students that don't belong in a section</h4>
+      {% if sections|length > 0 %}
+      <form action="/student-admin/assign-sectionless-students" method="POST">
+        {% csrf_token %}
+        <label>Number per section:</label>
+        <input type="number" name="num_per_section">
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input class="btn btn-primary" type="submit" value="Reassign to sections">
+      </form>
+      {% endif %}
+    </div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th class="first-column" scope="col">Email</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Slack Registered</th>
+          <th scope="col">Delete from Batch</th>
+          {% if sections|length > 0 %}
+          <th scope="col">Add to Section</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in no_section_users %}
+        <tr>
+          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
+          <td>{{ user.first_name }}</td>
+          <td>{{ user.last_name }}</td>
+          {% if user.slack_id == None %}
+          <td class="user-slackid-td"><i class="fas fa-times-circle"></i></td>
+          {% else %}
+          <td class="user-slackid-td"><i class="far fa-check-circle"></i></td>
+          {% endif %}
+          <td>
+            <form action="/student-admin/delete-from-batch-only" method="POST">
+              {% csrf_token %}
+              <select name="funnel_status" class="section-select">
+                <option selected="selected" disabled>--</option>
+                {% for reason in dropout_reasons %}
+                <option value="{{ reason }}">{{ reason }}</option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <input type="hidden" name="batch_id" value="{{ batch.id }}">
+              <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
+            </form>
+          </td>
+          {% if sections|length > 0 %}
+          <td>
+            <form action="/student-admin/add-to-section" method="POST">
+              {% csrf_token %}
+              <select name="section_id" class="section-select">
+                <option selected="selected" disabled>--</option>
+                {% for section in sections %}
+                <option value="{{ section.id }}">{{ section.number }}</option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <input type="hidden" name="batch_id" value="{{ batch.id }}">
+              <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
+
+  {% if slack_unregistered|length > 0 %}
+  <div class="unregistered-users">
+
+    <div class="header">
+      <h4>Students that aren't registered on slack</h4>
+      <form action="/student-admin/check-slack-registration" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+        <input class="btn btn-primary" type="submit" value="check slack registration / send reminder email">
+      </form>
+    </div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th class="first-column" scope="col">Email</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Delete from Batch</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in slack_unregistered %}
+        <tr>
+          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
+          <td>{{ user.first_name }}</td>
+          <td>{{ user.last_name }}</td>
+          <td>
+            <form action="/student-admin/delete-from-batch-only" method="POST">
+              {% csrf_token %}
+              <select name="funnel_status" class="section-select">
+                <option selected="selected" disabled>--</option>
+                {% for reason in dropout_reasons %}
+                <option value="{{ reason }}">{{ reason }}</option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="user_id" value="{{ user.id }}">
+              <input type="hidden" name="batch_id" value="{{ batch.id }}">
+              <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
   <script>
     const copyButtonArray = document.querySelectorAll('.copy-button');
     copyButtonArray.forEach(button => {
@@ -136,40 +283,40 @@
         })
         copyToClipboard(data);
       })
+      copyToClipboard(data);
     })
 
-    const copyNameButtonArray = document.querySelectorAll('.copy-name-button');
-    copyNameButtonArray.forEach(button => {
-      button.addEventListener('click', () => {
-        const userRow  = document.querySelectorAll(`.user-row-${button.value}`);
-        const data = [...userRow].map(row => {
-          let fname = row.querySelector(`.user-fname-td`).innerText;
-          let lname = row.querySelector(`.user-lname-td`).innerText;
-          fname = fname.toLowerCase()
-          fname = fname.replace(/\b\w/g, l => l.toUpperCase())
-          lname = lname.toLowerCase()
-          lname = lname.replace(/\b\w/g, l => l.toUpperCase())
-          return `${fname} ${lname}`;
-        });
+  const copyNameButtonArray = document.querySelectorAll('.copy-name-button');
+  copyNameButtonArray.forEach(button => {
+    button.addEventListener('click', () => {
+      const userRow = document.querySelectorAll(`.user-row-${button.value}`);
+      const data = [...userRow].map(row => {
+        let fname = row.querySelector(`.user-fname-td`).innerText;
+        let lname = row.querySelector(`.user-lname-td`).innerText;
+        fname = fname.toLowerCase()
+        fname = fname.replace(/\b\w/g, l => l.toUpperCase())
+        lname = lname.toLowerCase()
+        lname = lname.replace(/\b\w/g, l => l.toUpperCase())
+        return `${fname} ${lname}`;
+      });
 
-        copyToClipboard(data.join('\n'));
-      })
+      copyToClipboard(data.join('\n'));
     })
+  })
 
-    const copyToClipboard = (data) => {
-       // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
-      let selBox = document.createElement('textarea');
-      selBox.style.position = 'fixed';
-      selBox.style.left = '0';
-      selBox.style.top = '0';
-      selBox.style.opacity = '0';
-      selBox.value = data;
-      document.body.appendChild(selBox);
-      selBox.focus();
-      selBox.select();
-      document.execCommand('copy');
-      document.body.removeChild(selBox);
-    };
-  </script>
-</div>
+  const copyToClipboard = (data) => {
+    // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
+    let selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = data;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  };
+</script>
 {% endblock %}

@@ -1,27 +1,18 @@
 import datetime
-from pprint import pprint
 
-import hubspot
 from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods
-from hubspot.crm.contacts import (
-    ApiException,
-    Filter,
-    FilterGroup,
-    PublicObjectSearchRequest,
-    SimplePublicObjectInput,
-)
-from sentry_sdk import capture_exception
 
 from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
+from ..library.hubspot import Hubspot
 from ..models import Batch
 
-client = hubspot.Client.create(api_key=settings.HUBSPOT_API_KEY)
+# from env vars
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
-max_capacity = settings.MAX_CAPACITY
+batch_max_capacity = settings.BATCH_MAX_CAPACITY
 
 
 @require_GET
@@ -51,6 +42,14 @@ def dashboard(request):
 def signup(request, batch_id, email):
 
     batch = Batch.objects.get(pk=batch_id)
+    # get batch's max capacity
+    if batch.max_capacity is None:
+        # from env var
+        batch_capacity = batch_max_capacity
+    else:
+        # from database
+        batch_capacity = batch.max_capacity
+
     # get batch start date
     start_date = batch.start_date
     # get today's date
@@ -59,11 +58,11 @@ def signup(request, batch_id, email):
     difference = start_date - today
     # get number of students in batch
     num_students_in_batch = batch.users.count()
-    print('number of students', num_students_in_batch)
     # if difference is more than days env var, registration is not allowed
     if difference.days < int(days_to_expiration):
         return render(request, "users/registration-expired.html")
-    elif num_students_in_batch > int(max_capacity):
+    # if number of students in batch exceeds batch capacity, registration is not allowed
+    elif num_students_in_batch >= int(batch_capacity):
         return render(request, "users/max-capacity.html")
     else:
         if request.method == "GET":
@@ -72,7 +71,11 @@ def signup(request, batch_id, email):
             last_name = request.GET.get("last_name", "")
 
             form = SignUpForm(
-                initial={"email": email, "first_name": first_name, "last_name": last_name}
+                initial={
+                    "email": email,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                }
             )
 
             context = {
@@ -102,8 +105,11 @@ def signup(request, batch_id, email):
             email = form.cleaned_data.get("email")
 
             # set hubspot user data
-            user_hubspot_id = get_hubspot_id(email)
-            update_hubspot(user_hubspot_id)
+            hubspot_client = Hubspot()
+            # get batch number
+            batch_number = batch.number
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
 
             user = get_user_model().objects.create(
                 email=email,
@@ -118,55 +124,9 @@ def signup(request, batch_id, email):
             batch.users.add(user)
             # section = batch.add_student_to_section(user)
 
-            # send email
+            # send emails
             send_reg_notification(user, batch)
 
             login(request, user)
 
             return redirect("soyuz_app:dashboard")
-
-
-def get_hubspot_id(email):
-    try:
-        # from: https://github.com/HubSpot/hubspot-api-python/issues/49#issuecomment-811911302
-        email_filter = Filter(property_name="email", operator="EQ", value=email)
-
-        first_group = FilterGroup(filters=[email_filter])
-
-        public_object_search_request = PublicObjectSearchRequest(
-            filter_groups=[first_group]
-        )
-
-        api_response = client.crm.contacts.search_api.do_search(
-            public_object_search_request=public_object_search_request
-        )
-
-        result = api_response.to_dict()
-
-        if (
-            result["total"] == 0
-            or "results" not in result
-            or len(result["results"]) == 0
-        ):
-            raise ValueError("no hubspot user email")
-
-        return result["results"][0]["properties"]["hs_object_id"]
-    except ApiException as e:
-        capture_exception(e)
-        raise ValueError("error getting hubspot user email")
-
-
-def update_hubspot(user_hubspot_id):
-    properties = {"bootcamp_funnel_status": "basics_apply;basics_register"}
-
-    simple_public_object_input = SimplePublicObjectInput(properties=properties)
-    try:
-        api_response = client.crm.contacts.basic_api.update(
-            contact_id=user_hubspot_id,
-            simple_public_object_input=simple_public_object_input,
-        )
-        pprint(api_response)
-
-    except ApiException as e:
-        capture_exception(e)
-        raise ValueError("error updating hubspot")
