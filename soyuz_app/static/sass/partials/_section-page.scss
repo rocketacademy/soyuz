@@ -8,38 +8,103 @@
   }
   color: $blue;
   padding: 40px;
+  .section-top-header {
+    padding: 20px 0;
+  }
   .section-container {
+    padding-bottom: 40px;
+    border-bottom: 1px solid $blue;
     display: flex;
     flex-direction: column;
     form {
       margin-bottom: 40px;
     }
-  }
-}
-.add-student-form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    .add-student-form-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-  .add-student-form {
-    width: 60%;
-    padding: 40px;
-    .add-user {
-      padding: 15px 0;
+      .add-student-form {
+        width: 60%;
+        padding: 40px;
+        .add-user {
+          padding: 15px 0;
+          display: flex;
+          .add-user-select {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+    .section {
+      padding: 20px 40px;
+      margin: 10px 30px 10px 10px;
+      border: 1px solid lightgray;
+      border-radius: 10px;
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        .section-buttons {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+
+      .user-slackid-td {
+        .fa-check-circle {
+          color: $blue;
+        }
+        .fa-times-circle {
+          color: red;
+        }
+      }
+
+      td,
+      th {
+        text-align: center;
+      }
+      .first-column {
+        text-align: left;
+      }
+    }
+  }
+  .unregistered-users,
+  .no-section {
+    color: $blue;
+    padding: 20px 40px;
+    margin: 40px 30px 10px 10px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    .header,
+    .no-section-header {
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    td,
+    th {
+      text-align: center;
+    }
+    .first-column {
+      text-align: left;
+    }
+    .user-slackid-td {
+      .fa-check-circle {
+        color: $blue;
+      }
+      .fa-times-circle {
+        color: red;
+      }
     }
   }
 }
-.section {
+
+.no-section {
+  color: $blue;
   padding: 20px 40px;
-  margin: 0 20px 0 0;
+  margin: 40px 30px 10px 10px;
   border: 1px solid lightgray;
   border-radius: 10px;
-  margin: 10px;
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-  }
-
   td,
   th {
     text-align: center;
@@ -47,16 +112,12 @@
   .first-column {
     text-align: left;
   }
-}
-.unregistered-users,
-.no-section {
-  color: $blue;
-  padding: 20px 40px;
-  margin: 40px 20px 0 20px;
-  border: 1px solid lightgray;
-  border-radius: 10px;
-  .header {
-    display: flex;
-    justify-content: space-between;
+  .user-slackid-td {
+    .fa-check-circle {
+      color: $blue;
+    }
+    .fa-times-circle {
+      color: red;
+    }
   }
 }
