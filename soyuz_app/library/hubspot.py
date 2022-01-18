@@ -6,6 +6,7 @@ from hubspot.crm.contacts import (
     FilterGroup,
     PublicObjectSearchRequest,
     SimplePublicObjectInput,
+    BatchInputSimplePublicObjectBatchInput
 )
 from sentry_sdk import capture_exception
 
@@ -72,10 +73,28 @@ class Hubspot:
 
     # update funnel status on dropout from batch
 
-    def update_funnel_dropout(self, user_hubspot_id, funnel_status):
+    def update_funnel_status(self, user_hubspot_id, funnel_status):
 
         properties = {
             "bootcamp_funnel_status": f"basics_apply;basics_register;{funnel_status}"
         }
 
         self.update_hubspot(user_hubspot_id, properties)
+
+    # update funnel status of multiple students
+    def bulk_update_funnel_completion(self, batch_users):
+
+        property_list = []
+        for user in batch_users:
+            user_obj = {}
+            user_obj['id'] = user.hubspot_id
+            user_obj['properties'] = {'bootcamp_funnel_status': 'basics_apply;basics_register;basics_completion'}
+            property_list.append(user_obj)
+
+        batch_input_simple_public_object_batch_input = BatchInputSimplePublicObjectBatchInput(inputs=property_list)
+
+        try:
+            self.client.crm.contacts.batch_api.update(
+                batch_input_simple_public_object_batch_input=batch_input_simple_public_object_batch_input)
+        except ApiException as e:
+            print(f"Exception when calling batch_api->update: {e}")
