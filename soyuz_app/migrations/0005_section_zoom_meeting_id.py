@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('soyuz_app', '0003_section_section_leader'),
+        ('soyuz_app', '0004_section_section_leader'),
     ]
 
     operations = [

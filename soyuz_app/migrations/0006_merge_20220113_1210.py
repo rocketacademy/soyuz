@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('soyuz_app', '0002_batch_max_capacity'),
-        ('soyuz_app', '0004_section_zoom_meeting_id'),
+        ('soyuz_app', '0005_section_zoom_meeting_id'),
     ]
 
     operations = [
