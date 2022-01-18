@@ -2,11 +2,13 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-from django.contrib.auth import get_user_model
+
 from ..emails.reminder import send_reminder
 from ..models import Batch
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,7 +41,13 @@ class Slack:
             email_lookup_result = self.client.users_lookupByEmail(email=user.email)
 
         except SlackApiError as e:
-            logger.error("Error looking up email: {}".format(e))
+
+            if e.response["error"] == "users_not_found":
+                # send reminder email if user is not registered on slack
+                batch = Batch.objects.get(users__email=user.email)
+                send_reminder(user, batch)
+            else:
+                logger.error("Error looking up email: {}".format(e))
 
         else:
             # save slack id if user is found in workspace and does not have a slack id
@@ -48,12 +56,6 @@ class Slack:
 
             if user_list is not None:
                 user_list.append(user.slack_id)
-
-        finally:
-            var_exists = 'email_lookup_result' in locals() or 'email_lookup_result' in globals()
-            if var_exists is False:
-                batch = Batch.objects.get(users__email=user.email)
-                send_reminder(user, batch)
 
     def add_users_to_channel(self, section, id_string):
 
@@ -86,13 +88,20 @@ class Slack:
         section_users = list(
             get_user_model().objects.filter(
                 # slack id is needed to add user to slack channel
-                section=section, slack_id__isnull=False, is_superuser=False, is_staff=False
-            ))
+                section=section,
+                slack_id__isnull=False,
+                is_superuser=False,
+                is_staff=False,
+            )
+        )
 
         unregistered_users = list(
             get_user_model().objects.filter(
                 # slack id is needed to add user to slack channel
-                section=section, slack_id__isnull=True, is_superuser=False, is_staff=False
+                section=section,
+                slack_id__isnull=True,
+                is_superuser=False,
+                is_staff=False,
             )
         )
 

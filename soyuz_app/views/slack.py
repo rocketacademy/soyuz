@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from ..library.slack import Slack
-from ..models import Section, Batch
+from ..models import Section
 
 SLACK_VERIFICATION_TOKEN = settings.SLACK_VERIFICATION_TOKEN
 
@@ -42,7 +42,6 @@ def event_hook(request):
 
 
 def team_join_event(event_obj):
-    print('event obj', event_obj)
 
     # get user email from event obj
     user_email = event_obj["user"]["profile"]["email"]
@@ -65,17 +64,16 @@ def team_join_event(event_obj):
 
         if len(user_batches) > 0:
             user_batch = user_batches[0]
-            print('user batch', user_batch)
+            print("user batch", user_batch)
 
             slack_client.add_users_to_channel(user_batch, slack_id)
 
-            # TODO: do we want to implement this?
             try:
                 user_section = user.section_set.get(batch=user_batch)
-                print('user section', user_section)
+                print("user section", user_section)
 
             except Section.DoesNotExist:
-                print('section does not exist')
+                print("section does not exist")
 
             else:
                 slack_client.add_users_to_channel(user_section, slack_id)
