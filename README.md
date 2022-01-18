@@ -89,6 +89,13 @@ Make sure pipenv is in your path:
 echo 'export PATH=/Users/jayden/Library/Python/3.7/bin:$PATH' >> ~/.profile
 ```
 
+#### run pipenv
+Whenever you want to run Soyuz Django commands, you have to be in the pipenv shell:
+
+```
+pipenv shell
+```
+
 #### install the soyuz dependencies
 
 ```
@@ -153,6 +160,10 @@ Run it:
 Go to the local server: http://localhost:8025
 
 # Heroku Setup
+
+```bash
+heroku pg:psql --app soyuz-ra-staging
+```
 
 ```bash
 heroku run python manage.py makemigrations

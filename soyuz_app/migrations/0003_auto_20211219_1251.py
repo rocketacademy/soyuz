@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('soyuz_app', '0001_initial'),
+        ('soyuz_app', '0002_batch_max_capacity'),
     ]
 
     operations = [
