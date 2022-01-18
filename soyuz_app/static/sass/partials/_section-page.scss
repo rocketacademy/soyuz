@@ -98,26 +98,3 @@
     }
   }
 }
-
-.no-section {
-  color: $blue;
-  padding: 20px 40px;
-  margin: 40px 30px 10px 10px;
-  border: 1px solid lightgray;
-  border-radius: 10px;
-  td,
-  th {
-    text-align: center;
-  }
-  .first-column {
-    text-align: left;
-  }
-  .user-slackid-td {
-    .fa-check-circle {
-      color: $blue;
-    }
-    .fa-times-circle {
-      color: red;
-    }
-  }
-}
