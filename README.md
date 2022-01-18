@@ -90,6 +90,7 @@ echo 'export PATH=/Users/jayden/Library/Python/3.7/bin:$PATH' >> ~/.profile
 ```
 
 #### run pipenv
+
 Whenever you want to run Soyuz Django commands, you have to be in the pipenv shell:
 
 ```

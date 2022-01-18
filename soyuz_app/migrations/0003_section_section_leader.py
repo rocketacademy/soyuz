@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('soyuz_app', '0002_auto_20211219_1251'),
+        ('soyuz_app', '0002_batch_max_capacity'),
     ]
 
     operations = [
