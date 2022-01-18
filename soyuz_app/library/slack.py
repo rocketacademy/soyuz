@@ -7,7 +7,6 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 from ..emails.reminder import send_reminder
-from ..models import Batch
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +43,9 @@ class Slack:
 
             if e.response["error"] == "users_not_found":
                 # send reminder email if user is not registered on slack
-                batch = Batch.objects.get(users__email=user.email)
-                send_reminder(user, batch)
+                # batch = Batch.objects.get(users__email=user.email)
+                # send_reminder(user, batch)
+                pass
             else:
                 logger.error("Error looking up email: {}".format(e))
 
