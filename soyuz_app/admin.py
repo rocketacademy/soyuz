@@ -15,6 +15,7 @@ class UserAdmin(BaseUserAdmin):
                     "password",
                     "github_username",
                     "hubspot_id",
+                    "slack_id",
                     "last_login",
                 )
             },
@@ -36,7 +37,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
 
-    list_display = ("email", "hubspot_id", "github_username", "is_staff", "last_login")
+    list_display = ("email", "hubspot_id", "github_username", "slack_id", "is_staff", "last_login")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("email",)
     ordering = ("email",)
