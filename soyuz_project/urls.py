@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from pathlib import Path
+import os
 
 import environ
 from django.conf.urls import handler404, handler500  # , handler403, handler400
@@ -27,14 +27,13 @@ from soyuz_app.views.error import error_404, error_500
 handler404 = error_404  # noqa: F811
 handler500 = error_500  # noqa: F811
 
-ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-APPS_DIR = ROOT_DIR / "soyuz"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
-    env.read_env(str(ROOT_DIR / ".env"))
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 urlpatterns = [
     path("admin/", admin.site.urls),
