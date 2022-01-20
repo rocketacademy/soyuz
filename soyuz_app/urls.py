@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 # from rest_framework import routers
-from .views import user, web, slack, zoom
+from .views import slack, user, web, zoom
 
 # router = routers.DefaultRouter()
 # router.register(r"batches", rest.BatchView, "batch")
@@ -60,16 +60,40 @@ urlpatterns = [
         web.create_batch_channel,
         name="create_batch_channel",
     ),
-    path("student-admin/choose-section-leader", web.choose_section_leader, name="choose_section_leader"),
-    path('student-admin/create-zoom-room', web.create_zoom_room, name="create_zoom_room"),
-    path('student-admin/delete-section-leader', web.delete_section_leader, name="delete_section_leader"),
+    path(
+        "student-admin/choose-section-leader",
+        web.choose_section_leader,
+        name="choose_section_leader",
+    ),
+    path(
+        "student-admin/create-zoom-room", web.create_zoom_room, name="create_zoom_room"
+    ),
+    path(
+        "student-admin/delete-section-leader",
+        web.delete_section_leader,
+        name="delete_section_leader",
+    ),
     path("student-admin/assign-sections", web.assign_sections, name="assign_sections"),
     path("student-admin/create-channels", web.create_channels, name="create_channels"),
-    path('event/hook', slack.event_hook, name='event_hook'),
-    path('recording-complete', zoom.recording_complete, name="recording_complete"),
-    path("student-admin/change-batch-capacity", web.change_batch_capacity, name="change_batch_capacity"),
-    path('student-admin/course-completed', web.course_completed, name="course_completed"),
-    path("student-admin/create-section-channel", web.create_section_channel, name="create_section_channel"),
-    path("student-admin/assign-sectionless-students", web.sectionless_assign, name="sectionless_assign"),
+    path("event/hook", slack.event_hook, name="event_hook"),
+    path("recording-complete", zoom.recording_complete, name="recording_complete"),
+    path(
+        "student-admin/change-batch-capacity",
+        web.change_batch_capacity,
+        name="change_batch_capacity",
+    ),
+    path(
+        "student-admin/course-completed", web.course_completed, name="course_completed"
+    ),
+    path(
+        "student-admin/create-section-channel",
+        web.create_section_channel,
+        name="create_section_channel",
+    ),
+    path(
+        "student-admin/assign-sectionless-students",
+        web.sectionless_assign,
+        name="sectionless_assign",
+    ),
     path("", web.landing_page, name="landing_page"),
 ]

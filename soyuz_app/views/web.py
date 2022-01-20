@@ -1,6 +1,6 @@
-from ..library.zoom import Zoom
 import logging
 import math
+
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from ..forms import AddBatchForm, AddUserForm
 from ..library.hubspot import Hubspot
 from ..library.slack import Slack
+from ..library.zoom import Zoom
 from ..models import Batch, Course, Section
 
 # from slack_sdk.errors import SlackApiError
@@ -102,9 +103,9 @@ def get_sections(request, course_name, batch_number):
         batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
     )
 
-    section_leaders = list(get_user_model().objects.filter(
-        is_superuser=False, is_staff=True
-    ))
+    section_leaders = list(
+        get_user_model().objects.filter(is_superuser=False, is_staff=True)
+    )
 
     sections = batch.section_set.all()
 
@@ -616,8 +617,8 @@ def choose_section_leader(request):
     batch = Batch.objects.get(id=batch_id)
     batch_number = batch.number
     course_name = batch.course.name
-    print('section leader id', section_leader_id)
-    print('section id', section_id)
+    print("section leader id", section_leader_id)
+    print("section id", section_id)
 
     # get section
     section = Section.objects.get(id=int(section_id))
@@ -627,7 +628,9 @@ def choose_section_leader(request):
     section.section_leader = new_section_leader
     section.save()
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -643,16 +646,18 @@ def create_zoom_room(request):
         host = section.section_leader
         # from zoom.py, creates zoom room and returns meeting id
         # TODO: remove this if condition
-        if host.email != 'sam@rocketacademy.co':
+        if host.email != "sam@rocketacademy.co":
             zoom = Zoom()
             # TODO: change host.email back
             meeting_id = zoom.create_room(host.email, batch, section)
             # save zoom meeting id
             section.zoom_meeting_id = meeting_id
             section.save()
-            print('section zoom meeting id', section.zoom_meeting_id)
+            print("section zoom meeting id", section.zoom_meeting_id)
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @staff_member_required
@@ -670,7 +675,9 @@ def delete_section_leader(request):
     section.section_leader = None
     section.save()
 
-    return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
 
 
 @require_POST
