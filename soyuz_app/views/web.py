@@ -278,7 +278,7 @@ def create_channels(request):
     batch_number = batch.number
     course_name = batch.course.name
 
-    sections = Section.objects.all()
+    sections = Section.objects.filter(batch=batch)
 
     slack_client = Slack()
     for section in sections:

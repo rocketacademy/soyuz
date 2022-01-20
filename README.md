@@ -329,3 +329,7 @@ The Zoom API is used to automatically create, record and delete zoom meetings
 
 On the created Apps page, in the left hand sidebar, click on Feature to access the Event subscriptions dropdown where event subscriptions can be added.
 The recording.completed webhook is used to notify Soyuz when a zoom recording is complete.
+
+#### Slack Bot Permissions
+
+Please note that the creator an app has to be an owner of the workspace that the app is installed in, and under settings & administration > workspace settings > settings and permissions > permissions > channel management, all fields should be set to Everyone because some API methods require these permissions to work correctly, e.g, conversations.create needs people who can create public channels to be set to Everyone.
