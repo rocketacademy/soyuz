@@ -286,6 +286,32 @@ REST_FRAMEWORK = {
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
+
+# celery
+# ------------------------------------------------------------------------------
+# Celery Configuration Options
+CELERY_TIMEZONE = "Asia/Singapore"
+# CELERY_TASK_TRACK_STARTED = True
+# CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "max_connections": 2,
+}
+CELERY_BROKER_POOL_LIMIT = None
+CELERY_BROKER_CONNECTION_MAX_RETRIES = None
+
+CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json", "msgpack"]
+# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# CELERY_BEAT_SCHEDULE = {
+# 'send-summary-every-foot-mom': {
+#       'task': 'summary',
+# seconds
+#       'schedule': 3.0,
+#    },
+# }
+
+
 # Your stuff...
 # ------------------------------------------------------------------------------
 

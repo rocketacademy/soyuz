@@ -318,3 +318,34 @@ It is also used to check if a user has been registered on slack.
 
 The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
 It notifies Soyuz when a user has registered on Slack and their slack id is added to the Soyuz database
+
+# celery
+Celery is the job running queue for soyuz.
+
+```
+celery --app soyuz_project worker -l INFO
+```
+
+### redis
+
+Celery keeps the record of what needs to be done and results inside of redis
+
+#### Install
+```
+brew install redis
+```
+
+#### Start the Server
+```
+redis-server /usr/local/etc/redis.conf
+```
+
+#### clear redis out
+```
+./manage.py shell
+```
+```
+import redis
+r = redis.Redis()
+r.flushdb()
+```

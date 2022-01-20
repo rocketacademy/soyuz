@@ -47,7 +47,7 @@ django-anymail = {version = "==8.4", extras = ["sendgrid"]}
 Django = "==3.2.7"
 PyYAML = "==6.0"
 slack-sdk = "*"
-celery = "*"
+celery = "==5.2.3"
 pytz = "*"
 
 [dev-packages]
