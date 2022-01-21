@@ -50,6 +50,7 @@ PyYAML = "==6.0"
 pyjwt = "*"
 slack-sdk = "*"
 boto3 = "*"
+jwt = "*"
 
 [dev-packages]
 isort = "==5.9.3"

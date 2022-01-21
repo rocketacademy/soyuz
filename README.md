@@ -320,6 +320,10 @@ It is also used to check if a user has been registered on slack.
 The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
 It notifies Soyuz when a user has registered on Slack and their slack id is added to the Soyuz database
 
+#### Slack Bot Permissions
+
+Please note that the creator an app has to be an owner of the workspace that the app is installed in, and under settings & administration > workspace settings > settings and permissions > permissions > channel management, all fields should be set to Everyone because some API methods require these permissions to work correctly, e.g, conversations.create needs people who can create public channels to be set to Everyone.
+
 # Zoom API
 
 Soyuz zoom app is accessible at [Zoom Marketplace] (https://marketplace.zoom.us/)

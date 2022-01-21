@@ -135,6 +135,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th scope="col"></th>
             <th class="first-column" scope="col">Email</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
@@ -147,7 +148,8 @@
         <tbody>
           {% for user in section.users %}
           <tr class="user-row-{{ section.number }}">
-            <th class="user-email-{{ section.number }} first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
+            <th>{{forloop.counter}}</th>
+            <th class="user-email-{{ section.number }} first-column" scope="row">{{ user }}</th>
             <td class="user-fname-td">{{ user.first_name }}</td>
             <td class="user-lname-td">{{ user.last_name }}</td>
             {% if user.slack_id == None %}
@@ -221,6 +223,7 @@
     <table class="table table-striped">
       <thead>
         <tr>
+          <th scope="col"></th>
           <th class="first-column" scope="col">Email</th>
           <th scope="col">First Name</th>
           <th scope="col">Last Name</th>
@@ -231,7 +234,8 @@
       <tbody>
         {% for user in no_section_users %}
         <tr>
-          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
+          <th>{{forloop.counter}}</th>
+          <td class="first-column">{{ user }}</td>
           <td>{{ user.first_name }}</td>
           <td>{{ user.last_name }}</td>
           {% if user.slack_id == None %}
@@ -257,10 +261,6 @@
         {% endfor %}
       </tbody>
     </table>
-<<<<<<< HEAD
-    {% endif %}
-=======
->>>>>>> 9b01f3914472d445e7cc81c6456e2025c4307ace
   </div>
   {% endif %}
 
@@ -280,7 +280,8 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th class="first-column" scope="col">Email</th>
+          <th scope="col"></th>
+          <th class="first-column"scope="col">Email</th>
           <th scope="col">First Name</th>
           <th scope="col">Last Name</th>
           <th scope="col">Delete from Batch</th>
@@ -289,7 +290,8 @@
       <tbody>
         {% for user in slack_unregistered %}
         <tr>
-          <th class="first-column" scope="row">{{forloop.counter}}. {{ user }}</th>
+          <th>{{forloop.counter}}</th>
+          <td class="first-column">{{ user }}</td>
           <td>{{ user.first_name }}</td>
           <td>{{ user.last_name }}</td>
           <td>
@@ -313,19 +315,33 @@
   </div>
   {% endif %}
 </div>
-  <script>
-    const copyButtonArray = document.querySelectorAll('.copy-button');
-    copyButtonArray.forEach(button => {
-      button.addEventListener('click', () => {
-        const data = [];
-        const emails = document.querySelectorAll(`.user-email-${button.value}`);
-        emails.forEach(email => {
-          data.push(email.innerText);
-        })
-        copyToClipboard(data);
+<script>
+  const copyToClipboard = (data) => {
+    // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
+    let selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = data;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  };
+
+  const copyButtonArray = document.querySelectorAll('.copy-button');
+  const data = [];
+  copyButtonArray.forEach(button => {
+    button.addEventListener('click', () => {
+      const emails = document.querySelectorAll(`.user-email-${button.value}`);
+      emails.forEach(email => {
+        data.push(email.innerText);
       })
-      copyToClipboard(data);
+      copyToClipboard(data)
     })
+  })
 
   const copyNameButtonArray = document.querySelectorAll('.copy-name-button');
   copyNameButtonArray.forEach(button => {
@@ -344,20 +360,5 @@
       copyToClipboard(data.join('\n'));
     })
   })
-
-  const copyToClipboard = (data) => {
-    // from stackoverflow, https://stackoverflow.com/questions/58376758/how-to-copy-a-json-data-to-the-clipboard-with-the-button
-    let selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = data;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
-  };
 </script>
 {% endblock %}
