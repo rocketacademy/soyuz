@@ -319,11 +319,27 @@ It is also used to check if a user has been registered on slack.
 The Events API is a streamlined, easy way to build apps and bots that respond to activities in Slack.
 It notifies Soyuz when a user has registered on Slack and their slack id is added to the Soyuz database
 
-# manage.py commands
+# local testing data - manage.py commands
 
 https://docs.djangoproject.com/en/dev/howto/custom-management-commands/
 
+These command are meant to be able to create a new local database and also create a new set of live API test data.
+
+These commands assume that the DB is empty already.
+
+### reset postgres
+```
+$ dropdb soyuz_db
+$ createdb soyuz_db
+$ python manage.py migrate
+$ python manage.py migrate soyuz_app
+```
+
 ### resethubspot
+
+```
+$ python manage.py resethubspot
+```
 
 Note: you must manually clear out the hubspot of contacts first.
 
