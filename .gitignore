@@ -277,3 +277,5 @@ wow_proj/media/
 
 .env
 .envs/*
+
+client_secrets_file.json

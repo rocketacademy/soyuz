@@ -29,6 +29,13 @@
 
 
   <div class="section-container">
+    <form action="/student-admin/create-zoom-room" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input type="hidden" name="slack_unregistered" value="{{ slack_unregistered }}">
+      <input class="btn btn-primary" onclick="return confirm('Please make sure all sections have been assigned a section leader');" type="submit" value="create zoom room">
+    </form>
+    </div>
       {% if sections|length == 0 %}
       <div class="assign-sections">
         <h4>Assign Sections</h4>
@@ -66,6 +73,44 @@
     {% for section in sections %}
     <div class="section">
       <div class="section-header">
+<<<<<<< HEAD
+        <h3>Section: {{ section.number }}</h3>
+        <div>
+          <button class="btn btn-primary copy-button" type="submit" value="{{ section.number }}">Copy email
+            addresses</button>
+          <button class="btn btn-primary copy-name-button" type="submit" value="{{ section.number }}">Copy Section
+            Names</button>
+        </div>
+      </div>
+      <p>Number of students: {{ section.users|length }}</p>
+      {% if section.zoom_meeting_id %}
+      <p>Zoom meeting link: <a href="https://us02web.zoom.us/j/{{ section.zoom_meeting_id }}">https://us02web.zoom.us/j/{{ section.zoom_meeting_id }}</a></p>
+      {% endif %}
+      {% if section.section_leader %}
+      <div class="section-leader">
+        <p>Section leader: {{ section.section_leader }}</p>
+        <form action="/student-admin/delete-section-leader" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="section_id" value="{{ section.id }}">
+          <input type="hidden" name="batch_id" value="{{ batch.id }}">
+          <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
+        </form>
+      </div>
+      {% endif %}
+      <label>Choose section leader</label>
+      <form action="/student-admin/choose-section-leader" method="POST">
+        {% csrf_token %}
+        <select name="section_leader_id" class="section-select">
+          <option selected="selected" disabled>--</option>
+          {% for leader in section_leaders %}
+          <option value="{{ leader.id }}">{{ leader.email }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="batch_id" value="{{ batch.id }}">
+        <input type="hidden" name="section_id" value="{{ section.id }}">
+        <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
+      </form>
+=======
         <div class="section-text">
           <h3>Section: {{ section.number }}</h3>
           <p>Number of students: {{ section.users|length }}</p>
@@ -86,6 +131,7 @@
         </div>
       </div>
 
+>>>>>>> 9b01f3914472d445e7cc81c6456e2025c4307ace
       <table class="table table-striped">
         <thead>
           <tr>
@@ -183,9 +229,6 @@
           <th scope="col">Last Name</th>
           <th scope="col">Slack Registered</th>
           <th scope="col">Delete from Batch</th>
-          {% if sections|length > 0 %}
-          <th scope="col">Add to Section</th>
-          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -214,22 +257,6 @@
               <button class="btn btn-primary" type="submit"><i class="fas fa-trash-alt"></i></button>
             </form>
           </td>
-          {% if sections|length > 0 %}
-          <td>
-            <form action="/student-admin/add-to-section" method="POST">
-              {% csrf_token %}
-              <select name="section_id" class="section-select">
-                <option selected="selected" disabled>--</option>
-                {% for section in sections %}
-                <option value="{{ section.id }}">{{ section.number }}</option>
-                {% endfor %}
-              </select>
-              <input type="hidden" name="user_id" value="{{ user.id }}">
-              <input type="hidden" name="batch_id" value="{{ batch.id }}">
-              <button class="btn btn-primary" type="submit" value="Submit"><i class="fas fa-user-plus"></i></button>
-            </form>
-          </td>
-          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
@@ -335,5 +362,3 @@
   })
 </script>
 {% endblock %}
-
-

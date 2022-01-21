@@ -2,11 +2,11 @@ import hubspot
 from django.conf import settings
 from hubspot.crm.contacts import (
     ApiException,
+    BatchInputSimplePublicObjectBatchInput,
     Filter,
     FilterGroup,
     PublicObjectSearchRequest,
     SimplePublicObjectInput,
-    BatchInputSimplePublicObjectBatchInput
 )
 from sentry_sdk import capture_exception
 
@@ -66,7 +66,7 @@ class Hubspot:
 
         properties = {
             "bootcamp_funnel_status": "basics_apply;basics_register",
-            "basics_batch_num": f"{batch_number}"
+            "basics_batch_num": f"{batch_number}",
         }
 
         self.update_hubspot(user_hubspot_id, properties)
@@ -87,14 +87,19 @@ class Hubspot:
         property_list = []
         for user in batch_users:
             user_obj = {}
-            user_obj['id'] = user.hubspot_id
-            user_obj['properties'] = {'bootcamp_funnel_status': 'basics_apply;basics_register;basics_completion'}
+            user_obj["id"] = user.hubspot_id
+            user_obj["properties"] = {
+                "bootcamp_funnel_status": "basics_apply;basics_register;basics_completion"
+            }
             property_list.append(user_obj)
 
-        batch_input_simple_public_object_batch_input = BatchInputSimplePublicObjectBatchInput(inputs=property_list)
+        batch_input_simple_public_object_batch_input = (
+            BatchInputSimplePublicObjectBatchInput(inputs=property_list)
+        )
 
         try:
             self.client.crm.contacts.batch_api.update(
-                batch_input_simple_public_object_batch_input=batch_input_simple_public_object_batch_input)
+                batch_input_simple_public_object_batch_input=batch_input_simple_public_object_batch_input
+            )
         except ApiException as e:
             print(f"Exception when calling batch_api->update: {e}")

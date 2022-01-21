@@ -47,7 +47,10 @@ psycopg2 = "==2.9.1"
 django-anymail = {version = "==8.4", extras = ["sendgrid"]}
 Django = "==3.2.7"
 PyYAML = "==6.0"
+pyjwt = "*"
 slack-sdk = "*"
+boto3 = "*"
+jwt = "*"
 
 [dev-packages]
 isort = "==5.9.3"

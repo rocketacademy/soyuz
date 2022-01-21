@@ -111,6 +111,14 @@ class Section(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True)
     batch = models.ForeignKey(Batch, on_delete=models.DO_NOTHING)
     slack_channel_id = models.CharField(max_length=200, null=True, blank=True)
+    section_leader = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
+                                       on_delete=models.DO_NOTHING, related_name="section_leader")
+    zoom_meeting_id = models.CharField(max_length=200, null=True, blank=True)
+
+
+class Recording(models.Model):
+    url = models.CharField(max_length=255)
+    section = models.ForeignKey(Section, on_delete=models.DO_NOTHING)
 
 
 class Workflow_type(models.Model):

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_GET, require_http_methods
 from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
 from ..library.hubspot import Hubspot
-from ..models import Batch
+from ..models import Batch, Section
 
 # from env vars
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
@@ -17,12 +17,28 @@ batch_max_capacity = settings.BATCH_MAX_CAPACITY
 
 @require_GET
 def dashboard(request):
-    context = {
-        "user": request.user,
-    }
     batch_query = request.user.batch_set.filter(
         start_date__gte=datetime.date.today()
     ).order_by("start_date")
+
+    email = request.user
+    # get list of all batches user belongs to (past and present)
+    # order by descending start date => most recent batch is at index 0
+    user_batches = Batch.objects.filter(users__email=email).order_by("-start_date")
+    # get user's current section
+    user_section = Section.objects.filter(batch=user_batches[0], users__email=email)
+    # if section exists
+    if len(user_section) > 0:
+        user_section = user_section[0]
+    else:
+        # if section does not exist
+        user_section = None
+
+    context = {
+        "user": request.user,
+        "current_batch": user_batches[0],
+        "current_section": user_section
+    }
 
     batches = []
     if len(batch_query) > 0:
@@ -35,6 +51,7 @@ def dashboard(request):
         context["batches"] = batches
 
         # pprint(batches[0]["section"].number)
+
     return render(request, "users/dashboard.html", context)
 
 

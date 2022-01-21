@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from ..forms import AddBatchForm, AddUserForm
 from ..library.hubspot import Hubspot
 from ..library.slack import Slack
+from ..library.zoom import Zoom
 from ..models import Batch, Course, Section
 
 # from slack_sdk.errors import SlackApiError
@@ -102,6 +103,10 @@ def get_sections(request, course_name, batch_number):
         batch=batch, slack_id__isnull=True, is_superuser=False, is_staff=False
     )
 
+    section_leaders = list(
+        get_user_model().objects.filter(is_superuser=False, is_staff=True)
+    )
+
     sections = batch.section_set.all()
 
     section_array = []
@@ -117,8 +122,16 @@ def get_sections(request, course_name, batch_number):
         section_obj["number"] = section.number
         section_users = section.users.all()
         section_obj["users"] = section_users
+        section_obj["section_leader"] = section.section_leader
+        section_obj["zoom_meeting_id"] = section.zoom_meeting_id
         section_obj["slack_channel_id"] = section.slack_channel_id
         section_array.append(section_obj)
+
+    # get list of section leaders that have not already been assigned a section
+    for section in section_array:
+        for leader in section_leaders:
+            if leader == section["section_leader"]:
+                section_leaders.remove(leader)
 
     if request.method == "GET":
         form = AddUserForm(initial={"password1": "qwerty1234"})
@@ -175,6 +188,7 @@ def get_sections(request, course_name, batch_number):
         "sections": section_array,
         "no_section_users": no_section_users,
         "slack_unregistered": slack_unregistered,
+        "section_leaders": section_leaders,
         "form": form,
         "dropout_reasons": dropout_reasons,
         "channels_created": channels_created,
@@ -588,6 +602,73 @@ def sectionless_assign(request):
 
         else:
             pass
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
+
+@staff_member_required
+@require_POST
+def choose_section_leader(request):
+    section_leader_id = request.POST.get("section_leader_id")
+    section_id = request.POST.get("section_id")
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    # get section
+    section = Section.objects.get(id=int(section_id))
+    # get section leader
+    new_section_leader = get_user_model().objects.get(id=int(section_leader_id))
+    # assign section leader to section / update section leader
+    section.section_leader = new_section_leader
+    section.save()
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
+
+@staff_member_required
+@require_POST
+def create_zoom_room(request):
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    sections = Section.objects.all()
+    for section in sections:
+        host = section.section_leader
+        # from zoom.py, creates zoom room and returns meeting id
+        zoom = Zoom()
+        # TODO: change host.email back
+        meeting_id = zoom.create_room(host.email, batch, section)
+        # save zoom meeting id
+        section.zoom_meeting_id = meeting_id
+        section.save()
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )
+
+
+@staff_member_required
+@require_POST
+def delete_section_leader(request):
+    batch_id = request.POST.get("batch_id")
+    batch = Batch.objects.get(id=batch_id)
+    batch_number = batch.number
+    course_name = batch.course.name
+
+    section_id = request.POST.get("section_id")
+    section = Section.objects.get(id=int(section_id))
+
+    # delete section leader
+    section.section_leader = None
+    section.save()
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number

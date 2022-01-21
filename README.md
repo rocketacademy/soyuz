@@ -328,3 +328,20 @@ It notifies Soyuz when a user has registered on Slack and their slack id is adde
 #### Slack Bot Permissions
 
 Please note that the creator an app has to be an owner of the workspace that the app is installed in, and under settings & administration > workspace settings > settings and permissions > permissions > channel management, all fields should be set to Everyone because some API methods require these permissions to work correctly, e.g, conversations.create needs people who can create public channels to be set to Everyone.
+
+# Zoom API
+
+Soyuz zoom app is accessible at [Zoom Marketplace] (https://marketplace.zoom.us/)
+Sign in with your rocketacademy account, access Created Apps page by clicking on manage in the top right hand corner and click on [Soyuz](https://marketplace.zoom.us/develop/apps/tblRpuhAQlWXwwvx8vrgTA/information).
+
+The Zoom API is used to automatically create, record and delete zoom meetings
+
+On the created Apps page, in the left hand sidebar, click on Feature to access the Event subscriptions dropdown where event subscriptions can be added.
+
+Methods used:
+
+The recording.completed webhook is used to notify Soyuz when a zoom recording is complete.
+
+# AWS S3
+
+Rocket's cloud recordings are stored on S3. They are transferred directly from Zoom cloud recordings when the Zoom recording completed webhook has informed Soyuz that a Zoom recording is complete i.e., when a meeting is concluded.
