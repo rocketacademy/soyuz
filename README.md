@@ -328,4 +328,11 @@ Sign in with your rocketacademy account, access Created Apps page by clicking on
 The Zoom API is used to automatically create, record and delete zoom meetings
 
 On the created Apps page, in the left hand sidebar, click on Feature to access the Event subscriptions dropdown where event subscriptions can be added.
+
+Methods used:
+
 The recording.completed webhook is used to notify Soyuz when a zoom recording is complete.
+
+# AWS S3
+
+Rocket's cloud recordings are stored on S3. They are transferred directly from Zoom cloud recordings when the Zoom recording completed webhook has informed Soyuz that a Zoom recording is complete i.e., when a meeting is concluded.

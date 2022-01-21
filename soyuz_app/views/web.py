@@ -616,8 +616,6 @@ def choose_section_leader(request):
     batch = Batch.objects.get(id=batch_id)
     batch_number = batch.number
     course_name = batch.course.name
-    print('section leader id', section_leader_id)
-    print('section id', section_id)
 
     # get section
     section = Section.objects.get(id=int(section_id))
@@ -642,15 +640,12 @@ def create_zoom_room(request):
     for section in sections:
         host = section.section_leader
         # from zoom.py, creates zoom room and returns meeting id
-        # TODO: remove this if condition
-        if host.email != 'sam@rocketacademy.co':
-            zoom = Zoom()
-            # TODO: change host.email back
-            meeting_id = zoom.create_room(host.email, batch, section)
-            # save zoom meeting id
-            section.zoom_meeting_id = meeting_id
-            section.save()
-            print('section zoom meeting id', section.zoom_meeting_id)
+        zoom = Zoom()
+        # TODO: change host.email back
+        meeting_id = zoom.create_room(host.email, batch, section)
+        # save zoom meeting id
+        section.zoom_meeting_id = meeting_id
+        section.save()
 
     return redirect("soyuz_app:get_sections", course_name=course_name, batch_number=batch_number)
 
