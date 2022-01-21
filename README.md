@@ -229,6 +229,11 @@ heroku open
 heroku pg:backups:schedule DATABASE_URL --at '02:00 Asia/Singapore' --remote staging
 ```
 
+# deployment
+Deployment is automatic when any changes are pushed to the production branch.
+
+Before deploying make sure that the Heroku maintenance mode is turned on, especially in the case of DB changes.
+
 # View Testing Code
 
 ```
