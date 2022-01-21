@@ -326,9 +326,11 @@ Celery is the job running queue for soyuz.
 celery --app soyuz_project worker -l INFO
 ```
 
-### redis
+## redis
 
 Celery keeps the record of what needs to be done and results inside of redis
+
+Note that [Heroku Redis Cloud](https://devcenter.heroku.com/articles/heroku-redis) must be installed in the heroku instance.
 
 #### Install
 ```
@@ -348,4 +350,30 @@ redis-server /usr/local/etc/redis.conf
 import redis
 r = redis.Redis()
 r.flushdb()
+```
+
+### Example Celery queue usage
+
+Run redis in another terminal:
+```
+redis-server /usr/local/etc/redis.conf
+```
+
+Run the celery worker in another terminal:
+```
+celery --app soyuz_project worker -l INFO
+```
+
+##### Write a delay into a view
+
+Note: to test this the same code below can be run from the Django shell.
+
+Import the task functions
+```
+from soyuz_project.celery import hello
+```
+
+Put the function in the queue to be run. This function call will kick off the celery worker in the other terminal.
+```
+hello.delay()
 ```

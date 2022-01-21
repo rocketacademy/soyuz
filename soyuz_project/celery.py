@@ -23,7 +23,7 @@ app = Celery("soyuz_project")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.conf.update(
-    CELERY_BROKER_URL=env("REDISCLOUD_URL"), CELERY_RESULT_BACKEND=env("REDISCLOUD_URL")
+    CELERY_BROKER_URL=env("REDIS_URL"), CELERY_RESULT_BACKEND=env("REDIS_URL")
 )
 
 # example to have celery run a task at set intervals
@@ -46,4 +46,4 @@ def debug_task(self):
 
 @app.task(bind=True)
 def hello(self):
-    print(f"FRequest: {self.request!r}")
+    print(f"####### Hello Function is Delayed!!i {self.request!r}")
