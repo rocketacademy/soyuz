@@ -6,8 +6,6 @@ from django.contrib.auth import get_user_model
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from ..emails.reminder import send_reminder
-
 logger = logging.getLogger(__name__)
 
 
@@ -42,9 +40,6 @@ class Slack:
         except SlackApiError as e:
 
             if e.response["error"] == "users_not_found":
-                # send reminder email if user is not registered on slack
-                # batch = Batch.objects.get(users__email=user.email)
-                # send_reminder(user, batch)
                 pass
             else:
                 logger.error("Error looking up email: {}".format(e))
@@ -95,16 +90,6 @@ class Slack:
             )
         )
 
-        unregistered_users = list(
-            get_user_model().objects.filter(
-                # slack id is needed to add user to slack channel
-                section=section,
-                slack_id__isnull=True,
-                is_superuser=False,
-                is_staff=False,
-            )
-        )
-
         if len(section_users) > 0:
             for user in section_users:
                 user_ids.append(user.slack_id)
@@ -116,7 +101,3 @@ class Slack:
 
                 # add users to slack channel
                 self.add_users_to_channel(section, user_ids)
-        # send reminder email if user does not have a slack_id
-        if len(unregistered_users) > 0:
-            for user in unregistered_users:
-                send_reminder(user, batch)
