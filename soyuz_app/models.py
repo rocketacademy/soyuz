@@ -125,7 +125,7 @@ class Workflows(models.Model):
 
 class Waiting_list(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Queue')
-    batch = models.ForeignKey(Batch, on_delete=models.DO_NOTHING)
+    batch = models.OneToOneField(Batch, on_delete=models.DO_NOTHING, primary_key=True)
 
 
 class Queue(models.Model):
