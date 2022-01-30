@@ -68,5 +68,7 @@ urlpatterns = [
     path("student-admin/create-section-channel", web.create_section_channel, name="create_section_channel"),
     path("student-admin/assign-sectionless-students", web.sectionless_assign, name="sectionless_assign"),
     path("student-admin/waiting-list/batch/<batch_id>", waiting_list.get_waiting_list, name="get_waiting_list"),
+    path("student-admin/delete-from-waiting-list", waiting_list.delete_from_waiting_list,
+         name="delete_from_waiting_list"),
     path("", web.landing_page, name="landing_page"),
 ]

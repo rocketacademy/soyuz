@@ -1,15 +1,28 @@
+.breadcrumbs {
+  margin-left: 5%;
+}
 .waiting-list-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: $blue;
+
   h4 {
-    width: 80%;
+    width: 90%;
     text-align: left;
     margin-top: 40px;
   }
-  .table {
-    width: 80%;
+  .waiting-list-delete-form {
+    padding: 40px;
+    width: 70%;
+    .waiting-list-delete-button {
+      padding: 0 0 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .delete-checkbox {
+      text-align: center;
+    }
   }
 }

@@ -1,7 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-from ..models import Batch, Waiting_list
+from ..models import Batch, Waiting_list, Queue
 from django.shortcuts import redirect, render
 
 
@@ -16,14 +16,30 @@ def get_waiting_list(request, batch_id):
 
     except Waiting_list.DoesNotExist:
         batch_waiting_list = None
-        waiting_list_students = None
+        waiting_list_queue = None
 
     else:
-        if batch_waiting_list is not None:
-            waiting_list_students = get_user_model().objects.filter(waiting_list=batch_waiting_list)
+        waiting_list_queue = list(Queue.objects.filter(waiting_list=batch_waiting_list).order_by("entry_date"))
 
     context = {
-        "waiting_list_students": waiting_list_students
+        "batch": batch,
+        "waiting_list": batch_waiting_list,
+        "waiting_list_queue": waiting_list_queue
     }
 
     return render(request, "waiting-list.html", context)
+
+
+@staff_member_required
+@require_POST
+def delete_from_waiting_list(request):
+    batch_id = int(request.POST.get('batch_id'))
+    students_to_delete = request.POST.getlist('student_id')
+    batch = Batch.objects.get(id=batch_id)
+
+    waiting_list = batch.waiting_list
+
+    for student_id in students_to_delete:
+        waiting_list.users.remove(int(student_id))
+
+    return redirect('soyuz_app:get_waiting_list', batch_id=batch_id)
