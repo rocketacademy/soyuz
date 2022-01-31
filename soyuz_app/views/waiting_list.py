@@ -43,3 +43,18 @@ def delete_from_waiting_list(request):
         waiting_list.users.remove(int(student_id))
 
     return redirect('soyuz_app:get_waiting_list', batch_id=batch_id)
+
+
+def join_waiting_list(batch, user, first_name, datetime):
+    waiting_list = batch.waiting_list
+    waiting_list.users.add(user, through_defaults={'entry_date': datetime.date.today()})
+
+    waiting_list_count = waiting_list.users.all().count()
+
+    context = {
+        "waiting_list_count": waiting_list_count,
+        "first_name": first_name,
+        "batch": batch
+    }
+
+    return context

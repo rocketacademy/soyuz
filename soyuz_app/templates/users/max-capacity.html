@@ -1,13 +1,39 @@
 {% extends "layouts/base.html" %}
 {% block page_content %}
+{% load crispy_forms_tags %}
+
 <div class="centered-container">
   <div class="centered-box">
       <h4>Sorry! We have reached maximum capacity!</h4>
-      <p>Thank you for your interest in joining in our upcoming basics batch!</p>
-      <p>Unfortunately we have currently reached full
-      capacity for our upcoming basics batch, and are unable to take on more students for this batch.</p> <p>Don't worry! We will
-      send you updates on our upcoming batches where we invite you to signup for!</p>
-      <p>If you wish, you can enter your name onto your waiting list <a href="https://forms.gle/sieRkCkQJRfDfnaa7">here.</a></p>
+      <p>
+        Thank you for your interest in joining our Basics course!
+      </p>
+      <p>
+        Unfortunately we have reached full
+        capacity for this current batch, and are unable to take on more students.
+      </p>
+      <p>
+        Don't worry! We will
+        send you updates on our upcoming batches where we invite you to signup for them!
+      </p>
+      <p>
+        If you wish, you can sign up for this batch's waiting list, by filling in the following form:
+      </p>
+      <div class="waiting-list-form-container">
+        <h6>Email: {{email}}</h6>
+        {% if form.errors and 'email' in form.errors %}
+        <div class="alert alert-primary" role="alert">
+          {{ form.errors }}
+        </div>
+        {% endif %}
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <p>
+            <button class="btn btn-primary" type="submit">Sign up!</button>
+          </p>
+        </form>
+      </div>
       <p>We may not be able to guarantee you a spot for this batch, but if there is an opening, we will let you know!</p>
       <p>Thank you for your understanding!</p>
   </div>
