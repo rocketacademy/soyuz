@@ -51,18 +51,28 @@ class TestViews(TestCase):
         self.waiting_list1.users.add(self.user3,
                                      through_defaults={'entry_date': datetime.date.today() - datetime.timedelta(days=1)})
 
-        self.waiting_list_url = reverse('soyuz_app:get_waiting_list', args=[self.batch1.id])
-
     def test_waiting_list_GET(self):
-        request = self.factory.get(self.waiting_list_url)
+        get_waiting_list_url = reverse('soyuz_app:get_waiting_list', args=[self.batch1.id])
+        request = self.factory.get(get_waiting_list_url)
         request.user = self.user1
         response = waiting_list.get_waiting_list(request, self.batch1.id)
+        waiting_list_students = list(self.waiting_list1.users.all())
 
         self.assertEquals(response.status_code, 200)
+        self.assertEquals(waiting_list_students[0], self.user2)
+        self.assertEquals(self.waiting_list1.users.count(), 2)
 
-    def test_waiting_list_students(self):
-        waiting_list_student = get_user_model().objects.filter(
-            waiting_list=self.waiting_list1, queue__entry_date=datetime.date.today())
+    def test_delete_from_waiting_list_POST(self):
+        delete_from_waiting_list_url = reverse('soyuz_app:delete_from_waiting_list')
+        request = self.factory.post(delete_from_waiting_list_url, {
+            'batch_id': self.batch1.id,
+            'student_id': self.user2.id
+        })
 
-        self.assertEquals(waiting_list_student[0], self.user2)
-        self.assertEquals(waiting_list_student.count(), 1)
+        request.user = self.user1
+        response = waiting_list.delete_from_waiting_list(request)
+        waiting_list_students = list(self.waiting_list1.users.all())
+
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(waiting_list_students[0], self.user3)
+        self.assertEquals(self.waiting_list1.users.count(), 1)
