@@ -56,10 +56,10 @@ class TestViews(TestCase):
         request = self.factory.get(get_waiting_list_url)
         request.user = self.user1
         response = waiting_list.get_waiting_list(request, self.batch1.id)
-        waiting_list_students = list(self.waiting_list1.users.all())
+        waiting_list_students = list(self.waiting_list1.users.all().order_by('queue__entry_date'))
 
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(waiting_list_students[0], self.user2)
+        self.assertEquals(waiting_list_students[0], self.user3)
         self.assertEquals(self.waiting_list1.users.count(), 2)
 
     def test_delete_from_waiting_list_POST(self):
