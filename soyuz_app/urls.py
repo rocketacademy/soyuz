@@ -70,6 +70,5 @@ urlpatterns = [
     path("student-admin/waiting-list/batch/<batch_id>", waiting_list.get_waiting_list, name="get_waiting_list"),
     path("student-admin/delete-from-waiting-list", waiting_list.delete_from_waiting_list,
          name="delete_from_waiting_list"),
-    path("student-admin/join-waiting-list", waiting_list.join_waiting_list, name="join_waiting_list"),
     path("", web.landing_page, name="landing_page"),
 ]
