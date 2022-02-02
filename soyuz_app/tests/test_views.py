@@ -36,20 +36,54 @@ class TestViews(TestCase):
             last_name='wayne',
         )
 
+        self.user4 = get_user_model().objects.create(
+            email='richard@gotham.com',
+            hubspot_id='689',
+            first_name='dick',
+            last_name='grayson',
+        )
+
+        self.user5 = get_user_model().objects.create(
+            email='minnie@disney.com',
+            hubspot_id='810',
+            first_name='minnie',
+            last_name='mouse',
+        )
+
         self.batch1 = Batch.objects.create(
             number=1,
-            start_date=datetime.date.today() - datetime.timedelta(days=1),
-            course=self.course1
+            start_date=datetime.date.today() + datetime.timedelta(days=3),
+            course=self.course1,
+            max_capacity=2,
+        )
+
+        self.batch2 = Batch.objects.create(
+            number=2,
+            start_date=datetime.date.today() + datetime.timedelta(days=3),
+            course=self.course1,
+            max_capacity=20,
+        )
+
+        self.batch3 = Batch.objects.create(
+            number=3,
+            start_date=datetime.date.today() - datetime.timedelta(days=3),
+            course=self.course1,
+            max_capacity=0
         )
 
         self.waiting_list1 = Waiting_list.objects.create(
             batch=self.batch1
         )
 
+        self.batch1.users.add(self.user4)
+        self.batch1.users.add(self.user5)
+
         self.waiting_list1.users.add(self.user2, through_defaults={'entry_date': datetime.date.today()})
 
         self.waiting_list1.users.add(self.user3,
                                      through_defaults={'entry_date': datetime.date.today() - datetime.timedelta(days=1)})
+
+        self.client = Client()
 
     def test_waiting_list_GET(self):
         get_waiting_list_url = reverse('soyuz_app:get_waiting_list', args=[self.batch1.id])
@@ -76,3 +110,60 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 302)
         self.assertEquals(waiting_list_students[0], self.user3)
         self.assertEquals(self.waiting_list1.users.count(), 1)
+
+    def test_signup_max_capacity_GET(self):
+        response = self.client.get(reverse('soyuz_app:signup', args=[self.batch1.id, 'minnie@disney.com']))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/max-capacity.html')
+
+    def test_signup_max_capacity_POST_add_to_waiting_list(self):
+        response = self.client.post(reverse('soyuz_app:signup', args=[self.batch1.id, 'clint@marvel.com']), data={
+            "email": "clint@marvel.com",
+            "first_name": "Clint",
+            "last_name": "Barton",
+            "password1": "qwerty1234",
+            "password2": "qwerty1234"
+        })
+
+        self.assertEquals(self.waiting_list1.users.all().count(), 3)
+        self.assertTemplateUsed(response, 'users/waiting-list-confirmation.html')
+
+    def test_signup_max_capacity_POST_create_waiting_list(self):
+        response = self.client.post(reverse('soyuz_app:signup', args=[self.batch3.id, 'nat@marvel.com']), data={
+            "email": "nat@marvel.com",
+            "first_name": "Natasha",
+            "last_name": "Romanoff",
+            "password1": "qwerty1234",
+            "password2": "qwerty1234"
+        })
+
+        self.assertEquals(Waiting_list.objects.all().count(), 2)
+        self.assertTemplateUsed(response, 'users/waiting-list-confirmation.html')
+
+    def test_signup_registration_GET(self):
+        response = self.client.get(reverse('soyuz_app:signup', args=[self.batch2.id, 'goofy@disney.com']))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/signup.html')
+
+    def test_signup_registration_POST(self):
+        response = self.client.post(reverse('soyuz_app:signup', args=[self.batch2.id, 'pepper@marvel.com']), data={
+            "email": "pepper@marvel.com",
+            "first_name": "Pepper",
+            "last_name": "Potts",
+            "password1": "qwerty1234",
+            "password2": "qwerty1234"
+        })
+
+        batch_2_users = list(self.batch2.users.all())
+
+        self.assertEquals(self.batch2.users.all().count(), 1)
+        self.assertEquals(batch_2_users[0].email, 'pepper@marvel.com')
+        self.assertEquals(response.status_code, 302)
+
+    def test_signup_reg_link_expired_GET(self):
+        response = self.client.get(reverse('soyuz_app:signup', args=[self.batch3.id, 'elsa@disney.com']))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/registration-expired.html')
