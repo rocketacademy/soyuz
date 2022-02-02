@@ -45,8 +45,17 @@ def delete_from_waiting_list(request):
     return redirect('soyuz_app:get_waiting_list', batch_id=batch_id)
 
 
-def join_waiting_list(batch, user, first_name, datetime):
-    waiting_list = batch.waiting_list
+def create_or_join_waiting_list(batch, user, first_name, datetime):
+    try:
+        waiting_list = batch.waiting_list
+
+    except Waiting_list.DoesNotExist:
+        waiting_list = Waiting_list.objects.create(
+            batch=batch
+        )
+
+    print('waiting list', waiting_list)
+
     waiting_list.users.add(user, through_defaults={'entry_date': datetime.date.today()})
 
     waiting_list_count = waiting_list.users.all().count()
