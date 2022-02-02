@@ -54,8 +54,6 @@ def create_or_join_waiting_list(batch, user, first_name, datetime):
             batch=batch
         )
 
-    print('waiting list', waiting_list)
-
     waiting_list.users.add(user, through_defaults={'entry_date': datetime.date.today()})
 
     waiting_list_count = waiting_list.users.all().count()
