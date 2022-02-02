@@ -2,10 +2,18 @@
 {% block page_content %}
 <div class="centered-container">
   <div class="centered-box">
-   <h4>Thank you {{ first_name|title }}! </h4>
-   <h4>Your submission to the waiting list has been received</h4>
-   <p>We currently have {{ waiting_list_count }} people on the waiting list for {{ batch.course.name|title }} {{ batch.number }}</p>
-   <p>We will email you when a spot becomes available!</p>
+    <h4>Thank you {{ first_name|title }}! </h4>
+    <h4>Your submission to the waiting list has been received</h4>
+    <p>
+        We currently have {{ waiting_list_count }}
+        {% if waiting_list_count == 1 %}
+          person
+        {% else %}
+          people
+        {% endif %}
+        on the waiting list for {{ batch.course.name|title }} {{ batch.number }}
+    </p>
+    <p>We will email you when a spot becomes available!</p>
   </div>
 </div>
 {% endblock %}
