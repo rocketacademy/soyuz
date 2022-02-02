@@ -9,7 +9,7 @@ from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
 from ..library.hubspot import Hubspot
 from ..models import Batch
-from .waiting_list import join_waiting_list
+from .waiting_list import create_or_join_waiting_list
 
 # from env vars
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
@@ -38,6 +38,8 @@ def dashboard(request):
     return render(request, "users/dashboard.html", context)
 
 
+# depending on whether the number of students in a batch exceeds batch capacity,
+# a different page is displayed
 def template_to_display(num_students_in_batch, batch_capacity):
     if num_students_in_batch >= int(batch_capacity):
         template = "users/max-capacity.html"
@@ -66,7 +68,6 @@ def signup(request, batch_id, email):
     # check difference
     difference = start_date - today
     # get number of students in batch
-    num_students_in_batch = 3
     num_students_in_batch = batch.users.count()
 
     if request.method == 'GET':
@@ -107,7 +108,6 @@ def signup(request, batch_id, email):
             }
 
             template = template_to_display(num_students_in_batch, batch_capacity)
-
             return render(request, template, context)
 
         raw_password = form.cleaned_data.get("password1")
@@ -131,9 +131,10 @@ def signup(request, batch_id, email):
         user.set_password(raw_password)
         user.save()
 
-        # whether or not the batch max capacity is exceeded determines whether the student is added to the batch or batch waiting list
+        # whether or not the batch max capacity is exceeded determines if
+        # the student is added to the batch or batch waiting list
         if num_students_in_batch >= int(batch_capacity):
-            context = join_waiting_list(batch, user, first_name, datetime)
+            context = create_or_join_waiting_list(batch, user, first_name, datetime)
 
             return render(request, "users/waiting-list-confirmation.html", context)
 
