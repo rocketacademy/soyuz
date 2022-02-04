@@ -65,3 +65,33 @@ def create_or_join_waiting_list(batch, user, first_name, datetime):
     }
 
     return context
+
+
+def check_batch_capacity(batch):
+    # check if batch waiting list exists
+    try:
+        waiting_list = batch.waiting_list
+        print('waiting list', waiting_list.users.all())
+    except Waiting_list.DoesNotExist:
+        pass
+    else:
+        # if waiting list does exist, find out how many empty spaces we have
+        # to fill
+        slots_to_fill = batch.max_capacity - batch.users.all().count()
+        print('slots to fill', slots_to_fill)
+        if waiting_list.users.count() > 0:
+            # get students to remove from waiting list (order by oldest entry date)
+            if slots_to_fill <= waiting_list.users.count():
+                students_to_add = list(waiting_list.users.order_by(
+                    'queue__entry_date')[0:slots_to_fill])
+                print('students to add', students_to_add)
+            else:
+                students_to_add = list(waiting_list.users.order_by(
+                    'queue__entry_date'))
+                print('students to add', students_to_add)
+
+            # remove selected students from waiting list
+            waiting_list.users.remove(*students_to_add)
+            # add selected students to batch
+            batch.users.add(*students_to_add)
+            print('batch users', batch.users.all())
