@@ -3,7 +3,7 @@ from django.urls import reverse
 import datetime
 from ..models import Batch, Course, Queue, Waiting_list
 from django.contrib.auth import get_user_model
-from ..views import waiting_list
+from ..views import waiting_list, web
 
 
 class TestViews(TestCase):
@@ -167,3 +167,32 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'users/registration-expired.html')
+
+    def test_change_batch_capacity_POST_waiting_list_bigger_or_equals_change(self):
+        request = self.factory.post(reverse('soyuz_app:change_batch_capacity'), {
+            "new_batch_capacity": '4',
+            "batch_id": self.batch1.id
+        })
+
+        request.user = self.user1
+        response = web.change_batch_capacity(request)
+
+        batch = Batch.objects.get(number=1)
+        waiting_list = batch.waiting_list
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(batch.max_capacity, 4)
+        self.assertEquals(waiting_list.users.all().count(), 0)
+
+    def test_change_batch_capacity_POST_waiting_list_smaller_than_change(self):
+        request = self.factory.post(reverse('soyuz_app:change_batch_capacity'), {
+            "new_batch_capacity": '6',
+            "batch_id": self.batch1.id
+        })
+
+        request.user = self.user1
+        response = web.change_batch_capacity(request)
+
+        batch1 = Batch.objects.get(number=1)
+        self.assertEquals(response.status_code, 302)
+        self.assertEquals(batch1.max_capacity, 6)
+        self.assertEquals(self.batch1.users.all().count(), 4)
