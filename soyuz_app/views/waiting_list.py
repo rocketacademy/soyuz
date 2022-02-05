@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 
 
 @staff_member_required
-@require_POST
+@require_GET
 def get_waiting_list(request, batch_id):
 
     batch = Batch.objects.get(id=batch_id)

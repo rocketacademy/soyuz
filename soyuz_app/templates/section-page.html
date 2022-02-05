@@ -16,11 +16,9 @@
     <div class="section-page-header-left">
       {% if batch.waiting_list %}
       <div class="waiting-list-button">
-        <form action="{% url 'soyuz_app:get_waiting_list' batch_id=batch.id %}" method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="batch_id" value="{{ batch.id }}">
-          <input class="btn btn-primary" type="submit" value="waiting list">
-        </form>
+        <p>
+          <a href="{% url 'soyuz_app:get_waiting_list' batch_id=batch.id %}">Waiting list</a>
+        </p>
       </div>
       {% endif %}
       <div class="section-page-text">
