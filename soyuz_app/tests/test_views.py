@@ -1,7 +1,7 @@
 from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
 import datetime
-from ..models import Batch, Course, Queue, Waiting_list
+from ..models import Batch, Course, Queue, Waiting_list, Section
 from django.contrib.auth import get_user_model
 from ..views import waiting_list, web
 
@@ -50,6 +50,13 @@ class TestViews(TestCase):
             last_name='mouse',
         )
 
+        self.user6 = get_user_model().objects.create(
+            email='johntan@gmail.com',
+            hubspot_id='852',
+            first_name='john',
+            last_name='tan',
+        )
+
         self.batch1 = Batch.objects.create(
             number=1,
             start_date=datetime.date.today() + datetime.timedelta(days=3),
@@ -75,8 +82,23 @@ class TestViews(TestCase):
             batch=self.batch1
         )
 
+        self.section1 = Section.objects.create(
+            number=1,
+            batch=self.batch1
+        )
+
+        self.section2 = Section.objects.create(
+            number=2,
+            batch=self.batch1
+        )
+
         self.batch1.users.add(self.user4)
         self.batch1.users.add(self.user5)
+        self.batch1.users.add(self.user6)
+
+        self.section1.users.add(self.user4)
+        self.section1.users.add(self.user5)
+        self.section2.users.add(self.user6)
 
         self.waiting_list1.users.add(self.user2, through_defaults={'entry_date': datetime.date.today()})
 
@@ -177,11 +199,16 @@ class TestViews(TestCase):
         request.user = self.user1
         response = web.change_batch_capacity(request)
 
-        batch = Batch.objects.get(number=1)
+        batch = Batch.objects.get(id=self.batch1.id)
+        section1 = Section.objects.get(id=self.section1.id)
+        section2 = Section.objects.get(id=self.section2.id)
+
         waiting_list = batch.waiting_list
         self.assertEquals(response.status_code, 302)
         self.assertEquals(batch.max_capacity, 4)
-        self.assertEquals(waiting_list.users.all().count(), 0)
+        self.assertEquals(waiting_list.users.all().count(), 1)
+        self.assertEquals(section2.users.all().count(), 2)
+        self.assertEquals(section1.users.all().count(), 2)
 
     def test_change_batch_capacity_POST_waiting_list_smaller_than_change(self):
         request = self.factory.post(reverse('soyuz_app:change_batch_capacity'), {
@@ -195,4 +222,4 @@ class TestViews(TestCase):
         batch1 = Batch.objects.get(number=1)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(batch1.max_capacity, 6)
-        self.assertEquals(self.batch1.users.all().count(), 4)
+        self.assertEquals(self.batch1.users.all().count(), 5)
