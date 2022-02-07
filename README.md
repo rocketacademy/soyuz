@@ -230,6 +230,7 @@ heroku pg:backups:schedule DATABASE_URL --at '02:00 Asia/Singapore' --remote sta
 ```
 
 # deployment
+
 Deployment is automatic when any changes are pushed to the production branch.
 
 Before deploying make sure that the Heroku maintenance mode is turned on, especially in the case of DB changes.
@@ -328,3 +329,71 @@ It notifies Soyuz when a user has registered on Slack and their slack id is adde
 #### Slack Bot Permissions
 
 Please note that the creator an app has to be an owner of the workspace that the app is installed in, and under settings & administration > workspace settings > settings and permissions > permissions > channel management, all fields should be set to Everyone because some API methods require these permissions to work correctly, e.g, conversations.create needs people who can create public channels to be set to Everyone.
+
+# celery
+
+Celery is the job running queue for soyuz.
+
+```
+celery --app soyuz_project worker -l INFO
+```
+
+## redis
+
+Celery keeps the record of what needs to be done and results inside of redis
+
+Note that [Heroku Redis Cloud](https://devcenter.heroku.com/articles/heroku-redis) must be installed in the heroku instance.
+
+#### Install
+
+```
+brew install redis
+```
+
+#### Start the Server
+
+```
+redis-server /usr/local/etc/redis.conf
+```
+
+#### clear redis out
+
+```
+./manage.py shell
+```
+
+```
+import redis
+r = redis.Redis()
+r.flushdb()
+```
+
+### Example Celery queue usage
+
+Run redis in another terminal:
+
+```
+redis-server /usr/local/etc/redis.conf
+```
+
+Run the celery worker in another terminal:
+
+```
+celery --app soyuz_project worker -l INFO
+```
+
+##### Write a delay into a view
+
+Note: to test this the same code below can be run from the Django shell.
+
+Import the task functions
+
+```
+from soyuz_project.celery import hello
+```
+
+Put the function in the queue to be run. This function call will kick off the celery worker in the other terminal.
+
+```
+hello.delay()
+```

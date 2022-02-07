@@ -24,7 +24,7 @@ app.conf.update(
     CELERY_BEAT_SCHEDULE={
         'send-rejection-email': {
             'task': 'soyuz_app.tasks.send_basics_rejection_email',
-            'schedule': crontab(hour='8'),
+            'schedule': crontab(minute='1'),
         },
     })
 

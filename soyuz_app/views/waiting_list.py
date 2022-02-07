@@ -2,6 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 from ..models import Batch, Waiting_list, Queue, Section
+from ..library.hubspot import Hubspot
 from django.shortcuts import redirect, render
 
 
@@ -91,7 +92,12 @@ def check_batch_capacity(batch):
             # add selected students to batch
             batch.users.add(*students_to_add)
 
-            # check if batch has sections
+            hubspot_client = Hubspot()
+            # update student's funnel status in hubspot
+            for student in students_to_add:
+                hubspot_client.update_funnel_basics_apply(student.hubspot_id, batch.number)
+
+                # check if batch has sections
             try:
                 sections = Section.objects.filter(batch=batch)
             except Section.DoesNotExist:
@@ -99,7 +105,7 @@ def check_batch_capacity(batch):
             else:
                 for student in students_to_add:
                     # setting count to bigger number than a section will have
-                    section_users_count = 100
+                    section_users_count = 1000
                     selected_section = None
 
                     # looking for the section with the fewest students
