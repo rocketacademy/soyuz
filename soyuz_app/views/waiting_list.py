@@ -114,4 +114,5 @@ def check_batch_capacity(batch):
                             section_users_count = section.users.all().count()
                             selected_section = section
 
-                    selected_section.users.add(student)
+                    if selected_section is not None:
+                        selected_section.users.add(student)
