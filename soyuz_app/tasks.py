@@ -6,6 +6,11 @@ import datetime
 
 
 @shared_task
+def add(x, y):
+    return x + y
+
+
+@shared_task
 def send_basics_rejection_email():
     today = datetime.date.today()
 
