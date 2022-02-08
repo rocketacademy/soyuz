@@ -1,6 +1,8 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
+
+from ..emails.registration import send_reg_notification
 from ..models import Batch, Waiting_list, Queue, Section
 from ..library.hubspot import Hubspot
 from django.shortcuts import redirect, render
@@ -97,6 +99,8 @@ def check_batch_capacity(batch):
             for student in students_to_add:
                 hubspot_client.update_funnel_basics_apply(student.hubspot_id, batch.number)
 
+                # send email notifying students to sign up
+                send_reg_notification(student, batch)
                 # check if batch has sections
             try:
                 sections = Section.objects.filter(batch=batch)
