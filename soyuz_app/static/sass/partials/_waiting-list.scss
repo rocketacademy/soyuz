@@ -8,13 +8,21 @@
   align-items: center;
   color: $blue;
 
-  h4 {
+  h4,
+  .send_rejection-email-form {
     width: 90%;
     text-align: left;
     margin-top: 40px;
   }
+
+  .send_rejection-email-form {
+    margin-top: 10px;
+  }
   .waiting-list-delete-form {
     padding: 40px;
+    margin-top: 40px;
+    border-radius: 10px;
+    border: 1px solid lightgray;
     width: 70%;
     .waiting-list-delete-button {
       padding: 0 0 20px;

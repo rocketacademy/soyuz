@@ -290,16 +290,3 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # ------------------------------------------------------------------------------
 
 MAX_STUDENTS_SECTION = env("MAX_STUDENTS_SECTION", default=4)
-
-
-# celery
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Singapore'
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "max_connections": 2,
-}
-CELERY_BROKER_POOL_LIMIT = None
-CELERY_BROKER_CONNECTION_MAX_RETRIES = None
-
-CELERY_TASK_SERIALIZER = "json"
-CELERY_ACCEPT_CONTENT = ["json", "msgpack"]

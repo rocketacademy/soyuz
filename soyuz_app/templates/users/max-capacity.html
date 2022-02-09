@@ -6,11 +6,11 @@
   <div class="centered-box">
       <h4>Sorry! We have reached maximum capacity!</h4>
       <p>
-        Thank you for your interest in joining our Basics course!
+        Thank you for your interest in joining {{ batch.course.name|title }} {{ batch.number }} which starts on {{ batch.start_date }}!
       </p>
       <p>
         Unfortunately we have reached full
-        capacity for this current batch, and are unable to take on more students.
+        capacity for {{ batch.course.name|title }} {{ batch.number }}, and are unable to take on more students.
       </p>
       <p>
         Don't worry! We will
@@ -35,7 +35,7 @@
         </form>
       </div>
       <p>We may not be able to guarantee you a spot for this batch, but if there is an opening, we will let you know!</p>
-      <p>Thank you for your understanding!</p>
+      <p>Thank you for your kind understanding!</p>
   </div>
 </div>
 {% endblock %}

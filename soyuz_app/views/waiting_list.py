@@ -2,7 +2,10 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from ..emails.registration import send_reg_notification
+from soyuz_app.emails.basics_rejection import send_rejection_email
+
+from ..emails.waiting_list_confirmation import send_waiting_list_confirmation
+from ..emails.got_off_waitlist import send_got_off_waitlist_notification
 from ..models import Batch, Waiting_list, Queue, Section
 from ..library.hubspot import Hubspot
 from django.shortcuts import redirect, render
@@ -59,9 +62,12 @@ def create_or_join_waiting_list(batch, user, first_name, datetime):
 
     waiting_list.users.add(user, through_defaults={'entry_date': datetime.date.today()})
 
+    waiting_list_position = list(waiting_list.users.all()).index(user)
+
     waiting_list_count = waiting_list.users.all().count()
 
     context = {
+        "waiting_list_position": waiting_list_position,
         "waiting_list_count": waiting_list_count,
         "first_name": first_name,
         "batch": batch
@@ -100,7 +106,7 @@ def check_batch_capacity(batch):
                 hubspot_client.update_funnel_basics_apply(student.hubspot_id, batch.number)
 
                 # send email notifying students to sign up
-                send_reg_notification(student, batch)
+                send_got_off_waitlist_notification(student, batch)
                 # check if batch has sections
             try:
                 sections = Section.objects.filter(batch=batch)
@@ -120,3 +126,24 @@ def check_batch_capacity(batch):
 
                     if selected_section is not None:
                         selected_section.users.add(student)
+
+
+@staff_member_required
+@require_POST
+def send_basics_rejection_email(request):
+    batch_id = request.POST.get('batch_id')
+
+    batch = Batch.objects.get(id=int(batch_id))
+    waiting_list = batch.waiting_list
+
+    course_name = batch.course.name
+    batch_number = batch.number
+    waiting_list_students = list(waiting_list.users.all())
+    print('waiting list students', waiting_list_students)
+
+    for student in waiting_list_students:
+        send_rejection_email(student, batch)
+
+    return redirect(
+        "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
+    )

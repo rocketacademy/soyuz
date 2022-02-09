@@ -70,5 +70,7 @@ urlpatterns = [
     path("student-admin/waiting-list/batch/<batch_id>", waiting_list.get_waiting_list, name="get_waiting_list"),
     path("student-admin/delete-from-waiting-list", waiting_list.delete_from_waiting_list,
          name="delete_from_waiting_list"),
+    path("student-admin/send-basics-rejection-email",
+         waiting_list.send_basics_rejection_email, name="send_basics_rejection_email"),
     path("", web.landing_page, name="landing_page"),
 ]
