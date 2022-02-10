@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Register your models here.
-from .models import Batch, Course, Section, User
+from .models import Batch, Course, Section, User, Waiting_list, Queue
 
 
 class UserAdmin(BaseUserAdmin):
@@ -55,8 +55,12 @@ class BatchAdmin(admin.ModelAdmin):
     list_display = ("number", "start_date", "course")
 
 
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = ('github_username', 'hubspot_id')
+class Waiting_listAdmin(admin.ModelAdmin):
+    list_display = ("batch",)
+
+
+class QueueAdmin(admin.ModelAdmin):
+    list_display = ("entry_date", "waiting_list", "user")
 
 
 # Register your models here.
@@ -64,3 +68,5 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Batch, BatchAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Course)
+admin.site.register(Waiting_list, Waiting_listAdmin)
+admin.site.register(Queue, QueueAdmin)

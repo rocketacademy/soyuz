@@ -4,10 +4,24 @@
     padding: 0 12px;
   }
   h1 {
-    margin-top: 40px;
+    margin-top: 10px;
   }
   color: $blue;
   padding: 40px;
+  .section-page-header {
+    display: flex;
+    justify-content: space-between;
+    .section-page-header-left {
+      .waiting-list-button {
+        margin-top: 40px;
+      }
+    }
+    .section-page-header-right {
+      .course-complete-button {
+        margin-top: 40px;
+      }
+    }
+  }
   .section-top-header {
     padding: 20px 0;
   }

@@ -9,6 +9,7 @@ from ..emails.registration import send_reg_notification
 from ..forms import SignUpForm
 from ..library.hubspot import Hubspot
 from ..models import Batch
+from .waiting_list import create_or_join_waiting_list
 
 # from env vars
 days_to_expiration = settings.DAYS_TO_REGISTRATION_EXPIRE
@@ -34,14 +35,24 @@ def dashboard(request):
             batches.append(user_batch)
         context["batches"] = batches
 
-        # pprint(batches[0]["section"].number)
     return render(request, "users/dashboard.html", context)
+
+
+# depending on whether the number of students in a batch exceeds batch capacity,
+# a different page is displayed
+def template_to_display(num_students_in_batch, batch_capacity):
+    if num_students_in_batch >= int(batch_capacity):
+        template = "users/max-capacity.html"
+    else:
+        template = "users/signup.html"
+
+    return template
 
 
 @require_http_methods(["GET", "POST"])
 def signup(request, batch_id, email):
-
     batch = Batch.objects.get(pk=batch_id)
+
     # get batch's max capacity
     if batch.max_capacity is None:
         # from env var
@@ -58,18 +69,16 @@ def signup(request, batch_id, email):
     difference = start_date - today
     # get number of students in batch
     num_students_in_batch = batch.users.count()
-    # if difference is more than days env var, registration is not allowed
-    if difference.days < int(days_to_expiration):
-        return render(request, "users/registration-expired.html")
-    # if number of students in batch exceeds batch capacity, registration is not allowed
-    elif num_students_in_batch >= int(batch_capacity):
-        return render(request, "users/max-capacity.html")
-    else:
-        if request.method == "GET":
 
-            first_name = request.GET.get("first_name", "")
-            last_name = request.GET.get("last_name", "")
+    if request.method == 'GET':
+        first_name = request.GET.get("first_name", "")
+        last_name = request.GET.get("last_name", "")
 
+        # if difference is more than days env var, registration is not allowed
+        if difference.days < int(days_to_expiration):
+            return render(request, "users/registration-expired.html")
+
+        else:
             form = SignUpForm(
                 initial={
                     "email": email,
@@ -84,45 +93,54 @@ def signup(request, batch_id, email):
                 "form": form,
             }
 
-            return render(request, "users/signup.html", context)
+            template = template_to_display(num_students_in_batch, batch_capacity)
 
-        elif request.method == "POST":
+            return render(request, template, context)
 
-            form = SignUpForm(request.POST)
+    elif request.method == "POST":
+        form = SignUpForm(request.POST)
 
-            if form.is_valid() is False:
+        if form.is_valid() is False:
 
-                context = {
-                    "email": email,
-                    "form": form,
-                }
+            context = {
+                "email": email,
+                "form": form,
+            }
 
-                return render(request, "users/signup.html", context)
+            template = template_to_display(num_students_in_batch, batch_capacity)
+            return render(request, template, context)
 
-            raw_password = form.cleaned_data.get("password1")
-            first_name = form.cleaned_data.get("first_name")
-            last_name = form.cleaned_data.get("last_name")
-            email = form.cleaned_data.get("email")
+        raw_password = form.cleaned_data.get("password1")
+        first_name = form.cleaned_data.get("first_name")
+        last_name = form.cleaned_data.get("last_name")
+        email = form.cleaned_data.get("email")
 
-            # set hubspot user data
-            hubspot_client = Hubspot()
-            # get batch number
-            batch_number = batch.number
-            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+        # set hubspot user data
+        hubspot_client = Hubspot()
+        # get batch number to update contact field in hubspot
+        batch_number = batch.number
+        user_hubspot_id = hubspot_client.get_hubspot_id(email)
+
+        user = get_user_model().objects.create(
+            email=email,
+            hubspot_id=user_hubspot_id,
+            first_name=first_name,
+            last_name=last_name,
+        )
+
+        user.set_password(raw_password)
+        user.save()
+
+        # whether or not the batch max capacity is exceeded determines if
+        # the student is added to the batch or batch waiting list
+        if num_students_in_batch >= int(batch_capacity):
+            context = create_or_join_waiting_list(batch, user, first_name, datetime)
+
+            return render(request, "users/waiting-list-confirmation.html", context)
+
+        else:
             hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
-
-            user = get_user_model().objects.create(
-                email=email,
-                hubspot_id=user_hubspot_id,
-                first_name=first_name,
-                last_name=last_name,
-            )
-
-            user.set_password(raw_password)
-            user.save()
-
             batch.users.add(user)
-            # section = batch.add_student_to_section(user)
 
             # send emails
             send_reg_notification(user, batch)

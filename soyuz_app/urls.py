@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 # from rest_framework import routers
-from .views import slack, user, web
+from .views import slack, user, web, waiting_list
 
 # router = routers.DefaultRouter()
 # router.register(r"batches", rest.BatchView, "batch")
@@ -67,5 +67,10 @@ urlpatterns = [
     path('student-admin/course-completed', web.course_completed, name="course_completed"),
     path("student-admin/create-section-channel", web.create_section_channel, name="create_section_channel"),
     path("student-admin/assign-sectionless-students", web.sectionless_assign, name="sectionless_assign"),
+    path("student-admin/waiting-list/batch/<batch_id>", waiting_list.get_waiting_list, name="get_waiting_list"),
+    path("student-admin/delete-from-waiting-list", waiting_list.delete_from_waiting_list,
+         name="delete_from_waiting_list"),
+    path("student-admin/send-basics-rejection-email",
+         waiting_list.send_basics_rejection_email, name="send_basics_rejection_email"),
     path("", web.landing_page, name="landing_page"),
 ]

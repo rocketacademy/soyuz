@@ -121,3 +121,14 @@ class Workflow_type(models.Model):
 class Workflows(models.Model):
     workFlow_type_id = models.ForeignKey(Workflow_type, on_delete=models.DO_NOTHING)
     completed = models.BooleanField(default=False)
+
+
+class Waiting_list(models.Model):
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Queue')
+    batch = models.OneToOneField(Batch, on_delete=models.DO_NOTHING, primary_key=True)
+
+
+class Queue(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    waiting_list = models.ForeignKey(Waiting_list, on_delete=models.DO_NOTHING)
+    entry_date = models.DateField()
