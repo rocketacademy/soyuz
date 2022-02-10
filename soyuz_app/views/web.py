@@ -53,6 +53,10 @@ def add_to_batch(request):
     # adding to batch and slack batch channel
     destination_batch.users.add(user)
 
+    # update batch number and funnel status in hubspot
+    hubspot_client = Hubspot()
+    hubspot_client.update_funnel_status_batch_number(user.hubspot_id, destination_batch.number)
+
     if user.slack_id is not None:
         slack_id = user.slack_id
 
