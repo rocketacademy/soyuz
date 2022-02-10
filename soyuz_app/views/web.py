@@ -7,11 +7,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-
+from ..views.waiting_list import check_batch_capacity
 from ..forms import AddBatchForm, AddUserForm
 from ..library.hubspot import Hubspot
 from ..library.slack import Slack
-from ..models import Batch, Course, Section
+from ..models import Batch, Course, Section, Waiting_list
 
 # from slack_sdk.errors import SlackApiError
 logger = logging.getLogger(__name__)
@@ -53,6 +53,10 @@ def add_to_batch(request):
     # adding to batch and slack batch channel
     destination_batch.users.add(user)
 
+    # update batch number and funnel status in hubspot
+    hubspot_client = Hubspot()
+    hubspot_client.update_funnel_status_batch_number(user.hubspot_id, destination_batch.number)
+
     if user.slack_id is not None:
         slack_id = user.slack_id
 
@@ -91,6 +95,7 @@ def get_student_list(request):
 def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
     batch = Batch.objects.get(number=batch_number, course=course)
+
     no_section_users = get_user_model().objects.filter(
         batch=batch,
         section__isnull=True,
@@ -214,6 +219,9 @@ def delete_from_batch(request):
 
         # remove from batch slack channel
         slack_client.remove_from_channel(batch, slack_id)
+
+    # check batch capacity and add/delete from waiting list and batch
+    check_batch_capacity(batch)
 
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
@@ -481,6 +489,10 @@ def delete_from_batch_only(request):
     # update user's funnel status
     hubspot_client.update_funnel_status(user_hubspot_id, funnel_status)
 
+    # check batch capacity, delete from waiting list and
+    # add to batch if necessary
+    check_batch_capacity(batch)
+
     return redirect(
         "soyuz_app:get_sections", course_name=course_name, batch_number=batch_number
     )
@@ -596,12 +608,15 @@ def sectionless_assign(request):
 
 @require_POST
 def change_batch_capacity(request):
-    new_batch_capacity = request.POST.get("new_batch_capacity")
+    new_batch_capacity = int(request.POST.get("new_batch_capacity"))
     batch_id = request.POST.get("batch_id")
     batch = Batch.objects.get(id=int(batch_id))
     # update batch's max capacity
-    batch.max_capacity = int(new_batch_capacity)
+    batch.max_capacity = new_batch_capacity
     batch.save()
+
+    # check batch capacity and add/delete from waiting list and batch
+    check_batch_capacity(batch)
 
     return redirect("soyuz_app:get_batches")
 

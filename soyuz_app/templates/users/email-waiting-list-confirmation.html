@@ -1,0 +1,13 @@
+<h4>Thank you {{ first_name|title }}! </h4>
+<h4>Your submission to the waiting list has been received</h4>
+<p>
+  {% if waiting_list_count == 1 %}
+  You are first
+  {% elif waiting_list_count == 2 %}
+  There is 1 person in front of you
+  {% else %}
+  There are {{ waiting_list_position }} people in front of you
+  {% endif %}
+  on the waiting list for {{ batch.course.name|title }} {{ batch.number }}
+</p>
+<p>We will email you when a spot becomes available!</p>

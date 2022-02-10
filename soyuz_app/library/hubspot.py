@@ -81,6 +81,16 @@ class Hubspot:
 
         self.update_hubspot(user_hubspot_id, properties)
 
+    # update batch number in hubspot
+    def update_funnel_status_batch_number(self, user_hubspot_id, batch_number):
+
+        properties = {
+            "bootcamp_funnel_status": "basics_apply;basics_register",
+            "basics_batch_num": f"{batch_number}"
+        }
+
+        self.update_hubspot(user_hubspot_id, properties)
+
     # update funnel status of multiple students
     def bulk_update_funnel_completion(self, batch_users):
 

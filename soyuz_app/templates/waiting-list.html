@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+{% block page_content %}
+<div class="breadcrumbs">
+  <a href="{% url 'soyuz_app:get_sections' course_name=batch.course.name batch_number=batch.number %}">Batch Page</a>
+</div>
+<div class="waiting-list-container">
+  <h4>{{ batch.course.name|title }} Batch {{ batch.number }} Waiting List</h4>
+  <form class="send_rejection-email-form" action="{% url 'soyuz_app:send_basics_rejection_email' %}" method="POST">
+    {%csrf_token %}
+    <input type="hidden" name="batch_id" value="{{ batch.id }}">
+    <input type="submit" class="btn btn-primary" value="send rejection emails"
+      onclick="return confirm('Are you sure you want to send rejection emails?')">
+  </form>
+  <form class="waiting-list-delete-form" action="{% url 'soyuz_app:delete_from_waiting_list' %}" method="POST">
+    {% csrf_token %}
+    <div class="waiting-list-delete-button">
+      <input type="hidden" name="batch_id" value="{{ batch.id }}">
+      <input type="submit" class="btn btn-primary" value="delete selected" onclick="return confirm('Are you sure you want to delete student(s) from waiting list?')">
+    </div>
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th class="first-column" scope="col">Email</th>
+          <th scope="col">Entry Date</th>
+          <th scope="col" class="delete-checkbox">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in waiting_list_queue %}
+        <tr>
+          <td class="first-column" scope="row">{{ student.user.email }}</td>
+          <td>{{ student.entry_date }}</td>
+          <td class="delete-checkbox">
+            <input type="checkbox" name="student_id" value="{{ student.user.id }}">
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+{% endblock %}
