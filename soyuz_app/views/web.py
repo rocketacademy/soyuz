@@ -91,6 +91,7 @@ def get_student_list(request):
 def get_sections(request, course_name, batch_number):
     course = Course.objects.get(name=course_name)
     batch = Batch.objects.get(number=batch_number, course=course)
+
     no_section_users = get_user_model().objects.filter(
         batch=batch,
         section__isnull=True,

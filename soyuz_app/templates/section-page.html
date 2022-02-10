@@ -14,7 +14,7 @@
   <a href="{% url 'soyuz_app:get_student_list' %}">Student List</a>
   <div class="section-page-header">
     <div class="section-page-header-left">
-      {% if batch.waiting_list != None %}
+      {% if batch.waiting_list %}
       <div class="waiting-list-button">
         <p>
           <a href="{% url 'soyuz_app:get_waiting_list' batch_id=batch.id %}">Waiting list</a>
