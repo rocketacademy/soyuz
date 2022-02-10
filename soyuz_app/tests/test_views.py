@@ -15,44 +15,44 @@ class TestViews(TestCase):
             name='basics'
         )
         self.user1 = get_user_model().objects.create(
-            email='ironman@marvel.com',
-            hubspot_id='567',
+            email='tony@marvel.com',
+            hubspot_id='951',
             first_name='tony',
             last_name='stark',
-            is_staff=True
         )
 
         self.user2 = get_user_model().objects.create(
             email='mickey@disney.com',
-            hubspot_id='234',
+            hubspot_id='901',
             first_name='mickey',
             last_name='mouse',
+            is_staff=True
         )
 
         self.user3 = get_user_model().objects.create(
-            email='batman@gotham.com',
-            hubspot_id='321',
-            first_name='bruce',
-            last_name='wayne',
+            email='donald@disney.com',
+            hubspot_id='1001',
+            first_name='donald',
+            last_name='duck',
         )
 
         self.user4 = get_user_model().objects.create(
-            email='richard@gotham.com',
-            hubspot_id='689',
-            first_name='dick',
-            last_name='grayson',
+            email='michellemokhuihui@gmail.com',
+            hubspot_id='801',
+            first_name='michelle',
+            last_name='mok',
         )
 
         self.user5 = get_user_model().objects.create(
-            email='minnie@disney.com',
-            hubspot_id='810',
-            first_name='minnie',
-            last_name='mouse',
+            email='michelle@rocketacademy.co',
+            hubspot_id='751',
+            first_name='michelle',
+            last_name='mok',
         )
 
         self.user6 = get_user_model().objects.create(
             email='johntan@gmail.com',
-            hubspot_id='852',
+            hubspot_id='1051',
             first_name='john',
             last_name='tan',
         )
@@ -100,7 +100,7 @@ class TestViews(TestCase):
         self.section1.users.add(self.user5)
         self.section2.users.add(self.user6)
 
-        self.waiting_list1.users.add(self.user2, through_defaults={'entry_date': datetime.date.today()})
+        self.waiting_list1.users.add(self.user1, through_defaults={'entry_date': datetime.date.today()})
 
         self.waiting_list1.users.add(self.user3,
                                      through_defaults={'entry_date': datetime.date.today() - datetime.timedelta(days=1)})
@@ -114,7 +114,7 @@ class TestViews(TestCase):
         response = waiting_list.get_waiting_list(request, self.batch1.id)
         waiting_list_students = list(self.waiting_list1.users.all().order_by('queue__entry_date'))
 
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 302)
         self.assertEquals(waiting_list_students[0], self.user3)
         self.assertEquals(self.waiting_list1.users.count(), 2)
 
@@ -122,12 +122,13 @@ class TestViews(TestCase):
         delete_from_waiting_list_url = reverse('soyuz_app:delete_from_waiting_list')
         request = self.factory.post(delete_from_waiting_list_url, {
             'batch_id': self.batch1.id,
-            'student_id': self.user2.id
+            'student_id': self.user1.id
         })
 
-        request.user = self.user1
+        request.user = self.user2
         response = waiting_list.delete_from_waiting_list(request)
-        waiting_list_students = list(self.waiting_list1.users.all())
+        new_waiting_list = Waiting_list.objects.get(batch=self.batch1)
+        waiting_list_students = list(new_waiting_list.users.all())
 
         self.assertEquals(response.status_code, 302)
         self.assertEquals(waiting_list_students[0], self.user3)
