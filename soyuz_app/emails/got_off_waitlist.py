@@ -9,7 +9,7 @@ def send_got_off_waitlist_notification(user, batch):
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
     msg_html = render_to_string(
-        "users/got-off-waitlist.html",
+        "users/emails/email-got-off-waiting-list.html",
         {"batch": batch, "user": user},
     )
 

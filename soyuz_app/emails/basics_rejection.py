@@ -9,7 +9,7 @@ def send_rejection_email(user, batch):
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
     msg_html = render_to_string(
-        "users/basics-rejection.html",
+        "users/emails/email-basics-rejection.html",
         {"batch": batch, "user": user},
     )
 

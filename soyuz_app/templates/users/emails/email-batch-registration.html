@@ -1,4 +1,5 @@
-
+{% extends "layouts/email.html" %}
+{% block page_content %}
 <h2>Welcome to Rocket Academy!</h2>
 
 <h4>Hi {{user.first_name}},</h4>
@@ -11,10 +12,12 @@
 </p>
 <p>
   <strong>
-    Prior to our first session, please join our Slack Channel using the SAME EMAIL ADDRESS you used to register on our website, with this link here.
+    Prior to our first session, please join our Slack Channel using the SAME EMAIL ADDRESS you used to register on our
+    website, with this link here.
   </strong>
 </p>
-  <a href="https://join.slack.com/t/rocketacademybasics/shared_invite/zt-10igrhvg0-BZDBGCRr1t6HTkNjXEPOkA">https://join.slack.com/t/rocketacademybasics/shared_invite/zt-10igrhvg0-BZDBGCRr1t6HTkNjXEPOkA</a>
+<a
+  href="https://join.slack.com/t/rocketacademybasics/shared_invite/zt-10igrhvg0-BZDBGCRr1t6HTkNjXEPOkA">https://join.slack.com/t/rocketacademybasics/shared_invite/zt-10igrhvg0-BZDBGCRr1t6HTkNjXEPOkA</a>
 </p>
 <p>
   Further communications with regards to Basics will be shared with you on Slack such as:
@@ -35,3 +38,9 @@
   Thank you again for your support with Rocket Academy,
   We look forward to seeing you in class!
 </strong>
+<br><br>
+<p>Sincerely,</p>
+<p>Foong</p>
+<p>Head, Admissions</p>
+
+{% endblock %}

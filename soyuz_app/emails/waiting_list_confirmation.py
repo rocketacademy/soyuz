@@ -8,7 +8,7 @@ def send_waiting_list_confirmation(user, batch, first_name, waiting_list_count, 
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
     msg_html = render_to_string(
-        "users/email-waiting-list-confirmation.html", {
+        "users/emails/email-waiting-list-confirmation.html", {
             "user": user,
             "batch": batch,
             "first_name": first_name,

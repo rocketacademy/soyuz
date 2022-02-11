@@ -1,3 +1,5 @@
+{% extends "layouts/email.html" %}
+{% block page_content %}
 <h4>Thank you {{ first_name|title }}! </h4>
 <h4>Your submission to the waiting list has been received</h4>
 <p>
@@ -11,3 +13,8 @@
   on the waiting list for {{ batch.course.name|title }} {{ batch.number }}
 </p>
 <p>We will email you when a spot becomes available!</p>
+<br><br>
+<p>Sincerely,</p>
+<p>Foong</p>
+<p>Head, Admissions</p>
+{% endblock %}

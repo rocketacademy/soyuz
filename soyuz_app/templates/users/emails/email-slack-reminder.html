@@ -1,3 +1,5 @@
+{% extends "layouts/email.html" %}
+{% block page_content %}
 <h2>Welcome to Rocket Academy!</h2>
 
 <h4>Hi {{user.first_name}},</h4>
@@ -28,3 +30,8 @@
 <h4>
   We look forward to seeing you in class!
 </h4>
+<br><br>
+<p>Sincerely,</p>
+<p>Foong</p>
+<p>Head, Admissions</p>
+{% endblock %}

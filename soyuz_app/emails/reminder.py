@@ -10,7 +10,7 @@ def send_reminder(user, batch):
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
     msg_html = render_to_string(
-        "users/slack-reminder.html",
+        "users/emails/email-slack-reminder.html",
         {"batch": batch, "user": user},
     )
 

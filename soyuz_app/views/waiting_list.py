@@ -66,6 +66,9 @@ def create_or_join_waiting_list(batch, user, first_name, datetime):
 
     waiting_list_count = waiting_list.users.all().count()
 
+    # send email to confirm spot on waitig list
+    send_waiting_list_confirmation(user, batch, first_name, waiting_list_count, waiting_list_position)
+
     context = {
         "waiting_list_position": waiting_list_position,
         "waiting_list_count": waiting_list_count,
