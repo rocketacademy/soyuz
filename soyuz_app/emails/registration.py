@@ -9,7 +9,7 @@ def send_reg_notification(user, batch):
 
     # msg_plain = render_to_string('templates/email.txt', {'some_params': some_params})
     msg_html = render_to_string(
-        "users/batch-registration.html",
+        "users/emails/email-batch-registration.html",
         {"batch": batch, "user": user},
     )
 

@@ -41,7 +41,8 @@ urlpatterns = [
     path("", include("soyuz_app.urls")),
     path(
         "password-reset/",
-        auth_views.PasswordResetView.as_view(template_name="users/password-reset.html"),
+        auth_views.PasswordResetView.as_view(template_name="users/password-reset.html",
+                                             html_email_template_name="users/emails/password-reset-email.html"),
         name="password_reset_email",
     ),
     path(
