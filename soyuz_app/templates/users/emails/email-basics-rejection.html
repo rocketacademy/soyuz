@@ -1,3 +1,5 @@
+{% extends "layouts/email.html" %}
+{% block page_content %}
 <p>Hi {{user.first_name}},</p>
 <p>Thank you so much for your enthusiasm in joining {{ batch.course.name|title }} {{ batch.number }}</p>
 <p>However, we regret to inform you that we are unable to offer you a spot in the current batch as we have reached maximum
@@ -7,7 +9,8 @@ and encourages student engagement and learning.</p>
 <p>More Basics courses will be run in the near future, and we will send you email confirmations for those dates
 closer to those commencement dates.</p>
 <p>We sincerely hope to see you in one of our courses soon!</p>
-<br>
+<br><br>
 <p>Sincerely,</p>
 <p>Foong</p>
 <p>Head, Admissions</p>
+{% endblock %}
