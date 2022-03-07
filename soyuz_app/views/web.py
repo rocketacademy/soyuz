@@ -170,9 +170,7 @@ def get_sections(request, course_name, batch_number):
     dropout_reasons = [
         "basics_deferred",
         "basics_dropout",
-        "basics_dropout_logistics",
-        "basics_dropout_noshow",
-        "basics_dropout_other",
+        "basics_dropout_noqualified",
     ]
 
     context = {
