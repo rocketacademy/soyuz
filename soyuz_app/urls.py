@@ -1,6 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import path
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 # from rest_framework import routers
 from .views import slack, user, web, waiting_list
@@ -72,5 +74,6 @@ urlpatterns = [
          name="delete_from_waiting_list"),
     path("student-admin/send-basics-rejection-email",
          waiting_list.send_basics_rejection_email, name="send_basics_rejection_email"),
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
     path("", web.landing_page, name="landing_page"),
 ]
