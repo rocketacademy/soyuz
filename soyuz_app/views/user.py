@@ -70,81 +70,86 @@ def signup(request, batch_id, email):
     # get number of students in batch
     num_students_in_batch = batch.users.count()
 
-    if request.method == 'GET':
-        first_name = request.GET.get("first_name", "")
-        last_name = request.GET.get("last_name", "")
+    # check to see if user already exists in database
+    try:
+        user = get_user_model().objects.get(email=email)
+    # if user does not exist, render signup form
+    except get_user_model().DoesNotExist:
+        if request.method == 'GET':
+            first_name = request.GET.get("first_name", "")
+            last_name = request.GET.get("last_name", "")
 
-        # if difference is more than days env var, registration is not allowed
-        if difference.days < int(days_to_expiration):
-            return render(request, "users/registration-expired.html")
+            # if difference is more than days env var, registration is not allowed
+            if difference.days < int(days_to_expiration):
+                return render(request, "users/registration-expired.html")
 
-        else:
-            form = SignUpForm(
-                initial={
+            else:
+                form = SignUpForm(
+                    initial={
+                        "email": email,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                    }
+                )
+
+                context = {
                     "email": email,
-                    "first_name": first_name,
-                    "last_name": last_name,
+                    "batch": batch,
+                    "form": form,
                 }
+
+                template = template_to_display(num_students_in_batch, batch_capacity)
+
+                return render(request, template, context)
+
+        elif request.method == "POST":
+            form = SignUpForm(request.POST)
+
+            if form.is_valid() is False:
+
+                context = {
+                    "email": email,
+                    "form": form,
+                }
+
+                template = template_to_display(num_students_in_batch, batch_capacity)
+                return render(request, template, context)
+
+            raw_password = form.cleaned_data.get("password1")
+            first_name = form.cleaned_data.get("first_name")
+            last_name = form.cleaned_data.get("last_name")
+            email = form.cleaned_data.get("email")
+
+            # set hubspot user data
+            # hubspot_client = Hubspot()
+            # get batch number to update contact field in hubspot
+            # batch_number = batch.number
+            # user_hubspot_id = hubspot_client.get_hubspot_id(email)
+
+            user = get_user_model().objects.create(
+                email=email,
+                # hubspot_id=user_hubspot_id,
+                first_name=first_name,
+                last_name=last_name,
             )
 
-            context = {
-                "email": email,
-                "batch": batch,
-                "form": form,
-            }
+            user.set_password(raw_password)
+            user.save()
 
-            template = template_to_display(num_students_in_batch, batch_capacity)
+    # whether or not the batch max capacity is exceeded determines if
+    # the student is added to the batch or batch waiting list
+    if num_students_in_batch >= int(batch_capacity):
+        context = create_or_join_waiting_list(batch, user, first_name, datetime)
 
-            return render(request, template, context)
+        return render(request, "users/waiting-list-confirmation.html", context)
 
-    elif request.method == "POST":
-        form = SignUpForm(request.POST)
+    else:
+        # hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
+        batch.users.add(user)
 
-        if form.is_valid() is False:
+        # send emails
+        # send_reg_notification(user, batch)
 
-            context = {
-                "email": email,
-                "form": form,
-            }
+        login(request, user)
 
-            template = template_to_display(num_students_in_batch, batch_capacity)
-            return render(request, template, context)
-
-        raw_password = form.cleaned_data.get("password1")
-        first_name = form.cleaned_data.get("first_name")
-        last_name = form.cleaned_data.get("last_name")
-        email = form.cleaned_data.get("email")
-
-        # set hubspot user data
-        hubspot_client = Hubspot()
-        # get batch number to update contact field in hubspot
-        batch_number = batch.number
-        user_hubspot_id = hubspot_client.get_hubspot_id(email)
-
-        user = get_user_model().objects.create(
-            email=email,
-            hubspot_id=user_hubspot_id,
-            first_name=first_name,
-            last_name=last_name,
-        )
-
-        user.set_password(raw_password)
-        user.save()
-
-        # whether or not the batch max capacity is exceeded determines if
-        # the student is added to the batch or batch waiting list
-        if num_students_in_batch >= int(batch_capacity):
-            context = create_or_join_waiting_list(batch, user, first_name, datetime)
-
-            return render(request, "users/waiting-list-confirmation.html", context)
-
-        else:
-            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
-            batch.users.add(user)
-
-            # send emails
-            send_reg_notification(user, batch)
-
-            login(request, user)
-
-            return redirect("soyuz_app:dashboard")
+        return redirect("soyuz_app:dashboard")
