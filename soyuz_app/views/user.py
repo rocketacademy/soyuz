@@ -70,9 +70,14 @@ def signup(request, batch_id, email):
     # get number of students in batch
     num_students_in_batch = batch.users.count()
 
+    # set hubspot client
+    hubspot_client = Hubspot()
+
+    batch_number = batch.number
     # check to see if user already exists in database
     try:
         user = get_user_model().objects.get(email=email)
+
     # if user does not exist, render signup form
     except get_user_model().DoesNotExist:
         if request.method == 'GET':
@@ -120,15 +125,11 @@ def signup(request, batch_id, email):
             last_name = form.cleaned_data.get("last_name")
             email = form.cleaned_data.get("email")
 
-            # set hubspot user data
-            # hubspot_client = Hubspot()
-            # get batch number to update contact field in hubspot
-            # batch_number = batch.number
-            # user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
 
             user = get_user_model().objects.create(
                 email=email,
-                # hubspot_id=user_hubspot_id,
+                hubspot_id=user_hubspot_id,
                 first_name=first_name,
                 last_name=last_name,
             )
@@ -136,20 +137,40 @@ def signup(request, batch_id, email):
             user.set_password(raw_password)
             user.save()
 
-    # whether or not the batch max capacity is exceeded determines if
-    # the student is added to the batch or batch waiting list
-    if num_students_in_batch >= int(batch_capacity):
-        context = create_or_join_waiting_list(batch, user, first_name, datetime)
+            # whether or not the batch max capacity is exceeded determines if
+            # the student is added to the batch or batch waiting list
+            if num_students_in_batch >= int(batch_capacity):
+                context = create_or_join_waiting_list(batch, user, first_name, datetime)
 
-        return render(request, "users/waiting-list-confirmation.html", context)
+                return render(request, "users/waiting-list-confirmation.html", context)
+
+            else:
+                hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
+                batch.users.add(user)
+
+                # send emails
+                # send_reg_notification(user, batch)
+
+                login(request, user)
+
+                return redirect("soyuz_app:dashboard")
 
     else:
-        # hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
-        batch.users.add(user)
+        # whether or not the batch max capacity is exceeded determines if
+        # the student is added to the batch or batch waiting list
+        if num_students_in_batch >= int(batch_capacity):
+            context = create_or_join_waiting_list(batch, user, first_name, datetime)
 
-        # send emails
-        # send_reg_notification(user, batch)
+            return render(request, "users/waiting-list-confirmation.html", context)
 
-        login(request, user)
+        else:
+            user_hubspot_id = hubspot_client.get_hubspot_id(email)
+            hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
+            batch.users.add(user)
 
-        return redirect("soyuz_app:dashboard")
+            # send emails
+            send_reg_notification(user, batch)
+
+            login(request, user)
+
+            return redirect("soyuz_app:dashboard")
