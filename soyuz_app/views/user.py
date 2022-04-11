@@ -149,7 +149,7 @@ def signup(request, batch_id, email):
                 batch.users.add(user)
 
                 # send emails
-                # send_reg_notification(user, batch)
+                send_reg_notification(user, batch)
 
                 login(request, user)
 
