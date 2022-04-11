@@ -179,4 +179,4 @@ def signup(request, batch_id, email):
 
                 return redirect("soyuz_app:dashboard")
         else:
-            return redirect('soyuz_app:dashboard')
+            return redirect('soyuz_app:login')
