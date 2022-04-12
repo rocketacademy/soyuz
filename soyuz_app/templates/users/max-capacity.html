@@ -16,6 +16,7 @@
         Don't worry! We will
         send you updates on our upcoming batches where we invite you to signup for them!
       </p>
+      {% if user == None %}
       <p>
         If you wish, you can sign up for this batch's waiting list, by filling in the following form:
       </p>
@@ -34,6 +35,19 @@
           </p>
         </form>
       </div>
+      {% else %}
+      <p>
+        If you wish, you can sign up for this batch's waiting list, by clicking on the button below:
+      </p>
+      <div class="waiting-list-register-button">
+        <form action="/waiting-list-register" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="batch_id" value="{{ batch.id }}">
+          <input type="hidden" name="user_email" value="{{ user }}">
+          <input class="btn btn-primary" type="submit" value="Register for Waiting List">
+        </form>
+      </div>
+      {% endif %}
       <p>We may not be able to guarantee you a spot for this batch, but if there is an opening, we will let you know!</p>
       <p>Thank you for your kind understanding!</p>
   </div>
