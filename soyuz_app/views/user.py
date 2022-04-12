@@ -168,6 +168,7 @@ def signup(request, batch_id, email):
         return render(request, "users/waiting-list-confirmation.html", context)
 
     else:
+        user_hubspot_id = hubspot_client.get_hubspot_id(email)
         hubspot_client.update_funnel_basics_apply(user_hubspot_id, batch_number)
         batch.users.add(user)
 
