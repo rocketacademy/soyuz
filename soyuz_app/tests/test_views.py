@@ -152,6 +152,19 @@ class TestViews(TestCase):
         self.assertEquals(self.waiting_list1.users.all().count(), 3)
         self.assertTemplateUsed(response, 'users/waiting-list-confirmation.html')
 
+    def test_signup_new_user_GET(self):
+        response = self.client.post(reverse('soyuz_app:signup', args=[self.batch2.id, 'raphael@turtles.com']))
+
+        self.assertTemplateUsed(response, 'users/signup.html')
+
+    def test_signup_existing_user_GET(self):
+        response = self.client.post(reverse('soyuz_app:signup', args=[self.batch2.id, 'johntan@gmail.com']))
+
+        batch_2_users = list(self.batch2.users.all())
+
+        self.assertEquals(self.batch2.users.all().count(), 1)
+        self.assertEquals(batch_2_users[0].email, 'johntan@gmail.com')
+
     def test_signup_max_capacity_POST_create_waiting_list(self):
         response = self.client.post(reverse('soyuz_app:signup', args=[self.batch3.id, 'nat@marvel.com']), data={
             "email": "nat@marvel.com",

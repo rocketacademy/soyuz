@@ -74,6 +74,7 @@ urlpatterns = [
          name="delete_from_waiting_list"),
     path("student-admin/send-basics-rejection-email",
          waiting_list.send_basics_rejection_email, name="send_basics_rejection_email"),
+    path("waiting-list-register", user.waiting_list_register, name="waiting_list_register"),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
     path("", web.landing_page, name="landing_page"),
 ]
